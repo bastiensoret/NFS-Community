@@ -1,0 +1,165 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  GATEKEEPER
+  BASIC_USER
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+}
+
+enum WorkArrangement {
+  REMOTE
+  HYBRID
+  ON_SITE
+}
+
+enum SeniorityLevel {
+  JUNIOR
+  MID
+  SENIOR
+  LEAD
+  EXPERT
+}
+
+enum EducationLevel {
+  BACHELOR
+  MASTER
+  PHD
+  OTHER
+}
+
+enum SkillPriority {
+  MANDATORY
+  PREFERABLE
+}
+
+enum SkillLevel {
+  BASIC
+  GOOD
+  FLUENT
+  EXPERT
+}
+
+enum JobPostingStatus {
+  ACTIVE
+  CLOSED
+  FILLED
+  PENDING_REVIEW
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          UserRole  @default(BASIC_USER)
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Candidate {
+  id                String   @id @default(cuid())
+  firstName         String
+  lastName          String
+  email             String   @unique
+  phoneNumber       String?
+  desiredRoles      String
+  skills            String
+  industries        String
+  seniorityLevel    SeniorityLevel?
+  certifications    String
+  location          String?
+  profileDataJson   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model JobPosting {
+  id                    String            @id @default(cuid())
+  externalReference     String?
+  source                String?
+  sourceUrl             String?
+  jobTitle              String
+  companyName           String
+  companyDivision       String?
+  organizationalUnit    String?
+  roleCategory          String?
+  roleProfile           String?
+  seniorityLevel        SeniorityLevel
+  workLocation          String
+  employmentType        EmploymentType
+  contractDuration      String?
+  startDate             DateTime?
+  endDate               DateTime?
+  extensionPossible     Boolean           @default(false)
+  description           String
+  missionContext        String?
+  responsibilities      String
+  objectives            String
+  education             String?
+  experience            String?
+  skills                String?
+  languages             String
+  industry              String?
+  domain                String?
+  travelRequired        String?
+  salaryRange           String?
+  applicationMethod     String?
+  contactPerson         String?
+  applicationDeadline   DateTime?
+  postingDate           DateTime          @default(now())
+  lastUpdated           DateTime          @updatedAt
+  status                JobPostingStatus  @default(ACTIVE)
+  viewCount             Int               @default(0)
+  applicationCount      Int               @default(0)
+}
