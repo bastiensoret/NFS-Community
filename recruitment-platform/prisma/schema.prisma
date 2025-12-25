@@ -4,59 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-}
-
-enum UserRole {
-  SUPER_ADMIN
-  GATEKEEPER
-  BASIC_USER
-}
-
-enum EmploymentType {
-  FULL_TIME
-  PART_TIME
-  CONTRACT
-  TEMPORARY
-}
-
-enum WorkArrangement {
-  REMOTE
-  HYBRID
-  ON_SITE
-}
-
-enum SeniorityLevel {
-  JUNIOR
-  MID
-  SENIOR
-  LEAD
-  EXPERT
-}
-
-enum EducationLevel {
-  BACHELOR
-  MASTER
-  PHD
-  OTHER
-}
-
-enum SkillPriority {
-  MANDATORY
-  PREFERABLE
-}
-
-enum SkillLevel {
-  BASIC
-  GOOD
-  FLUENT
-  EXPERT
-}
-
-enum JobPostingStatus {
-  ACTIVE
-  CLOSED
-  FILLED
-  PENDING_REVIEW
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -66,7 +14,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  role          UserRole  @default(BASIC_USER)
+  role          String    @default("BASIC_USER")
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())
@@ -116,7 +64,7 @@ model Candidate {
   desiredRoles      String
   skills            String
   industries        String
-  seniorityLevel    SeniorityLevel?
+  seniorityLevel    String?
   certifications    String
   location          String?
   profileDataJson   String?
@@ -125,7 +73,7 @@ model Candidate {
 }
 
 model JobPosting {
-  id                    String            @id @default(cuid())
+  id                    String    @id @default(cuid())
   externalReference     String?
   source                String?
   sourceUrl             String?
@@ -135,13 +83,13 @@ model JobPosting {
   organizationalUnit    String?
   roleCategory          String?
   roleProfile           String?
-  seniorityLevel        SeniorityLevel
+  seniorityLevel        String
   workLocation          String
-  employmentType        EmploymentType
+  employmentType        String
   contractDuration      String?
   startDate             DateTime?
   endDate               DateTime?
-  extensionPossible     Boolean           @default(false)
+  extensionPossible     Boolean   @default(false)
   description           String
   missionContext        String?
   responsibilities      String
@@ -157,9 +105,9 @@ model JobPosting {
   applicationMethod     String?
   contactPerson         String?
   applicationDeadline   DateTime?
-  postingDate           DateTime          @default(now())
-  lastUpdated           DateTime          @updatedAt
-  status                JobPostingStatus  @default(ACTIVE)
-  viewCount             Int               @default(0)
-  applicationCount      Int               @default(0)
+  postingDate           DateTime  @default(now())
+  lastUpdated           DateTime  @updatedAt
+  status                String    @default("ACTIVE")
+  viewCount             Int       @default(0)
+  applicationCount      Int       @default(0)
 }
