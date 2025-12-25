@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Users, Briefcase, LogOut, Home } from "lucide-react"
+import { Users, Briefcase, LogOut, Home, Shield } from "lucide-react"
 import { getRoleDisplayName } from "@/lib/roles"
 
 export default async function DashboardLayout({
@@ -43,6 +43,14 @@ export default async function DashboardLayout({
               Job Postings
             </Button>
           </Link>
+          {session.user?.role === "SUPER_ADMIN" && (
+            <Link href="/dashboard/admin">
+              <Button variant="ghost" className="w-full justify-start">
+                <Shield className="mr-2 h-4 w-4" />
+                Admin Panel
+              </Button>
+            </Link>
+          )}
         </nav>
 
         <div className="absolute bottom-0 w-64 p-4 border-t border-gray-200">

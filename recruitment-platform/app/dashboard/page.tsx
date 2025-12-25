@@ -1,6 +1,6 @@
 import { auth } from "@/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Briefcase, UserCheck, Mail, Shield, Calendar, Building2, Crown, User } from "lucide-react"
+import { Users, Briefcase, UserCheck, Mail, Shield, Calendar, Building2, User } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 import { Badge } from "@/components/ui/badge"
 import { getRoleDisplayName } from "@/lib/roles"
@@ -21,7 +21,6 @@ export default async function DashboardPage() {
         firstName: true,
         lastName: true,
         role: true,
-        plan: true,
         tenantId: true,
         createdAt: true,
       },
@@ -116,10 +115,6 @@ export default async function DashboardPage() {
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Shield className="h-3 w-3" />
                   {getRoleDisplayName(fullUser?.role || '')}
-                </Badge>
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <Crown className="h-3 w-3" />
-                  {fullUser?.plan}
                 </Badge>
               </div>
 
