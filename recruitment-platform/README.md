@@ -1,4 +1,4 @@
-# Recruitment Platform
+# NFS Community
 
 A modern recruitment management platform built with Next.js, featuring candidate profile management, job posting creation, and role-based access control.
 
@@ -33,7 +33,7 @@ A modern recruitment management platform built with Next.js, featuring candidate
 ### 1. Clone and Install
 
 ```bash
-cd recruitment-platform
+cd nfs-community
 npm install
 ```
 
@@ -82,7 +82,7 @@ Open [http://localhost:3000](http://localhost:3000) - you'll be redirected to th
 ## Default Credentials
 
 **Dev User (Super Admin)**
-- Email: `bastiensoret@gmail.com`
+- Email: `info@bastiensoret.com`
 - Password: `devpassword123`
 - Role: SUPER_ADMIN
 
@@ -106,7 +106,7 @@ Open [http://localhost:3000](http://localhost:3000) - you'll be redirected to th
 ## Project Structure
 
 ```
-recruitment-platform/
+nfs-community/
 ├── app/
 │   ├── api/                    # API routes
 │   │   ├── auth/              # NextAuth endpoints
@@ -201,7 +201,7 @@ npx tsx prisma/seed.ts     # Seed database
 ### Database Connection Issues
 - Ensure PostgreSQL is running
 - Verify DATABASE_URL in `.env`
-- Check database exists: `createdb recruitment_platform`
+- Check database exists: `createdb nfs_community`
 
 ### Authentication Issues
 - Verify NEXTAUTH_SECRET is set

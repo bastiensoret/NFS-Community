@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 
 const { auth } = NextAuth(authConfig)
 
-const publicRoutes = ["/", "/auth/signin"]
+const publicRoutes = ["/", "/auth/signin", "/auth/signup"]
 
 export default auth((req) => {
   const { nextUrl } = req

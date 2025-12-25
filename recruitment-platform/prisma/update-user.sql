@@ -2,4 +2,4 @@
 UPDATE User 
 SET password = '$2b$10$zUhXikuYpdYU4VYFEUYIf.zYJj18/80rLHSxnOBnE4FLlG/miylV2',
     updatedAt = datetime('now')
-WHERE email = 'bastiensoret@gmail.com';
+WHERE email = 'info@bastiensoret.com';

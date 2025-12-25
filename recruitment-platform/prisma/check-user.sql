@@ -1,1 +1,1 @@
-SELECT id, email, name, role, password FROM User WHERE email = 'bastiensoret@gmail.com';
+SELECT id, email, name, role, password FROM User WHERE email = 'info@bastiensoret.com';

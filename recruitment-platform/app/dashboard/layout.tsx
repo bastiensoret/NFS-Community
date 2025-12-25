@@ -19,8 +19,8 @@ export default async function DashboardLayout({
     <div className="flex h-screen bg-gray-50">
       <aside className="w-64 bg-white border-r border-gray-200">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900">Recruitment</h1>
-          <p className="text-sm text-gray-500 mt-1">Platform</p>
+          <h1 className="text-2xl font-bold text-gray-900">NFS Community</h1>
+          <p className="text-sm text-gray-500 mt-1">Building our reputation</p>
         </div>
         
         <nav className="px-4 space-y-2">

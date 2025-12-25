@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import Link from "next/link"
 
 export default function SignInForm() {
   const router = useRouter()
@@ -118,7 +119,14 @@ export default function SignInForm() {
           </form>
 
           <div className="text-center text-sm text-muted-foreground">
-            Dev credentials: bastiensoret@gmail.com
+            Dev credentials: info@bastiensoret.com
+          </div>
+
+          <div className="text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+              Sign up
+            </Link>
           </div>
         </CardContent>
       </Card>

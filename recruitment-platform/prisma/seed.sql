@@ -2,7 +2,7 @@
 INSERT INTO User (id, email, name, password, role, createdAt, updatedAt)
 VALUES (
   'clxdev001',
-  'bastiensoret@gmail.com',
+  'info@bastiensoret.com',
   'Bastien Soret',
   '$2b$10$a7TSFDic9imV7C5IDplpQ.BrpLwde8NzKEbHKzagVKcyS4Ujk/1J.',
   'SUPER_ADMIN',
