@@ -15,7 +15,7 @@ export default async function AdminPage() {
   const [usersCount, adminCount, gatekeeperCount, usersList] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: { in: ["ADMIN", "SUPER_ADMIN"] } } }),
-    prisma.user.count({ where: { role: "GATEKEEPER" } }),
+    prisma.user.count({ where: { isGatekeeper: true } }),
     prisma.user.findMany({
       select: {
         id: true,
@@ -24,6 +24,7 @@ export default async function AdminPage() {
         firstName: true,
         lastName: true,
         role: true,
+        isGatekeeper: true,
         tenantId: true,
         createdAt: true,
       },

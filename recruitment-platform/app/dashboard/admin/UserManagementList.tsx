@@ -3,8 +3,9 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Shield, Building2, Search } from "lucide-react"
+import { Shield, Building2, Search, UserCog } from "lucide-react"
 import { getRoleDisplayName } from "@/lib/roles"
+import { EditUserDialog } from "./EditUserDialog"
 
 type User = {
   id: string
@@ -13,12 +14,20 @@ type User = {
   firstName: string | null
   lastName: string | null
   role: string
+  isGatekeeper: boolean
   tenantId: string | null
   createdAt: Date
 }
 
 export function UserManagementList({ users }: { users: User[] }) {
   const [searchQuery, setSearchQuery] = useState("")
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user)
+    setDialogOpen(true)
+  }
 
   const filteredUsers = users.filter((user) => {
     const searchLower = searchQuery.toLowerCase()
@@ -56,7 +65,8 @@ export function UserManagementList({ users }: { users: User[] }) {
           {filteredUsers.map((user) => (
             <div
               key={user.id}
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+              onClick={() => handleUserClick(user)}
+              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-4">
                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
@@ -82,6 +92,12 @@ export function UserManagementList({ users }: { users: User[] }) {
                   <Shield className="h-3 w-3" />
                   {getRoleDisplayName(user.role)}
                 </Badge>
+                {user.isGatekeeper && (
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <UserCog className="h-3 w-3" />
+                    Gatekeeper
+                  </Badge>
+                )}
                 <span className="text-xs text-gray-400">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </span>
@@ -90,6 +106,12 @@ export function UserManagementList({ users }: { users: User[] }) {
           ))}
         </div>
       )}
+
+      <EditUserDialog
+        user={selectedUser}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   )
 }

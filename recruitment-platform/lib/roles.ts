@@ -3,7 +3,6 @@ export const ROLES = {
   USER: 'USER',
   ADMIN: 'ADMIN',
   SUPER_ADMIN: 'SUPER_ADMIN',
-  GATEKEEPER: 'GATEKEEPER',
 } as const
 
 export type Role = typeof ROLES[keyof typeof ROLES]
@@ -13,7 +12,6 @@ export const ROLE_DISPLAY_NAMES: Record<Role, string> = {
   [ROLES.USER]: 'User',
   [ROLES.ADMIN]: 'Administrator',
   [ROLES.SUPER_ADMIN]: 'Super Administrator',
-  [ROLES.GATEKEEPER]: 'Gatekeeper',
 }
 
 export const ROLE_PERMISSIONS = {
@@ -60,17 +58,6 @@ export const ROLE_PERMISSIONS = {
     canValidateCandidates: true,
     canApproveJobPostings: true,
     canManageUsers: true,
-  },
-  [ROLES.GATEKEEPER]: {
-    canViewJobs: true,
-    canPostJobs: true,
-    canProposeCandidates: true,
-    canViewAllJobs: false,
-    canViewAllCandidates: false,
-    canValidateJobs: false,
-    canValidateCandidates: false,
-    canApproveJobPostings: true,
-    canManageUsers: false,
   },
 }
 

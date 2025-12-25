@@ -15,6 +15,7 @@ model User {
   image         String?
   password      String?
   role          String    @default("USER")
+  isGatekeeper  Boolean   @default(false)
   companyId     String?
   tenantId      String?
   firstName     String?
