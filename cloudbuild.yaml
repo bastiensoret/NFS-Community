@@ -7,7 +7,7 @@ steps:
       - 'gcr.io/$PROJECT_ID/recruitment-platform:$COMMIT_SHA'
       - '-t'
       - 'gcr.io/$PROJECT_ID/recruitment-platform:latest'
-      - './recruitment-platform'
+      - '.'
     
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
