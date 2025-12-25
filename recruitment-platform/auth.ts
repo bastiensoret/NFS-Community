@@ -9,6 +9,7 @@ const isProduction = process.env.VERCEL === "1"
 const isDevLoginEnabled = !isProduction && process.env.AUTH_ENABLE_DEV_LOGIN === "true"
 
 export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth({
+  debug: true,
   adapter: PrismaAdapter(prisma) as any,
   ...authConfig,
   providers: [
