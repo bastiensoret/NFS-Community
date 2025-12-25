@@ -42,7 +42,9 @@ export default function SignInPage() {
   }
 
   const handleAzureSignIn = () => {
-    signIn("azure-ad", { callbackUrl: "/dashboard" })
+    signIn("azure-ad", { 
+      callbackUrl: new URLSearchParams(window.location.search).get("callbackUrl") || "/dashboard" 
+    })
   }
 
   return (

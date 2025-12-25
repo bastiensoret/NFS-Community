@@ -15,8 +15,14 @@ model User {
   image         String?
   password      String?
   role          String    @default("BASIC_USER")
+  companyId     String?
+  tenantId      String?
+  firstName     String?
+  lastName      String?
+  plan          String    @default("FREE")
   accounts      Account[]
   sessions      Session[]
+  company       Company?  @relation(fields: [companyId], references: [id])
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -53,6 +59,17 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  tenantId  String?  @unique
+  domain    String?  @unique
+  plan      String   @default("FREE")
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Candidate {

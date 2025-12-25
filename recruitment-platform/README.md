@@ -43,16 +43,19 @@ Update the `.env` file with your configuration:
 
 ```env
 # Database
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/recruitment_platform?schema=public"
+DATABASE_URL="file:./dev.db"
 
-# NextAuth
-NEXTAUTH_SECRET="your-secret-key-change-this-in-production"
-NEXTAUTH_URL="http://localhost:3000"
+# NextAuth v5 (Auth.js)
+AUTH_SECRET="your-secret-key-change-this-in-production"
+AUTH_URL="http://localhost:3000"
 
-# Azure AD (Microsoft Entra ID)
+# Azure AD (Microsoft Entra ID) - Optional
 AZURE_AD_CLIENT_ID="your-azure-ad-client-id"
 AZURE_AD_CLIENT_SECRET="your-azure-ad-client-secret"
 AZURE_AD_TENANT_ID="your-azure-ad-tenant-id"
+
+# Dev Login (Local Only)
+AUTH_ENABLE_DEV_LOGIN="true"
 ```
 
 ### 3. Database Setup
