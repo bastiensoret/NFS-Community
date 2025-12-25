@@ -119,10 +119,6 @@ export default function SignInForm() {
           </form>
 
           <div className="text-center text-sm text-muted-foreground">
-            Dev credentials: info@bastiensoret.com
-          </div>
-
-          <div className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
             <Link href="/auth/signup" className="text-primary hover:underline font-medium">
               Sign up

@@ -5,7 +5,7 @@ A modern recruitment management platform built with Next.js, featuring candidate
 ## Features
 
 - **Authentication**: Microsoft Entra ID (Azure AD) SSO + Dev credentials
-- **Role-Based Access Control**: Super Admin, Gatekeeper, and Basic User roles
+- **Role-Based Access Control**: Super Administrator, Administrator, Gatekeeper, and User roles
 - **Candidate Management**: Create, view, edit, and delete candidate profiles
 - **Job Posting Management**: Create and manage job opportunities with detailed information
 - **Modern UI**: Built with shadcn/ui and Tailwind CSS
@@ -88,20 +88,24 @@ Open [http://localhost:3000](http://localhost:3000) - you'll be redirected to th
 
 ## User Roles
 
-### Super Admin
-- Full access to all features
-- Can assign roles to other users
-- Manage all candidates and job postings
+### User
+- Visualize job positions
+- Post job positions
+- Propose candidates
+
+### Administrator
+- Visualize all job positions and all candidates with filtering capabilities
+- Post job positions and rework/validate job positions from Users
+- Add candidates and validate proposed candidates from Users
+
+### Super Administrator
+- All Administrator capabilities
+- Manage everything regarding the app
+- Change other users' roles
 
 ### Gatekeeper
-- Review and approve content
-- Manage candidates and job postings
-- Limited administrative functions
-
-### Basic User
-- View candidates and job postings
-- Basic CRUD operations
-- No administrative access
+- Special capability above their normal role
+- Can approve job postings to generate mail campaigns towards matching candidates (feature pending implementation)
 
 ## Project Structure
 

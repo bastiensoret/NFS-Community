@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Users, Briefcase, LogOut, Home } from "lucide-react"
+import { getRoleDisplayName } from "@/lib/roles"
 
 export default async function DashboardLayout({
   children,
@@ -51,7 +52,7 @@ export default async function DashboardLayout({
                 {session.user?.name || session.user?.email}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {session.user?.role}
+                {getRoleDisplayName(session.user?.role || '')}
               </p>
             </div>
             <form action={async () => {

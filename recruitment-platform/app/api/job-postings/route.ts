@@ -3,6 +3,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { jobPostingSchema } from "@/lib/validations"
 import { z } from "zod"
+import { ROLES, hasPermission } from "@/lib/roles"
 
 export async function GET() {
   try {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    if (session.user.role !== "ADMIN" && session.user.role !== "RECRUITER") {
+    if (!hasPermission(session.user.role, 'canPostJobs')) {
       return NextResponse.json({ error: "Forbidden: Insufficient permissions" }, { status: 403 })
     }
 

@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    if (session.user.role !== "ADMIN" && session.user.role !== "RECRUITER") {
+    if (!hasPermission(session.user.role, 'canProposeCandidates')) {
       return NextResponse.json({ error: "Forbidden: Insufficient permissions" }, { status: 403 })
     }
 

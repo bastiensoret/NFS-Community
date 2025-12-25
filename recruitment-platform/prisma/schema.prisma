@@ -14,7 +14,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  role          String    @default("BASIC_USER")
+  role          String    @default("USER")
   companyId     String?
   tenantId      String?
   firstName     String?
