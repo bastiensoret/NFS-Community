@@ -1,16 +1,17 @@
 "use client"
 
 import { signIn } from "next-auth/react"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import React, { useState, Suspense, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -41,15 +42,15 @@ export default function SignInPage() {
     }
   }
 
-  const handleAzureSignIn = () => {
+  const handleEntraSignIn = () => {
+    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
     signIn("azure-ad", { 
-      callbackUrl: new URLSearchParams(window.location.search).get("callbackUrl") || "/dashboard" 
+      callbackUrl 
     })
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
           <CardDescription>
@@ -58,18 +59,17 @@ export default function SignInPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <Button
-            onClick={handleAzureSignIn}
+            onClick={handleEntraSignIn}
             className="w-full"
             variant="outline"
             type="button"
           >
-            <svg className="mr-2 h-4 w-4" viewBox="0 0 23 23">
-              <path fill="#f35325" d="M0 0h11v11H0z" />
-              <path fill="#81bc06" d="M12 0h11v11H12z" />
-              <path fill="#05a6f0" d="M0 12h11v11H0z" />
-              <path fill="#ffba08" d="M12 12h11v11H12z" />
+            <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7v10c0 6.52 4.02 10 10 10s10-3.48 10-10V7l-10-5z" fill="#0078D4"/>
+              <path d="M12 2v25" stroke="white" strokeWidth="0.5" opacity="0.3"/>
+              <path d="M2 7h20" stroke="white" strokeWidth="0.5" opacity="0.3"/>
             </svg>
-            Sign in with Microsoft
+            Login with Entra ID
           </Button>
 
           <div className="relative">
@@ -83,7 +83,7 @@ export default function SignInPage() {
             </div>
           </div>
 
-          <form onSubmit={handleCredentialsSignIn} className="space-y-4">
+          <form onSubmit={handleCredentialsSignIn} className="space-y-4" suppressHydrationWarning>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -122,6 +122,24 @@ export default function SignInPage() {
           </div>
         </CardContent>
       </Card>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <Suspense fallback={
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
+            <CardDescription>
+              Loading...
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      }>
+        <SignInForm />
+      </Suspense>
     </div>
   )
 }

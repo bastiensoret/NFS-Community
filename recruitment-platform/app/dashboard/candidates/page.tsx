@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -23,8 +24,11 @@ interface Candidate {
 }
 
 export default function CandidatesPage() {
+  const { data: session } = useSession()
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [loading, setLoading] = useState(true)
+  
+  const canManage = session?.user?.role === "ADMIN" || session?.user?.role === "RECRUITER"
 
   useEffect(() => {
     fetchCandidates()
@@ -71,12 +75,14 @@ export default function CandidatesPage() {
           <h1 className="text-3xl font-bold text-gray-900">Candidates</h1>
           <p className="text-gray-500 mt-2">Manage candidate profiles</p>
         </div>
-        <Link href="/dashboard/candidates/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Candidate
-          </Button>
-        </Link>
+        {canManage && (
+          <Link href="/dashboard/candidates/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Candidate
+            </Button>
+          </Link>
+        )}
       </div>
 
       <Card>
@@ -100,7 +106,7 @@ export default function CandidatesPage() {
                   <TableHead>Seniority</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  {canManage && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -128,22 +134,24 @@ export default function CandidatesPage() {
                     <TableCell>{candidate.seniorityLevel || "-"}</TableCell>
                     <TableCell>{candidate.location || "-"}</TableCell>
                     <TableCell>{format(new Date(candidate.createdAt), "MMM d, yyyy")}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link href={`/dashboard/candidates/${candidate.id}`}>
-                          <Button variant="ghost" size="icon">
-                            <Pencil className="h-4 w-4" />
+                    {canManage && (
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Link href={`/dashboard/candidates/${candidate.id}`}>
+                            <Button variant="ghost" size="icon">
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(candidate.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(candidate.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

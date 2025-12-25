@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -20,8 +21,11 @@ interface JobPosting {
 }
 
 export default function JobPostingsPage() {
+  const { data: session } = useSession()
   const [jobPostings, setJobPostings] = useState<JobPosting[]>([])
   const [loading, setLoading] = useState(true)
+
+  const canManage = session?.user?.role === "ADMIN" || session?.user?.role === "RECRUITER"
 
   useEffect(() => {
     fetchJobPostings()
@@ -83,12 +87,14 @@ export default function JobPostingsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Job Postings</h1>
           <p className="text-gray-500 mt-2">Manage job opportunities</p>
         </div>
-        <Link href="/dashboard/job-postings/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Job Posting
-          </Button>
-        </Link>
+        {canManage && (
+          <Link href="/dashboard/job-postings/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Job Posting
+            </Button>
+          </Link>
+        )}
       </div>
 
       <Card>
@@ -111,7 +117,7 @@ export default function JobPostingsPage() {
                   <TableHead>Type</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Posted</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  {canManage && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -127,22 +133,24 @@ export default function JobPostingsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>{format(new Date(job.postingDate), "MMM d, yyyy")}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link href={`/dashboard/job-postings/${job.id}`}>
-                          <Button variant="ghost" size="icon">
-                            <Pencil className="h-4 w-4" />
+                    {canManage && (
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Link href={`/dashboard/job-postings/${job.id}`}>
+                            <Button variant="ghost" size="icon">
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(job.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(job.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

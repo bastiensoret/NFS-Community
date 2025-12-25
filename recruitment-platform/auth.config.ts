@@ -7,18 +7,18 @@ import { prisma } from "./lib/prisma"
 const isProduction = process.env.VERCEL === "1"
 const isDevLoginEnabled = !isProduction && process.env.AUTH_ENABLE_DEV_LOGIN === "true"
 
-if (isProduction && !process.env.AZURE_AD_CLIENT_ID) {
-  throw new Error("AZURE_AD_CLIENT_ID is required in production")
+if (isProduction && !process.env.AUTH_MICROSOFT_ENTRA_ID_ID) {
+  throw new Error("AUTH_MICROSOFT_ENTRA_ID_ID is required in production")
 }
 
 export default {
   providers: [
-    ...(process.env.AZURE_AD_CLIENT_ID && process.env.AZURE_AD_CLIENT_SECRET && process.env.AZURE_AD_TENANT_ID
+    ...(process.env.AUTH_MICROSOFT_ENTRA_ID_ID && process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET && process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID
       ? [
           AzureADProvider({
-            clientId: process.env.AZURE_AD_CLIENT_ID,
-            clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
-            tenantId: process.env.AZURE_AD_TENANT_ID,
+            clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
+            clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
+            issuer: `https://login.microsoftonline.com/${process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID}/v2.0`,
           }),
         ]
       : []),
@@ -64,6 +64,16 @@ export default {
       : []),
   ],
   callbacks: {
+    async signIn({ account, profile }) {
+      if (account?.provider === "azure-ad") {
+        const allowedTenantId = process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID
+        if (allowedTenantId && profile?.tid !== allowedTenantId) {
+          console.error(`Access denied: Tenant ID mismatch. Expected ${allowedTenantId}, got ${profile?.tid}`)
+          return false
+        }
+      }
+      return true
+    },
     async jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id

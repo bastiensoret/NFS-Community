@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { jobPostingSchema } from "@/lib/validations"
+import { z } from "zod"
 
 export async function GET() {
   try {
@@ -27,51 +29,61 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth()
     
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    if (session.user.role !== "ADMIN" && session.user.role !== "RECRUITER") {
+      return NextResponse.json({ error: "Forbidden: Insufficient permissions" }, { status: 403 })
+    }
+
     const body = await request.json()
+    
+    // Validate request body
+    const validatedData = jobPostingSchema.parse(body)
 
     const jobPosting = await prisma.jobPosting.create({
       data: {
-        externalReference: body.externalReference,
-        source: body.source,
-        sourceUrl: body.sourceUrl,
-        jobTitle: body.jobTitle,
-        companyName: body.companyName,
-        companyDivision: body.companyDivision,
-        organizationalUnit: body.organizationalUnit,
-        roleCategory: body.roleCategory,
-        roleProfile: body.roleProfile,
-        seniorityLevel: body.seniorityLevel,
-        workLocation: JSON.stringify(body.workLocation),
-        employmentType: body.employmentType,
-        contractDuration: body.contractDuration,
-        startDate: body.startDate ? new Date(body.startDate) : null,
-        endDate: body.endDate ? new Date(body.endDate) : null,
-        extensionPossible: body.extensionPossible || false,
-        description: body.description,
-        missionContext: body.missionContext,
-        responsibilities: JSON.stringify(body.responsibilities || []),
-        objectives: JSON.stringify(body.objectives || []),
-        education: body.education ? JSON.stringify(body.education) : null,
-        experience: body.experience ? JSON.stringify(body.experience) : null,
-        skills: body.skills ? JSON.stringify(body.skills) : null,
-        languages: JSON.stringify(body.languages || []),
-        industry: body.industry,
-        domain: body.domain,
-        travelRequired: body.travelRequired,
-        salaryRange: body.salaryRange ? JSON.stringify(body.salaryRange) : null,
-        applicationMethod: body.applicationMethod,
-        contactPerson: body.contactPerson ? JSON.stringify(body.contactPerson) : null,
-        applicationDeadline: body.applicationDeadline ? new Date(body.applicationDeadline) : null,
-        status: body.status || "ACTIVE",
+        externalReference: validatedData.externalReference,
+        source: validatedData.source,
+        sourceUrl: validatedData.sourceUrl,
+        jobTitle: validatedData.jobTitle,
+        companyName: validatedData.companyName,
+        companyDivision: validatedData.companyDivision,
+        organizationalUnit: validatedData.organizationalUnit,
+        roleCategory: validatedData.roleCategory,
+        roleProfile: validatedData.roleProfile,
+        seniorityLevel: validatedData.seniorityLevel,
+        workLocation: typeof validatedData.workLocation === 'string' ? validatedData.workLocation : JSON.stringify(validatedData.workLocation),
+        employmentType: validatedData.employmentType,
+        contractDuration: validatedData.contractDuration,
+        startDate: validatedData.startDate,
+        endDate: validatedData.endDate,
+        extensionPossible: validatedData.extensionPossible || false,
+        description: validatedData.description,
+        missionContext: validatedData.missionContext,
+        responsibilities: typeof validatedData.responsibilities === 'string' ? validatedData.responsibilities : JSON.stringify(validatedData.responsibilities || []),
+        objectives: typeof validatedData.objectives === 'string' ? validatedData.objectives : JSON.stringify(validatedData.objectives || []),
+        education: validatedData.education ? (typeof validatedData.education === 'string' ? validatedData.education : JSON.stringify(validatedData.education)) : null,
+        experience: validatedData.experience ? (typeof validatedData.experience === 'string' ? validatedData.experience : JSON.stringify(validatedData.experience)) : null,
+        skills: validatedData.skills ? (typeof validatedData.skills === 'string' ? validatedData.skills : JSON.stringify(validatedData.skills)) : null,
+        languages: typeof validatedData.languages === 'string' ? validatedData.languages : JSON.stringify(validatedData.languages || []),
+        industry: validatedData.industry,
+        domain: validatedData.domain,
+        travelRequired: validatedData.travelRequired,
+        salaryRange: validatedData.salaryRange ? (typeof validatedData.salaryRange === 'string' ? validatedData.salaryRange : JSON.stringify(validatedData.salaryRange)) : null,
+        applicationMethod: validatedData.applicationMethod,
+        contactPerson: validatedData.contactPerson ? (typeof validatedData.contactPerson === 'string' ? validatedData.contactPerson : JSON.stringify(validatedData.contactPerson)) : null,
+        applicationDeadline: validatedData.applicationDeadline,
+        status: validatedData.status,
       }
     })
 
     return NextResponse.json(jobPosting, { status: 201 })
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 })
+    }
     console.error("Error creating job posting:", error)
     return NextResponse.json(
       { error: "Failed to create job posting" },

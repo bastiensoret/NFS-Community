@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { candidateSchema } from "@/lib/validations"
+import { z } from "zod"
 
 export async function GET() {
   try {
@@ -27,30 +29,40 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth()
     
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    if (session.user.role !== "ADMIN" && session.user.role !== "RECRUITER") {
+      return NextResponse.json({ error: "Forbidden: Insufficient permissions" }, { status: 403 })
+    }
+
     const body = await request.json()
+    
+    // Validate request body
+    const validatedData = candidateSchema.parse(body)
 
     const candidate = await prisma.candidate.create({
       data: {
-        firstName: body.firstName,
-        lastName: body.lastName,
-        email: body.email,
-        phoneNumber: body.phoneNumber,
-        desiredRoles: JSON.stringify(body.desiredRoles || []),
-        skills: JSON.stringify(body.skills || []),
-        industries: JSON.stringify(body.industries || []),
-        seniorityLevel: body.seniorityLevel,
-        certifications: JSON.stringify(body.certifications || []),
-        location: body.location,
-        profileDataJson: JSON.stringify(body.profileDataJson),
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        email: validatedData.email,
+        phoneNumber: validatedData.phoneNumber,
+        desiredRoles: typeof validatedData.desiredRoles === 'string' ? validatedData.desiredRoles : JSON.stringify(validatedData.desiredRoles || []),
+        skills: typeof validatedData.skills === 'string' ? validatedData.skills : JSON.stringify(validatedData.skills || []),
+        industries: typeof validatedData.industries === 'string' ? validatedData.industries : JSON.stringify(validatedData.industries || []),
+        seniorityLevel: validatedData.seniorityLevel,
+        certifications: typeof validatedData.certifications === 'string' ? validatedData.certifications : JSON.stringify(validatedData.certifications || []),
+        location: validatedData.location,
+        profileDataJson: validatedData.profileDataJson ? JSON.stringify(validatedData.profileDataJson) : null,
       }
     })
 
     return NextResponse.json(candidate, { status: 201 })
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 })
+    }
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "A candidate with this email already exists" },
