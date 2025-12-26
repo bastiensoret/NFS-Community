@@ -18,6 +18,10 @@ interface Position {
   employmentType: string
   status: string
   postingDate: Date
+  externalReference?: string | null
+  workLocation: any // Json
+  startDate?: Date | null
+  contractDuration?: string | null
 }
 
 interface PaginationProps {
@@ -82,6 +86,24 @@ export function PositionsTable({ initialPositions, userRole, pagination }: Posit
     }
   }
 
+  const getLocationString = (location: any) => {
+    if (!location) return "Not specified"
+    if (typeof location === 'string') return location
+    if (Array.isArray(location)) return location.join(", ")
+    
+    // It's an object
+    const city = location.city || ""
+    const country = location.country || ""
+    if (city && country) return `${city}, ${country}`
+    return city || country || "Not specified"
+  }
+
+  const getOnSiteRequirement = (location: any) => {
+    if (!location || typeof location !== 'object' || Array.isArray(location)) return "Not specified"
+    if (location.officeDaysRequired === undefined || location.officeDaysRequired === null) return "Not specified"
+    return `${location.officeDaysRequired} days`
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -93,99 +115,117 @@ export function PositionsTable({ initialPositions, userRole, pagination }: Posit
           <Link href="/dashboard/positions/new">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Add Position
+              Add position
             </Button>
           </Link>
         )}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>All Positions</CardTitle>
-          <CardDescription>A list of all job opportunities</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {positions.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No positions found. Add your first position to get started.</p>
-            </div>
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Job Title</TableHead>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Seniority</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Posted</TableHead>
-                    {canManage && <TableHead className="text-right">Actions</TableHead>}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {positions.map((position) => (
-                    <TableRow key={position.id}>
-                      <TableCell className="font-medium">{position.jobTitle}</TableCell>
-                      <TableCell>{position.companyName}</TableCell>
-                      <TableCell>{position.seniorityLevel}</TableCell>
-                      <TableCell>{position.employmentType.replace('_', ' ')}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(position.status)}>
-                          {position.status.replace('_', ' ')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{format(new Date(position.postingDate), "MMM d, yyyy")}</TableCell>
-                      {canManage && (
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Link href={`/dashboard/positions/${position.id}`}>
-                              <Button variant="ghost" size="icon">
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(position.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+      {positions.length === 0 ? (
+        <Card>
+          <CardContent className="text-center py-12">
+            <p className="text-gray-500">No positions found. Add your first position to get started.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {positions.map((position) => (
+              <Card key={position.id} className="flex flex-col">
+                <CardHeader className="pb-4">
+                  <div className="flex justify-between items-start gap-2 mb-2">
+                    <div className="flex flex-col gap-1">
+                      {position.externalReference && (
+                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded w-fit">
+                          {position.externalReference}
+                        </span>
                       )}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      <CardTitle className="text-lg leading-tight">{position.jobTitle}</CardTitle>
+                    </div>
+                    <Badge className={getStatusColor(position.status)}>
+                      {position.status.replace('_', ' ')}
+                    </Badge>
+                  </div>
+                  <CardDescription className="font-medium text-gray-700">
+                    {position.companyName}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 text-sm space-y-3">
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-2">
+                    <div>
+                      <span className="text-gray-500 block text-xs mb-0.5">Location</span>
+                      <span className="font-medium">{getLocationString(position.workLocation)}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs mb-0.5">Experience</span>
+                      <span className="font-medium capitalize">{position.seniorityLevel.toLowerCase()}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs mb-0.5">Start date</span>
+                      <span className="font-medium">
+                        {position.startDate ? format(new Date(position.startDate), "MMM d, yyyy") : "ASAP"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs mb-0.5">Duration</span>
+                      <span className="font-medium">
+                        {position.contractDuration ? `${position.contractDuration} months` : "Not specified"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs mb-0.5">On-site</span>
+                      <span className="font-medium">{getOnSiteRequirement(position.workLocation)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+                {canManage && (
+                  <div className="px-6 py-4 bg-gray-50 rounded-b-lg border-t flex justify-end gap-2 mt-auto">
+                    <Link href={`/dashboard/positions/${position.id}`}>
+                      <Button variant="outline" size="sm" className="h-8">
+                        <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                        Edit
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                      onClick={() => handleDelete(position.id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                      Delete
+                    </Button>
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
 
-              <div className="flex items-center justify-end space-x-2 py-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page <= 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
-                </Button>
-                <div className="text-sm text-gray-500">
-                  Page {pagination.page} of {pagination.totalPages}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.totalPages}
-                >
-                  Next
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page <= 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <div className="text-sm text-gray-500">
+              Page {pagination.page} of {pagination.totalPages}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Briefcase, UserCheck } from "lucide-react"
 import { prisma } from "@/lib/prisma"
+import Link from "next/link"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -20,27 +21,31 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Candidates</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{candidatesCount}</div>
-            <p className="text-xs text-muted-foreground">Registered profiles</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/candidates" className="block transition-transform hover:scale-[1.02]">
+          <Card className="h-full cursor-pointer hover:bg-gray-50/50">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Candidates</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{candidatesCount}</div>
+              <p className="text-xs text-muted-foreground">Registered profiles</p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Positions</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{jobPostingsCount}</div>
-            <p className="text-xs text-muted-foreground">Total positions</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/positions" className="block transition-transform hover:scale-[1.02]">
+          <Card className="h-full cursor-pointer hover:bg-gray-50/50">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Positions</CardTitle>
+              <Briefcase className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{jobPostingsCount}</div>
+              <p className="text-xs text-muted-foreground">Total positions</p>
+            </CardContent>
+          </Card>
+        </Link>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

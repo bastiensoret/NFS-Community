@@ -9,40 +9,74 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
 
-export default function NewJobPostingPage() {
+interface WorkLocation {
+  address?: string
+  city?: string
+  postalCode?: string
+  country?: string
+  workArrangement?: string
+  officeDaysRequired?: number
+}
+
+interface Position {
+  id: string
+  jobTitle: string
+  companyName: string
+  companyDivision?: string | null
+  externalReference?: string | null
+  seniorityLevel: string
+  employmentType: string
+  industry?: string | null
+  domain?: string | null
+  description: string
+  workLocation: any
+  responsibilities: string[]
+  objectives: string[]
+  applicationMethod?: string | null
+  source?: string | null
+  sourceUrl?: string | null
+  startDate?: Date | null
+  contractDuration?: string | null
+  status: string
+}
+
+export function EditPositionForm({ position }: { position: Position }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  
+  const locationData = position.workLocation as WorkLocation
+  
   const [formData, setFormData] = useState({
-    jobTitle: "",
-    companyName: "",
-    companyDivision: "",
-    seniorityLevel: "MID",
-    employmentType: "FULL_TIME",
-    description: "",
-    externalReference: "",
-    source: "",
-    sourceUrl: "",
-    industry: "",
-    domain: "",
-    applicationMethod: "",
-    startDate: "",
-    contractDuration: "",
+    jobTitle: position.jobTitle,
+    companyName: position.companyName,
+    companyDivision: position.companyDivision || "",
+    seniorityLevel: position.seniorityLevel,
+    employmentType: position.employmentType,
+    description: position.description,
+    externalReference: position.externalReference || "",
+    source: position.source || "",
+    sourceUrl: position.sourceUrl || "",
+    industry: position.industry || "",
+    domain: position.domain || "",
+    applicationMethod: position.applicationMethod || "",
+    startDate: position.startDate ? new Date(position.startDate).toISOString().split('T')[0] : "",
+    contractDuration: position.contractDuration || "",
+    status: position.status,
   })
   
   const [workLocation, setWorkLocation] = useState({
-    address: "",
-    city: "",
-    postalCode: "",
-    country: "",
-    workArrangement: "HYBRID",
-    officeDaysRequired: 3,
+    address: locationData?.address || "",
+    city: locationData?.city || "",
+    postalCode: locationData?.postalCode || "",
+    country: locationData?.country || "",
+    workArrangement: locationData?.workArrangement || "HYBRID",
+    officeDaysRequired: locationData?.officeDaysRequired || 3,
   })
 
-  const [responsibilities, setResponsibilities] = useState<string[]>([])
-  const [objectives, setObjectives] = useState<string[]>([])
+  const [responsibilities, setResponsibilities] = useState<string[]>(position.responsibilities || [])
+  const [objectives, setObjectives] = useState<string[]>(position.objectives || [])
   const [currentInput, setCurrentInput] = useState({
     responsibility: "",
     objective: "",
@@ -73,26 +107,26 @@ export default function NewJobPostingPage() {
     setLoading(true)
 
     try {
-      const response = await fetch("/api/positions", {
-        method: "POST",
+      const response = await fetch(`/api/positions/${position.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
           workLocation,
           responsibilities,
           objectives,
-          languages: [],
         }),
       })
 
       if (response.ok) {
-        router.push("/dashboard/positions")
+        router.push(`/dashboard/positions/${position.id}`)
+        router.refresh()
       } else {
         const error = await response.json()
-        alert(error.error || "Failed to create position")
+        alert(error.error || "Failed to update position")
       }
     } catch (error) {
-      alert("Failed to create position")
+      alert("Failed to update position")
     } finally {
       setLoading(false)
     }
@@ -101,8 +135,8 @@ export default function NewJobPostingPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Add new position</h1>
-        <p className="text-gray-500 mt-2">Create a new job opportunity</p>
+        <h1 className="text-3xl font-bold text-gray-900">Edit position</h1>
+        <p className="text-gray-500 mt-2">Update job opportunity details</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -120,6 +154,27 @@ export default function NewJobPostingPage() {
                 <CardDescription>Enter the position details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Status *</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) => setFormData({ ...formData, status: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ACTIVE">Active</SelectItem>
+                        <SelectItem value="DRAFT">Draft</SelectItem>
+                        <SelectItem value="FILLED">Filled</SelectItem>
+                        <SelectItem value="CLOSED">Closed</SelectItem>
+                        <SelectItem value="ARCHIVED">Archived</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="jobTitle">Job title *</Label>
@@ -435,7 +490,7 @@ export default function NewJobPostingPage() {
 
         <div className="flex gap-4 pt-6">
           <Button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create position"}
+            {loading ? "Saving..." : "Save changes"}
           </Button>
           <Button
             type="button"

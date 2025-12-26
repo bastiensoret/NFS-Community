@@ -11,7 +11,18 @@ export const jobPostingSchema = z.object({
   roleCategory: z.string().optional(),
   roleProfile: z.string().optional(),
   seniorityLevel: z.string().min(1, "Seniority level is required"),
-  workLocation: z.union([z.string(), z.array(z.string())]), // Stored as Json
+  workLocation: z.union([
+    z.string(), 
+    z.array(z.string()),
+    z.object({
+      address: z.string().optional(),
+      city: z.string().optional(),
+      postalCode: z.string().optional(),
+      country: z.string().optional(),
+      workArrangement: z.string().optional(),
+      officeDaysRequired: z.number().optional(),
+    })
+  ]), // Stored as Json
   employmentType: z.string().min(1, "Employment type is required"),
   contractDuration: z.string().optional(),
   startDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),

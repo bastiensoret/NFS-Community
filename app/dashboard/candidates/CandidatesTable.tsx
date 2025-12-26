@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
@@ -88,10 +88,6 @@ export function CandidatesTable({ initialCandidates, userRole, pagination }: Can
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>All Candidates</CardTitle>
-          <CardDescription>A list of all registered candidates</CardDescription>
-        </CardHeader>
         <CardContent>
           {candidates.length === 0 ? (
             <div className="text-center py-12">
