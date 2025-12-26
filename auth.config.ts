@@ -35,6 +35,9 @@ export default {
       if (user) {
         token.id = user.id
         token.role = user.role
+        if (user.image) {
+          token.picture = user.image
+        }
       }
 
       if (profile?.tid) {
@@ -52,6 +55,9 @@ export default {
         session.user.id = token.id as string
         session.user.role = token.role as string
         session.user.tenantId = token.tenantId as string
+        if (token.picture) {
+          session.user.image = token.picture
+        }
       }
       return session
     },

@@ -27,6 +27,7 @@ export default async function AdminPage() {
         isGatekeeper: true,
         tenantId: true,
         createdAt: true,
+        image: true,
       },
       orderBy: { createdAt: "desc" },
     }),
@@ -42,7 +43,7 @@ export default async function AdminPage() {
       <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total users</CardTitle>
+            <CardTitle className="text-sm font-medium">Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -76,7 +77,7 @@ export default async function AdminPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>User Management</CardTitle>
+          <CardTitle>User management</CardTitle>
           <CardDescription>All registered users in the system</CardDescription>
         </CardHeader>
         <CardContent>

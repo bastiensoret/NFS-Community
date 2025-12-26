@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,14 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
   const [isGatekeeper, setIsGatekeeper] = useState(user?.isGatekeeper || false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+
+  useEffect(() => {
+    if (user) {
+      setSelectedRole(user.role)
+      setIsGatekeeper(user.isGatekeeper)
+      setError("")
+    }
+  }, [user])
 
   const handleSave = async () => {
     if (!user) return

@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { ProfileForm } from "./ProfileForm"
 import { PasswordForm } from "./PasswordForm"
-import { Separator } from "@/components/ui/separator"
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -21,16 +20,15 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-medium">Profile Settings</h3>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
+        <p className="text-gray-500 mt-2">
           Manage your account settings and preferences.
         </p>
       </div>
-      <Separator />
       
-      <div className="grid gap-6">
+      <div className="space-y-6">
         <ProfileForm 
           user={{
             firstName: user.firstName,

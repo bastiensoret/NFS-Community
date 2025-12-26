@@ -17,6 +17,7 @@ type User = {
   isGatekeeper: boolean
   tenantId: string | null
   createdAt: Date
+  image: string | null
 }
 
 export function UserManagementList({ users }: { users: User[] }) {
@@ -38,8 +39,7 @@ export function UserManagementList({ users }: { users: User[] }) {
     return (
       fullName.includes(searchLower) ||
       user.email.toLowerCase().includes(searchLower) ||
-      user.role.toLowerCase().includes(searchLower) ||
-      (user.tenantId && user.tenantId.toLowerCase().includes(searchLower))
+      user.role.toLowerCase().includes(searchLower)
     )
   })
 
@@ -49,7 +49,7 @@ export function UserManagementList({ users }: { users: User[] }) {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           type="text"
-          placeholder="Search by name, email, role, or organization..."
+          placeholder="Search by name, email or role..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10"
@@ -69,8 +69,18 @@ export function UserManagementList({ users }: { users: User[] }) {
               className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                  {user.firstName?.[0] || user.name?.[0] || user.email[0].toUpperCase()}
+                <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border">
+                  {user.image ? (
+                    <img 
+                      src={user.image} 
+                      alt="Profile" 
+                      className="h-full w-full object-cover" 
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                      {user.firstName?.[0] || user.name?.[0] || user.email[0].toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <div className="font-medium text-gray-900">
@@ -82,25 +92,16 @@ export function UserManagementList({ users }: { users: User[] }) {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                {user.tenantId && (
-                  <div className="flex items-center gap-1 text-sm text-gray-500">
-                    <Building2 className="h-3.5 w-3.5" />
-                    <span>{user.tenantId}</span>
-                  </div>
+                {user.isGatekeeper && (
+                  <Badge className="flex items-center gap-1 bg-orange-500 hover:bg-orange-500 text-white border-0">
+                    <UserCog className="h-3 w-3" />
+                    Gatekeeper
+                  </Badge>
                 )}
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Shield className="h-3 w-3" />
                   {getRoleDisplayName(user.role)}
                 </Badge>
-                {user.isGatekeeper && (
-                  <Badge variant="outline" className="flex items-center gap-1">
-                    <UserCog className="h-3 w-3" />
-                    Gatekeeper
-                  </Badge>
-                )}
-                <span className="text-xs text-gray-400">
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </span>
               </div>
             </div>
           ))}
