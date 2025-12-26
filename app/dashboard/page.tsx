@@ -48,7 +48,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Job Postings</CardTitle>
+            <CardTitle className="text-sm font-medium">Positions</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Positions</CardTitle>
             <UserCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -80,8 +80,8 @@ export default async function DashboardPage() {
               <div className="font-medium">Add New Candidate</div>
               <div className="text-sm text-gray-500">Create a new candidate profile</div>
             </a>
-            <a href="/dashboard/job-postings/new" className="block p-3 rounded-lg border hover:bg-gray-50 transition-colors">
-              <div className="font-medium">Create Job Posting</div>
+            <a href="/dashboard/positions/new" className="block p-3 rounded-lg border hover:bg-gray-50 transition-colors">
+              <div className="font-medium">Create Position</div>
               <div className="text-sm text-gray-500">Add a new job opportunity</div>
             </a>
           </CardContent>

@@ -1,9 +1,9 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { JobPostingsTable } from "./JobPostingsTable"
+import { PositionsTable } from "./PositionsTable"
 import { redirect } from "next/navigation"
 
-export default async function JobPostingsPage({
+export default async function PositionsPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string; limit?: string }>
@@ -19,7 +19,7 @@ export default async function JobPostingsPage({
   const limit = Number(resolvedParams?.limit) || 10
   const skip = (page - 1) * limit
 
-  const [jobPostings, total] = await Promise.all([
+  const [positions, total] = await Promise.all([
     prisma.jobPosting.findMany({
       orderBy: { postingDate: "desc" },
       skip,
@@ -29,8 +29,8 @@ export default async function JobPostingsPage({
   ])
 
   return (
-    <JobPostingsTable 
-      initialJobPostings={jobPostings} 
+    <PositionsTable 
+      initialPositions={positions} 
       userRole={session.user?.role}
       pagination={{
         page,

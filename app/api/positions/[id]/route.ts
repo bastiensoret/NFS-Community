@@ -10,7 +10,7 @@ export const GET = withAuth<{ params: Promise<{ id: string }> }>(async (request,
   })
 
   if (!jobPosting) {
-    return NextResponse.json({ error: "Job posting not found" }, { status: 404 })
+    return NextResponse.json({ error: "Position not found" }, { status: 404 })
   }
 
   return NextResponse.json(jobPosting)
@@ -59,7 +59,7 @@ export const PATCH = withAuth<{ params: Promise<{ id: string }> }>(async (reques
   })
 
   return NextResponse.json(jobPosting)
-}, 'canPostJobs')
+}, 'canPostPositions')
 
 export const DELETE = withAuth<{ params: Promise<{ id: string }> }>(async (request, session, { params }) => {
   const { id } = await params
@@ -68,5 +68,5 @@ export const DELETE = withAuth<{ params: Promise<{ id: string }> }>(async (reque
     where: { id }
   })
 
-  return NextResponse.json({ message: "Job posting deleted successfully" })
-}, 'canPostJobs')
+  return NextResponse.json({ message: "Position deleted successfully" })
+}, 'canPostPositions')

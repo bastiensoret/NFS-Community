@@ -10,7 +10,7 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 
-interface JobPosting {
+interface Position {
   id: string
   jobTitle: string
   companyName: string
@@ -27,17 +27,17 @@ interface PaginationProps {
   totalPages: number
 }
 
-interface JobPostingsTableProps {
-  initialJobPostings: JobPosting[]
+interface PositionsTableProps {
+  initialPositions: Position[]
   userRole?: string
   pagination: PaginationProps
 }
 
-export function JobPostingsTable({ initialJobPostings, userRole, pagination }: JobPostingsTableProps) {
+export function PositionsTable({ initialPositions, userRole, pagination }: PositionsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [jobPostings, setJobPostings] = useState<JobPosting[]>(initialJobPostings)
+  const [positions, setPositions] = useState<Position[]>(initialPositions)
   const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "RECRUITER"
 
   const createQueryString = (name: string, value: string) => {
@@ -51,19 +51,19 @@ export function JobPostingsTable({ initialJobPostings, userRole, pagination }: J
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this job posting?")) return
+    if (!confirm("Are you sure you want to delete this position?")) return
 
     try {
-      const response = await fetch(`/api/job-postings/${id}`, {
+      const response = await fetch(`/api/positions/${id}`, {
         method: "DELETE",
       })
 
       if (response.ok) {
-        setJobPostings(jobPostings.filter(job => job.id !== id))
+        setPositions(positions.filter(pos => pos.id !== id))
         router.refresh()
       }
     } catch (error) {
-      console.error("Failed to delete job posting:", error)
+      console.error("Failed to delete position:", error)
     }
   }
 
@@ -86,14 +86,14 @@ export function JobPostingsTable({ initialJobPostings, userRole, pagination }: J
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Job Postings</h1>
-          <p className="text-gray-500 mt-2">Manage job opportunities</p>
+          <h1 className="text-3xl font-bold text-gray-900">Positions</h1>
+          <p className="text-gray-500 mt-2">Manage open positions</p>
         </div>
         {canManage && (
-          <Link href="/dashboard/job-postings/new">
+          <Link href="/dashboard/positions/new">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Add Job Posting
+              Add Position
             </Button>
           </Link>
         )}
@@ -101,13 +101,13 @@ export function JobPostingsTable({ initialJobPostings, userRole, pagination }: J
 
       <Card>
         <CardHeader>
-          <CardTitle>All Job Postings</CardTitle>
+          <CardTitle>All Positions</CardTitle>
           <CardDescription>A list of all job opportunities</CardDescription>
         </CardHeader>
         <CardContent>
-          {jobPostings.length === 0 ? (
+          {positions.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500">No job postings found. Add your first job posting to get started.</p>
+              <p className="text-gray-500">No positions found. Add your first position to get started.</p>
             </div>
           ) : (
             <>
@@ -124,22 +124,22 @@ export function JobPostingsTable({ initialJobPostings, userRole, pagination }: J
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {jobPostings.map((job) => (
-                    <TableRow key={job.id}>
-                      <TableCell className="font-medium">{job.jobTitle}</TableCell>
-                      <TableCell>{job.companyName}</TableCell>
-                      <TableCell>{job.seniorityLevel}</TableCell>
-                      <TableCell>{job.employmentType.replace('_', ' ')}</TableCell>
+                  {positions.map((position) => (
+                    <TableRow key={position.id}>
+                      <TableCell className="font-medium">{position.jobTitle}</TableCell>
+                      <TableCell>{position.companyName}</TableCell>
+                      <TableCell>{position.seniorityLevel}</TableCell>
+                      <TableCell>{position.employmentType.replace('_', ' ')}</TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(job.status)}>
-                          {job.status.replace('_', ' ')}
+                        <Badge className={getStatusColor(position.status)}>
+                          {position.status.replace('_', ' ')}
                         </Badge>
                       </TableCell>
-                      <TableCell>{format(new Date(job.postingDate), "MMM d, yyyy")}</TableCell>
+                      <TableCell>{format(new Date(position.postingDate), "MMM d, yyyy")}</TableCell>
                       {canManage && (
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Link href={`/dashboard/job-postings/${job.id}`}>
+                            <Link href={`/dashboard/positions/${position.id}`}>
                               <Button variant="ghost" size="icon">
                                 <Pencil className="h-4 w-4" />
                               </Button>
@@ -147,7 +147,7 @@ export function JobPostingsTable({ initialJobPostings, userRole, pagination }: J
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleDelete(job.id)}
+                              onClick={() => handleDelete(position.id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>

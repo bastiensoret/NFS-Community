@@ -71,7 +71,7 @@ export default function NewJobPostingPage() {
     setLoading(true)
 
     try {
-      const response = await fetch("/api/job-postings", {
+      const response = await fetch("/api/positions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -84,13 +84,13 @@ export default function NewJobPostingPage() {
       })
 
       if (response.ok) {
-        router.push("/dashboard/job-postings")
+        router.push("/dashboard/positions")
       } else {
         const error = await response.json()
-        alert(error.error || "Failed to create job posting")
+        alert(error.error || "Failed to create position")
       }
     } catch (error) {
-      alert("Failed to create job posting")
+      alert("Failed to create position")
     } finally {
       setLoading(false)
     }
@@ -99,7 +99,7 @@ export default function NewJobPostingPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Add New Job Posting</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Add New Position</h1>
         <p className="text-gray-500 mt-2">Create a new job opportunity</p>
       </div>
 
@@ -115,7 +115,7 @@ export default function NewJobPostingPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Basic Information</CardTitle>
-                <CardDescription>Enter the job posting details</CardDescription>
+                <CardDescription>Enter the position details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
@@ -408,7 +408,7 @@ export default function NewJobPostingPage() {
 
         <div className="flex gap-4 pt-6">
           <Button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create Job Posting"}
+            {loading ? "Creating..." : "Create Position"}
           </Button>
           <Button
             type="button"

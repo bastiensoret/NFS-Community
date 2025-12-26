@@ -129,10 +129,10 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
               </SelectContent>
             </Select>
             <p className="text-xs text-gray-500">
-              {selectedRole === "ADMIN" && "Can manage jobs and candidates"}
+              {selectedRole === "ADMIN" && "Can manage positions and candidates"}
               {selectedRole === "SUPER_ADMIN" && "Full system access"}
-              {selectedRole === "USER" && "Can post jobs and propose candidates"}
-              {selectedRole === "BASIC_USER" && "View-only access to jobs"}
+              {selectedRole === "USER" && "Can post positions and propose candidates"}
+              {selectedRole === "BASIC_USER" && "View-only access to positions"}
             </p>
           </div>
 
@@ -150,7 +150,7 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
             </Label>
           </div>
           <p className="text-xs text-gray-500 -mt-2">
-            Can approve job postings in addition to their role permissions
+            Can approve positions in addition to their role permissions
           </p>
 
           {error && (

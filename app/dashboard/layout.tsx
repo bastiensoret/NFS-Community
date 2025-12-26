@@ -18,13 +18,13 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <aside className="w-64 bg-white border-r border-gray-200">
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-gray-900">NFS Community</h1>
           <p className="text-sm text-gray-500 mt-1">Building our reputation</p>
         </div>
         
-        <nav className="px-4 space-y-2">
+        <nav className="px-4 space-y-2 flex-1">
           <Link href="/dashboard">
             <Button variant="ghost" className="w-full justify-start">
               <Home className="mr-2 h-4 w-4" />
@@ -37,12 +37,15 @@ export default async function DashboardLayout({
               Candidates
             </Button>
           </Link>
-          <Link href="/dashboard/job-postings">
+          <Link href="/dashboard/positions">
             <Button variant="ghost" className="w-full justify-start">
               <Briefcase className="mr-2 h-4 w-4" />
-              Job Postings
+              Positions
             </Button>
           </Link>
+        </nav>
+
+        <div className="px-4 pb-2">
           {session.user?.role === "SUPER_ADMIN" && (
             <Link href="/dashboard/admin">
               <Button variant="ghost" className="w-full justify-start">
@@ -51,9 +54,9 @@ export default async function DashboardLayout({
               </Button>
             </Link>
           )}
-        </nav>
+        </div>
 
-        <div className="absolute bottom-0 w-64 p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">

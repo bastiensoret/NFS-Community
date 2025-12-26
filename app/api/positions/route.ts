@@ -37,7 +37,7 @@ export const POST = withAuth(async (request) => {
   // Validate request body
   const validatedData = jobPostingSchema.parse(body)
 
-  const jobPosting = await prisma.jobPosting.create({
+    const jobPosting = await prisma.jobPosting.create({
     data: {
       externalReference: validatedData.externalReference,
       source: validatedData.source,
@@ -49,7 +49,8 @@ export const POST = withAuth(async (request) => {
       roleCategory: validatedData.roleCategory,
       roleProfile: validatedData.roleProfile,
       seniorityLevel: validatedData.seniorityLevel,
-      workLocation: typeof validatedData.workLocation === 'string' ? validatedData.workLocation : JSON.stringify(validatedData.workLocation),
+      // Json fields should be passed as objects, Prisma handles serialization
+      workLocation: validatedData.workLocation as Prisma.InputJsonValue,
       employmentType: validatedData.employmentType,
       contractDuration: validatedData.contractDuration,
       startDate: validatedData.startDate,
@@ -57,23 +58,23 @@ export const POST = withAuth(async (request) => {
       extensionPossible: validatedData.extensionPossible || false,
       description: validatedData.description,
       missionContext: validatedData.missionContext,
-      responsibilities: typeof validatedData.responsibilities === 'string' ? validatedData.responsibilities : JSON.stringify(validatedData.responsibilities || []),
-      objectives: typeof validatedData.objectives === 'string' ? validatedData.objectives : JSON.stringify(validatedData.objectives || []),
-      education: validatedData.education ? (typeof validatedData.education === 'string' ? validatedData.education : JSON.stringify(validatedData.education)) : null,
-      experience: validatedData.experience ? (typeof validatedData.experience === 'string' ? validatedData.experience : JSON.stringify(validatedData.experience)) : null,
-      skills: validatedData.skills ? (typeof validatedData.skills === 'string' ? validatedData.skills : JSON.stringify(validatedData.skills)) : null,
-      languages: typeof validatedData.languages === 'string' ? validatedData.languages : JSON.stringify(validatedData.languages || []),
+      // Array fields should be passed as arrays
+      responsibilities: validatedData.responsibilities,
+      objectives: validatedData.objectives,
+      education: validatedData.education || [],
+      experience: validatedData.experience || [],
+      skills: validatedData.skills || [],
+      languages: validatedData.languages || [],
       industry: validatedData.industry,
       domain: validatedData.domain,
       travelRequired: validatedData.travelRequired,
-      salaryRange: validatedData.salaryRange ? (typeof validatedData.salaryRange === 'string' ? validatedData.salaryRange : JSON.stringify(validatedData.salaryRange)) : null,
+      salaryRange: validatedData.salaryRange as Prisma.InputJsonValue,
       applicationMethod: validatedData.applicationMethod,
-      contactPerson: validatedData.contactPerson ? (typeof validatedData.contactPerson === 'string' ? validatedData.contactPerson : JSON.stringify(validatedData.contactPerson)) : null,
+      contactPerson: validatedData.contactPerson as Prisma.InputJsonValue,
       applicationDeadline: validatedData.applicationDeadline,
       status: validatedData.status,
     }
   })
 
   return NextResponse.json(jobPosting, { status: 201 })
-}, 'canPostJobs')
-
+}, 'canPostPositions')
