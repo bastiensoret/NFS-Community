@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -79,13 +79,13 @@ model Candidate {
   lastName          String
   email             String   @unique
   phoneNumber       String?
-  desiredRoles      String
-  skills            String
-  industries        String
+  desiredRoles      String[]
+  skills            String[]
+  industries        String[]
   seniorityLevel    String?
-  certifications    String
+  certifications    String[]
   location          String?
-  profileDataJson   String?
+  profileDataJson   Json?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -102,7 +102,7 @@ model JobPosting {
   roleCategory          String?
   roleProfile           String?
   seniorityLevel        String
-  workLocation          String
+  workLocation          Json
   employmentType        String
   contractDuration      String?
   startDate             DateTime?
@@ -110,18 +110,18 @@ model JobPosting {
   extensionPossible     Boolean   @default(false)
   description           String
   missionContext        String?
-  responsibilities      String
-  objectives            String
-  education             String?
-  experience            String?
-  skills                String?
-  languages             String
+  responsibilities      String[]
+  objectives            String[]
+  education             String[]
+  experience            String[]
+  skills                String[]
+  languages             String[]
   industry              String?
   domain                String?
   travelRequired        String?
-  salaryRange           String?
+  salaryRange           Json?
   applicationMethod     String?
-  contactPerson         String?
+  contactPerson         Json?
   applicationDeadline   DateTime?
   postingDate           DateTime  @default(now())
   lastUpdated           DateTime  @updatedAt

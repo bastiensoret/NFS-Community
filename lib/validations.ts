@@ -11,7 +11,7 @@ export const jobPostingSchema = z.object({
   roleCategory: z.string().optional(),
   roleProfile: z.string().optional(),
   seniorityLevel: z.string().min(1, "Seniority level is required"),
-  workLocation: z.union([z.string(), z.array(z.string())]), // Handle string or JSON array
+  workLocation: z.union([z.string(), z.array(z.string())]), // Stored as Json
   employmentType: z.string().min(1, "Employment type is required"),
   contractDuration: z.string().optional(),
   startDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
@@ -19,18 +19,27 @@ export const jobPostingSchema = z.object({
   extensionPossible: z.boolean().optional(),
   description: z.string().min(1, "Description is required"),
   missionContext: z.string().optional(),
-  responsibilities: z.union([z.string(), z.array(z.string())]),
-  objectives: z.union([z.string(), z.array(z.string())]),
-  education: z.union([z.string(), z.array(z.string())]).optional().nullable(),
-  experience: z.union([z.string(), z.array(z.string())]).optional().nullable(),
-  skills: z.union([z.string(), z.array(z.string())]).optional().nullable(),
-  languages: z.union([z.string(), z.array(z.string())]),
+  responsibilities: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]), // Stored as String[]
+  objectives: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]), // Stored as String[]
+  education: z.union([z.string(), z.array(z.string())]).optional().nullable().transform(val => {
+    if (!val) return [];
+    return Array.isArray(val) ? val : [val];
+  }), // Stored as String[]
+  experience: z.union([z.string(), z.array(z.string())]).optional().nullable().transform(val => {
+    if (!val) return [];
+    return Array.isArray(val) ? val : [val];
+  }), // Stored as String[]
+  skills: z.union([z.string(), z.array(z.string())]).optional().nullable().transform(val => {
+    if (!val) return [];
+    return Array.isArray(val) ? val : [val];
+  }), // Stored as String[]
+  languages: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]), // Stored as String[]
   industry: z.string().optional(),
   domain: z.string().optional(),
   travelRequired: z.string().optional(),
-  salaryRange: z.union([z.string(), z.object({ min: z.number(), max: z.number(), currency: z.string() })]).optional().nullable(),
+  salaryRange: z.union([z.string(), z.object({ min: z.number(), max: z.number(), currency: z.string() })]).optional().nullable(), // Stored as Json
   applicationMethod: z.string().optional(),
-  contactPerson: z.union([z.string(), z.object({ name: z.string(), email: z.string().email() })]).optional().nullable(),
+  contactPerson: z.union([z.string(), z.object({ name: z.string(), email: z.string().email() })]).optional().nullable(), // Stored as Json
   applicationDeadline: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "FILLED"]).default("ACTIVE"),
 })
@@ -40,11 +49,11 @@ export const candidateSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().optional(),
-  desiredRoles: z.union([z.string(), z.array(z.string())]),
-  skills: z.union([z.string(), z.array(z.string())]),
-  industries: z.union([z.string(), z.array(z.string())]),
+  desiredRoles: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
+  skills: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
+  industries: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
   seniorityLevel: z.string().optional(),
-  certifications: z.union([z.string(), z.array(z.string())]),
+  certifications: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
   location: z.string().optional(),
-  profileDataJson: z.any().optional(),
+  profileDataJson: z.record(z.string(), z.any()).optional(),
 })

@@ -1,27 +1,35 @@
 import NextAuth from "next-auth"
 import authConfig from "./auth.config"
-import { NextResponse } from "next/server"
 
 const { auth } = NextAuth(authConfig)
 
-const publicRoutes = ["/", "/auth/signin", "/auth/signup"]
-
 export default auth((req) => {
-  const { nextUrl } = req
   const isLoggedIn = !!req.auth
-
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
-
-  if (!isLoggedIn && !isPublicRoute) {
-    const callbackUrl = nextUrl.pathname + nextUrl.search
-    return NextResponse.redirect(
-      new URL(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`, nextUrl)
-    )
+  const isOnDashboard = req.nextUrl.pathname.startsWith('/dashboard')
+  const isOnAdmin = req.nextUrl.pathname.startsWith('/dashboard/admin')
+  
+  // Protect dashboard routes
+  if (isOnDashboard) {
+    if (!isLoggedIn) {
+      return Response.redirect(new URL('/auth/signin', req.nextUrl))
+    }
   }
 
-  return NextResponse.next()
+  // Optional: Add stricter checks for admin routes if role is available in session
+  // Note: req.auth.user.role might require type augmentation or checking token
 })
 
+// Configure matcher to run proxy on specific paths
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    /*
+    * Match all request paths except for the ones starting with:
+    * - api (API routes)
+    * - _next/static (static files)
+    * - _next/image (image optimization files)
+    * - favicon.ico (favicon file)
+    * - auth (auth routes)
+    */
+    "/((?!api|_next/static|_next/image|favicon.ico|auth).*)",
+  ],
 }

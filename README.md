@@ -43,22 +43,34 @@ Update the `.env` file with your configuration:
 
 ```env
 # Database
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://nfs_user:nfs_password@localhost:5433/nfs_community?schema=public"
 
 # NextAuth v5 (Auth.js)
 AUTH_SECRET="your-secret-key-change-this-in-production"
 AUTH_URL="http://localhost:3000"
 
 # Azure AD (Microsoft Entra ID) - Optional
-AZURE_AD_CLIENT_ID="your-azure-ad-client-id"
-AZURE_AD_CLIENT_SECRET="your-azure-ad-client-secret"
-AZURE_AD_TENANT_ID="your-azure-ad-tenant-id"
+AUTH_MICROSOFT_ENTRA_ID_ID="your-azure-ad-client-id"
+AUTH_MICROSOFT_ENTRA_ID_SECRET="your-azure-ad-client-secret"
+AUTH_MICROSOFT_ENTRA_ID_TENANT_ID="your-azure-ad-tenant-id"
 
 # Dev Login (Local Only)
 AUTH_ENABLE_DEV_LOGIN="true"
 ```
 
 ### 3. Database Setup
+
+We use Docker to run a local PostgreSQL database.
+
+```bash
+# Start PostgreSQL container
+npm run docker:up
+
+# Or manually:
+docker-compose up -d
+```
+
+Once the database is running:
 
 ```bash
 # Generate Prisma Client
@@ -79,10 +91,18 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) - you'll be redirected to the sign-in page.
 
+## Testing
+
+Run the test suite with:
+
+```bash
+npm test
+```
+
 ## Default Credentials
 
 **Dev User (Super Admin)**
-- Email: `info@bastiensoret.com`
+- Email: `bastiensoret@gmail.com`
 - Password: `devpassword123`
 - Role: SUPER_ADMIN
 

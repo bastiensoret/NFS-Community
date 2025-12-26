@@ -21,10 +21,8 @@ export default {
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      console.log("SignIn Callback:", { provider: account?.provider, profileId: profile?.id })
       if (account?.provider === "azure-ad") {
         const allowedTenantId = process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID
-        console.log("Checking Tenant ID:", { received: profile?.tid, expected: allowedTenantId })
         
         if (allowedTenantId && profile?.tid !== allowedTenantId) {
           console.error(`Access denied: Tenant ID mismatch. Expected ${allowedTenantId}, got ${profile?.tid}`)
@@ -34,7 +32,6 @@ export default {
       return true
     },
     async jwt({ token, user, account, profile }) {
-      console.log("JWT Callback:", { hasUser: !!user, hasAccount: !!account, hasProfile: !!profile })
       if (user) {
         token.id = user.id
         token.role = user.role
@@ -51,7 +48,6 @@ export default {
       return token
     },
     async session({ session, token }) {
-      console.log("Session Callback:", { userId: token?.id, userRole: token?.role })
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
