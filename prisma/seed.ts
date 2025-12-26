@@ -9,23 +9,33 @@ const prisma = new PrismaClient({
 async function main() {
   console.log('Starting database seed...')
 
-  const hashedPassword = await bcrypt.hash('devpassword123', 10)
+  const email = process.env.SEED_ADMIN_EMAIL || 'admin@example.com'
+  const password = process.env.SEED_ADMIN_PASSWORD || 'password123'
+
+  if (!process.env.SEED_ADMIN_EMAIL || !process.env.SEED_ADMIN_PASSWORD) {
+    console.warn('⚠️  Using default seed credentials. Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in .env for security.')
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10)
 
   const devUser = await prisma.user.upsert({
-    where: { email: 'bastiensoret@gmail.com' },
+    where: { email },
     update: {},
     create: {
-      email: 'bastiensoret@gmail.com',
-      name: 'Bastien Soret',
+      email,
+      name: 'Admin User',
       password: hashedPassword,
       role: 'SUPER_ADMIN',
     },
   })
 
-  console.log('Dev user created:', devUser)
-  console.log('Email: bastiensoret@gmail.com')
-  console.log('Password: devpassword123')
+  console.log('Dev user created/updated:')
+  console.log(`Email: ${email}`)
   console.log('Role: SUPER_ADMIN')
+  // Do not log the password in production scenarios, but helpful for dev
+  if (process.env.NODE_ENV !== 'production') {
+      console.log(`Password: ${password}`)
+  }
 }
 
 main()
