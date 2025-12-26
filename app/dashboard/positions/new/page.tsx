@@ -136,9 +136,17 @@ export default function NewJobPostingPage() {
         router.refresh()
       } else {
         const error = await response.json()
-        alert(error.error || "Failed to create position")
+        console.error("Creation error:", error)
+        if (error.details) {
+          // Format Zod errors
+          const errorMessages = error.details.map((d: any) => `${d.path.join('.')}: ${d.message}`).join('\n')
+          alert(`Validation Failed:\n${errorMessages}`)
+        } else {
+          alert(error.message || error.error || "Failed to create position")
+        }
       }
     } catch (error) {
+      console.error("Submission error:", error)
       alert("Failed to create position")
     } finally {
       setLoading(false)

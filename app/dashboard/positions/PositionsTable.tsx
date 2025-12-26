@@ -9,6 +9,7 @@ import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface Position {
   id: string
@@ -24,6 +25,7 @@ interface Position {
   country?: string | null
   durationMonths?: number | null
   workLocation: any // Json
+  workArrangement?: any // Json
   startDate?: Date | null
   contractDuration?: string | null
   urgent?: boolean
@@ -40,19 +42,30 @@ interface PositionsTableProps {
   initialPositions: Position[]
   userRole?: string
   pagination: PaginationProps
+  pendingCount?: number
+  currentStatus?: string
 }
 
-export function PositionsTable({ initialPositions, userRole, pagination }: PositionsTableProps) {
+export function PositionsTable({ initialPositions, userRole, pagination, pendingCount = 0, currentStatus = "ACTIVE" }: PositionsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [positions, setPositions] = useState<Position[]>(initialPositions)
-  const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "RECRUITER"
+  const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
+  const canManage = isAdmin || userRole === "RECRUITER"
 
   const createQueryString = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set(name, value)
     return params.toString()
+  }
+
+  const handleTabChange = (value: string) => {
+    const status = value === "pending" ? "PENDING_APPROVAL" : "ACTIVE"
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("status", status)
+    params.set("page", "1") 
+    router.push(pathname + "?" + params.toString())
   }
 
   const handlePageChange = (newPage: number) => {
@@ -84,6 +97,8 @@ export function PositionsTable({ initialPositions, userRole, pagination }: Posit
         return "bg-gray-100 text-gray-800"
       case "FILLED":
         return "bg-blue-100 text-blue-800"
+      case "PENDING_APPROVAL":
+        return "bg-yellow-100 text-yellow-800"
       case "PENDING_REVIEW":
         return "bg-yellow-100 text-yellow-800"
       default:
@@ -128,6 +143,22 @@ export function PositionsTable({ initialPositions, userRole, pagination }: Posit
           </Link>
         )}
       </div>
+
+      {isAdmin && (
+        <Tabs value={currentStatus === "PENDING_APPROVAL" ? "pending" : "active"} onValueChange={handleTabChange} className="w-full">
+          <TabsList>
+            <TabsTrigger value="active">Active Positions</TabsTrigger>
+            <TabsTrigger value="pending" className="relative">
+              Pending Approval
+              {pendingCount > 0 && (
+                <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
+                  {pendingCount}
+                </span>
+              )}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
 
       {positions.length === 0 ? (
         <Card>

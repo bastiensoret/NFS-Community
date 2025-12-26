@@ -20,6 +20,33 @@ export const PATCH = withAuth<{ params: Promise<{ id: string }> }>(async (reques
   const { id } = await params
   const body = await request.json()
 
+  // Fetch existing position to check ownership and current status
+  const existingPosition = await prisma.jobPosting.findUnique({
+    where: { id }
+  })
+
+  if (!existingPosition) {
+    return NextResponse.json({ error: "Position not found" }, { status: 404 })
+  }
+
+  const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN"
+  const isCreator = existingPosition.creatorId === session.user.id
+
+  // Permission check: Must be Admin OR Creator
+  if (!isAdmin && !isCreator) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  }
+
+  // Status transition check
+  let newStatus = body.status
+  if (newStatus && newStatus !== existingPosition.status) {
+    // Only Admin can change status to ACTIVE (approval)
+    if (newStatus === "ACTIVE" && !isAdmin) {
+      // If user tries to set ACTIVE, revert to PENDING or existing
+      newStatus = "PENDING_APPROVAL"
+    }
+  }
+
   const jobPosting = await prisma.jobPosting.update({
     where: { id },
     data: {
@@ -71,7 +98,7 @@ export const PATCH = withAuth<{ params: Promise<{ id: string }> }>(async (reques
       applicationMethod: body.applicationMethod,
       contactPerson: body.contactPerson,
       applicationDeadline: body.applicationDeadline ? new Date(body.applicationDeadline) : undefined,
-      status: body.status,
+      status: newStatus,
     }
   })
 

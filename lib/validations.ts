@@ -65,7 +65,7 @@ export const jobPostingSchema = z.object({
   applicationInstructions: z.string().optional().nullable(),
 
   // Metadata/System
-  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "FILLED"]).default("ACTIVE"),
+  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "FILLED", "PENDING_APPROVAL", "PENDING_REVIEW"]).default("ACTIVE"),
   
   // Legacy fields (kept for compatibility)
   externalReference: z.string().optional(),

@@ -219,7 +219,7 @@ export function EditPositionForm({ position }: { position: Position }) {
       <form onSubmit={handleSubmit}>
         <Tabs defaultValue="core" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="core">Core Info</TabsTrigger>
+            <TabsTrigger value="core">Core information</TabsTrigger>
             <TabsTrigger value="requirements">Requirements</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
           </TabsList>
@@ -227,8 +227,8 @@ export function EditPositionForm({ position }: { position: Position }) {
           <TabsContent value="core">
             <Card>
               <CardHeader>
-                <CardTitle>Core Information</CardTitle>
-                <CardDescription>Mandatory fields required to display a position</CardDescription>
+                <CardTitle>Core information</CardTitle>
+                <CardDescription>Fields required to display a position</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">

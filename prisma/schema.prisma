@@ -24,6 +24,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   company       Company?  @relation(fields: [companyId], references: [id])
+  createdPositions JobPosting[] @relation("CreatedPositions")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -144,6 +145,8 @@ model JobPosting {
   applicationInstructions String?
   contactInfo           Json?
   industrySector        String?
+  creatorId             String?
+  creator               User?     @relation("CreatedPositions", fields: [creatorId], references: [id])
 }
 
 enum IndustrySector {

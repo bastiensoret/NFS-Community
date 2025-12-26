@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Calendar, MapPin, Building2, Briefcase, Clock, Globe, Laptop, ExternalLink, Pencil } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
+import { ApprovePositionButton } from "./ApprovePositionButton"
 
 interface WorkLocation {
   address?: string
@@ -43,6 +44,7 @@ export default async function PositionDetailsPage({
   const contactInfo = position.contactInfo as unknown as { contact_person?: string, email?: string } | null
   
   const canManage = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN" || session.user?.role === "RECRUITER"
+  const canValidate = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN"
 
   const getStatusColor = (status: string) => {
     switch (status) {

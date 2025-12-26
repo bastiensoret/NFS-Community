@@ -3,6 +3,7 @@ import { auth } from "@/auth"
 import { hasPermission } from "@/lib/roles"
 import { Session } from "next-auth"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { ZodError } from "zod"
 
 type AuthenticatedHandler<T = any> = (
   req: NextRequest,
@@ -43,11 +44,19 @@ export function withAuth<T = any>(
         )
       }
 
-      return handler(req, session, context)
+      return await handler(req, session, context)
     } catch (error) {
       console.error("API Error:", error)
+      
+      if (error instanceof ZodError) {
+        return NextResponse.json(
+          { error: "Validation Error", details: error.errors },
+          { status: 400 }
+        )
+      }
+
       return NextResponse.json(
-        { error: "Internal Server Error" },
+        { error: "Internal Server Error", message: error instanceof Error ? error.message : "Unknown error" },
         { status: 500 }
       )
     }

@@ -31,11 +31,15 @@ export const GET = withAuth(async (request) => {
   })
 })
 
-export const POST = withAuth(async (request) => {
+export const POST = withAuth(async (request, session) => {
   const body = await request.json()
   
   // Validate request body
   const validatedData = jobPostingSchema.parse(body)
+
+  // Determine initial status based on user role
+  const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN"
+  const initialStatus = isAdmin ? (validatedData.status || "ACTIVE") : "PENDING_APPROVAL"
 
     const jobPosting = await prisma.jobPosting.create({
     data: {
@@ -56,6 +60,9 @@ export const POST = withAuth(async (request) => {
       contactInfo: validatedData.contactInfo as Prisma.InputJsonValue,
       department: validatedData.department,
       applicationInstructions: validatedData.applicationInstructions,
+
+      // Creator
+      creatorId: session.user.id,
 
       // Existing Fields
       externalReference: validatedData.externalReference,
@@ -89,9 +96,9 @@ export const POST = withAuth(async (request) => {
       applicationMethod: validatedData.applicationMethod,
       contactPerson: validatedData.contactPerson as Prisma.InputJsonValue,
       applicationDeadline: validatedData.applicationDeadline,
-      status: validatedData.status,
+      status: initialStatus,
     }
   })
 
   return NextResponse.json(jobPosting, { status: 201 })
-}, 'canPostPositions')
+})
