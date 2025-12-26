@@ -18,10 +18,15 @@ interface Position {
   employmentType: string
   status: string
   postingDate: Date
+  reference?: string | null
   externalReference?: string | null
+  location?: string | null
+  country?: string | null
+  durationMonths?: number | null
   workLocation: any // Json
   startDate?: Date | null
   contractDuration?: string | null
+  urgent?: boolean
 }
 
 interface PaginationProps {
@@ -86,22 +91,25 @@ export function PositionsTable({ initialPositions, userRole, pagination }: Posit
     }
   }
 
-  const getLocationString = (location: any) => {
-    if (!location) return "Not specified"
-    if (typeof location === 'string') return location
-    if (Array.isArray(location)) return location.join(", ")
+  const getLocationString = (position: Position) => {
+    const parts = []
+    if (position.location) parts.push(position.location)
+    else if (position.workLocation?.city) parts.push(position.workLocation.city)
     
-    // It's an object
-    const city = location.city || ""
-    const country = location.country || ""
-    if (city && country) return `${city}, ${country}`
-    return city || country || "Not specified"
+    if (position.country) parts.push(position.country)
+    else if (position.workLocation?.country) parts.push(position.workLocation.country)
+    
+    return parts.join(", ") || "Not specified"
   }
 
-  const getOnSiteRequirement = (location: any) => {
-    if (!location || typeof location !== 'object' || Array.isArray(location)) return "Not specified"
-    if (location.officeDaysRequired === undefined || location.officeDaysRequired === null) return "Not specified"
-    return `${location.officeDaysRequired} days`
+  const getOnSiteRequirement = (position: Position) => {
+    if (position.workArrangement?.on_site_days_per_week !== undefined) {
+      return `${position.workArrangement.on_site_days_per_week} days`
+    }
+    if (position.workLocation?.officeDaysRequired !== undefined) {
+      return `${position.workLocation.officeDaysRequired} days`
+    }
+    return "Not specified"
   }
 
   return (
@@ -135,10 +143,15 @@ export function PositionsTable({ initialPositions, userRole, pagination }: Posit
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start gap-2 mb-2">
                     <div className="flex flex-col gap-1">
-                      {position.externalReference && (
-                        <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded w-fit">
-                          {position.externalReference}
-                        </span>
+                      {(position.reference || position.externalReference) && (
+                        <div className="flex gap-2">
+                          <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded w-fit">
+                            {position.reference || position.externalReference}
+                          </span>
+                          {position.urgent && (
+                            <Badge variant="destructive" className="h-5 text-[10px] px-1.5">Urgent</Badge>
+                          )}
+                        </div>
                       )}
                       <CardTitle className="text-lg leading-tight">{position.jobTitle}</CardTitle>
                     </div>
@@ -154,7 +167,7 @@ export function PositionsTable({ initialPositions, userRole, pagination }: Posit
                   <div className="grid grid-cols-2 gap-y-3 gap-x-2">
                     <div>
                       <span className="text-gray-500 block text-xs mb-0.5">Location</span>
-                      <span className="font-medium">{getLocationString(position.workLocation)}</span>
+                      <span className="font-medium">{getLocationString(position)}</span>
                     </div>
                     <div>
                       <span className="text-gray-500 block text-xs mb-0.5">Experience</span>
@@ -169,12 +182,16 @@ export function PositionsTable({ initialPositions, userRole, pagination }: Posit
                     <div>
                       <span className="text-gray-500 block text-xs mb-0.5">Duration</span>
                       <span className="font-medium">
-                        {position.contractDuration ? `${position.contractDuration} months` : "Not specified"}
+                        {position.durationMonths 
+                          ? `${position.durationMonths} months` 
+                          : position.contractDuration 
+                            ? `${position.contractDuration} months` 
+                            : "Not specified"}
                       </span>
                     </div>
                     <div>
                       <span className="text-gray-500 block text-xs mb-0.5">On-site</span>
-                      <span className="font-medium">{getOnSiteRequirement(position.workLocation)}</span>
+                      <span className="font-medium">{getOnSiteRequirement(position)}</span>
                     </div>
                   </div>
                 </CardContent>

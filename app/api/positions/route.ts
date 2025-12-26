@@ -39,6 +39,25 @@ export const POST = withAuth(async (request) => {
 
     const jobPosting = await prisma.jobPosting.create({
     data: {
+      // New Core Fields
+      reference: validatedData.reference,
+      location: validatedData.location,
+      country: validatedData.country,
+      durationMonths: validatedData.durationMonths,
+      urgent: validatedData.urgent,
+      industrySector: validatedData.industrySector,
+      
+      // New Complex Fields (JSON)
+      workArrangement: validatedData.workArrangement as Prisma.InputJsonValue,
+      languageRequirements: validatedData.languageRequirements as Prisma.InputJsonValue,
+      detailedRequirements: validatedData.detailedRequirements as Prisma.InputJsonValue,
+      educationRequirements: validatedData.educationRequirements as Prisma.InputJsonValue,
+      contractDetails: validatedData.contractDetails as Prisma.InputJsonValue,
+      contactInfo: validatedData.contactInfo as Prisma.InputJsonValue,
+      department: validatedData.department,
+      applicationInstructions: validatedData.applicationInstructions,
+
+      // Existing Fields
       externalReference: validatedData.externalReference,
       source: validatedData.source,
       sourceUrl: validatedData.sourceUrl,
@@ -49,18 +68,16 @@ export const POST = withAuth(async (request) => {
       roleCategory: validatedData.roleCategory,
       roleProfile: validatedData.roleProfile,
       seniorityLevel: validatedData.seniorityLevel,
-      // Json fields should be passed as objects, Prisma handles serialization
       workLocation: validatedData.workLocation as Prisma.InputJsonValue,
-      employmentType: validatedData.employmentType,
+      employmentType: validatedData.employmentType || "CONTRACT", // Default or map
       contractDuration: validatedData.contractDuration,
       startDate: validatedData.startDate,
       endDate: validatedData.endDate,
       extensionPossible: validatedData.extensionPossible || false,
-      description: validatedData.description,
+      description: validatedData.description || "",
       missionContext: validatedData.missionContext,
-      // Array fields should be passed as arrays
-      responsibilities: validatedData.responsibilities,
-      objectives: validatedData.objectives,
+      responsibilities: validatedData.responsibilities || [],
+      objectives: validatedData.objectives || [],
       education: validatedData.education || [],
       experience: validatedData.experience || [],
       skills: validatedData.skills || [],

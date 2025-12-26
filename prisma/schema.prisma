@@ -128,4 +128,30 @@ model JobPosting {
   status                String    @default("ACTIVE")
   viewCount             Int       @default(0)
   applicationCount      Int       @default(0)
+
+  // New fields based on updated schema requirements
+  reference             String?
+  location              String?
+  country               String?
+  durationMonths        Float?
+  urgent                Boolean   @default(false)
+  workArrangement       Json?
+  languageRequirements  Json?
+  detailedRequirements  Json?
+  educationRequirements Json?
+  contractDetails       Json?
+  department            String?
+  applicationInstructions String?
+  contactInfo           Json?
+  industrySector        String?
+}
+
+enum IndustrySector {
+  Banking
+  Insurance
+  Finance
+  IT
+  Healthcare
+  Consulting
+  Other
 }

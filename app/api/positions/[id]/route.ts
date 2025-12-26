@@ -23,6 +23,23 @@ export const PATCH = withAuth<{ params: Promise<{ id: string }> }>(async (reques
   const jobPosting = await prisma.jobPosting.update({
     where: { id },
     data: {
+      // New Fields
+      reference: body.reference,
+      location: body.location,
+      country: body.country,
+      durationMonths: body.durationMonths,
+      urgent: body.urgent,
+      industrySector: body.industrySector,
+      workArrangement: body.workArrangement,
+      languageRequirements: body.languageRequirements,
+      detailedRequirements: body.detailedRequirements,
+      educationRequirements: body.educationRequirements,
+      contractDetails: body.contractDetails,
+      department: body.department,
+      applicationInstructions: body.applicationInstructions,
+      contactInfo: body.contactInfo,
+
+      // Existing Fields
       externalReference: body.externalReference,
       source: body.source,
       sourceUrl: body.sourceUrl,

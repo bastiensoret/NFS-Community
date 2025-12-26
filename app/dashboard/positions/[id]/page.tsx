@@ -38,6 +38,10 @@ export default async function PositionDetailsPage({
   }
 
   const location = position.workLocation as unknown as WorkLocation
+  const workArrangement = position.workArrangement as unknown as { remote_allowed?: boolean, on_site_days_per_week?: number } | null
+  const languages = position.languageRequirements as unknown as { language: string, level: string, mandatory: boolean }[] | null
+  const contactInfo = position.contactInfo as unknown as { contact_person?: string, email?: string } | null
+  
   const canManage = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN" || session.user?.role === "RECRUITER"
 
   const getStatusColor = (status: string) => {
@@ -55,13 +59,14 @@ export default async function PositionDetailsPage({
     }
   }
 
-  const getLocationString = (loc: WorkLocation) => {
-    if (!loc) return "Not specified"
+  const getLocationString = () => {
     const parts = []
-    if (loc.address) parts.push(loc.address)
-    if (loc.city) parts.push(loc.city)
-    if (loc.postalCode) parts.push(loc.postalCode)
-    if (loc.country) parts.push(loc.country)
+    if (position.location) parts.push(position.location)
+    else if (location?.city) parts.push(location.city)
+    
+    if (position.country) parts.push(position.country)
+    else if (location?.country) parts.push(location.country)
+    
     return parts.join(", ") || "Not specified"
   }
 
@@ -77,13 +82,16 @@ export default async function PositionDetailsPage({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold text-gray-900">{position.jobTitle}</h1>
-              {position.externalReference && (
+              {(position.reference || position.externalReference) && (
                 <span className="text-sm font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                  {position.externalReference}
+                  {position.reference || position.externalReference}
                 </span>
               )}
+              {position.urgent && (
+                <Badge variant="destructive" className="ml-2">Urgent</Badge>
+              )}
             </div>
-            <p className="text-gray-500">{position.companyName}</p>
+            <p className="text-gray-500">{position.companyName} {position.department && `• ${position.department}`}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -123,6 +131,34 @@ export default async function PositionDetailsPage({
                 </div>
               )}
 
+              {position.skills.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2">Required Skills</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {position.skills.map((skill, i) => (
+                      <Badge key={i} variant="secondary">{skill}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {languages && languages.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2">Languages</h3>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {languages.map((lang, i) => (
+                      <div key={i} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
+                        <span className="font-medium">{lang.language}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">{lang.level}</span>
+                          {lang.mandatory && <Badge variant="outline" className="text-xs border-red-200 text-red-700 bg-red-50">Required</Badge>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {position.objectives.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Objectives</h3>
@@ -133,6 +169,13 @@ export default async function PositionDetailsPage({
                   </ul>
                 </div>
               )}
+              
+              {position.applicationInstructions && (
+                <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
+                  <h3 className="font-semibold mb-2 text-blue-900">Application Instructions</h3>
+                  <p className="text-blue-800 text-sm whitespace-pre-wrap">{position.applicationInstructions}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -141,10 +184,10 @@ export default async function PositionDetailsPage({
               <CardTitle>Additional information</CardTitle>
             </CardHeader>
             <CardContent className="grid sm:grid-cols-2 gap-6">
-              {position.industry && (
+              {(position.industrySector || position.industry) && (
                 <div>
                   <span className="text-sm text-gray-500 block mb-1">Industry</span>
-                  <span className="font-medium">{position.industry}</span>
+                  <span className="font-medium">{position.industrySector || position.industry}</span>
                 </div>
               )}
               {position.domain && (
@@ -171,6 +214,17 @@ export default async function PositionDetailsPage({
                 <div>
                   <span className="text-sm text-gray-500 block mb-1">Application method</span>
                   <span className="font-medium">{position.applicationMethod}</span>
+                </div>
+              )}
+              {contactInfo && (contactInfo.contact_person || contactInfo.email) && (
+                <div className="col-span-2 border-t pt-4 mt-2">
+                  <h4 className="font-medium mb-2">Contact Person</h4>
+                  {contactInfo.contact_person && <div className="text-sm font-medium">{contactInfo.contact_person}</div>}
+                  {contactInfo.email && (
+                    <a href={`mailto:${contactInfo.email}`} className="text-sm text-blue-600 hover:underline">
+                      {contactInfo.email}
+                    </a>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -203,7 +257,7 @@ export default async function PositionDetailsPage({
                 <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
                 <div>
                   <span className="text-sm text-gray-500 block">Location</span>
-                  <span className="font-medium">{getLocationString(location)}</span>
+                  <span className="font-medium">{getLocationString()}</span>
                 </div>
               </div>
 
@@ -211,13 +265,28 @@ export default async function PositionDetailsPage({
                 <Laptop className="h-5 w-5 text-gray-400 mt-0.5" />
                 <div>
                   <span className="text-sm text-gray-500 block">Work arrangement</span>
-                  <span className="font-medium capitalize">
-                    {location?.workArrangement?.toLowerCase().replace('_', '-') || "Not specified"}
-                  </span>
-                  {(location?.officeDaysRequired !== undefined && location?.officeDaysRequired !== null) && (
-                    <span className="text-sm text-gray-500 block mt-0.5">
-                      ({location.officeDaysRequired} days on-site)
-                    </span>
+                  {workArrangement ? (
+                    <>
+                      <span className="font-medium capitalize">
+                        {workArrangement.remote_allowed ? "Remote Allowed" : "On-site"}
+                      </span>
+                      {(workArrangement.on_site_days_per_week !== undefined && workArrangement.on_site_days_per_week !== null) && (
+                        <span className="text-sm text-gray-500 block mt-0.5">
+                          ({workArrangement.on_site_days_per_week} days on-site)
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-medium capitalize">
+                        {location?.workArrangement?.toLowerCase().replace('_', '-') || "Not specified"}
+                      </span>
+                      {(location?.officeDaysRequired !== undefined && location?.officeDaysRequired !== null) && (
+                        <span className="text-sm text-gray-500 block mt-0.5">
+                          ({location.officeDaysRequired} days on-site)
+                        </span>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -237,7 +306,11 @@ export default async function PositionDetailsPage({
                 <div>
                   <span className="text-sm text-gray-500 block">Duration</span>
                   <span className="font-medium">
-                    {position.contractDuration ? `${position.contractDuration} months` : "Not specified"}
+                    {position.durationMonths 
+                      ? `${position.durationMonths} months` 
+                      : position.contractDuration 
+                        ? `${position.contractDuration} months` 
+                        : "Not specified"}
                   </span>
                 </div>
               </div>
