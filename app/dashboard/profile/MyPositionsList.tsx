@@ -27,9 +27,10 @@ export function MyPositionsList({ positions }: MyPositionsListProps) {
         return "Created (Pending Approval)"
       case "ACTIVE":
         return "Approved by Admin"
-      case "CLOSED":
-      case "FILLED":
-        return "Closed"
+      case "CAMPAIGN_SENT":
+        return "Campaign Sent"
+      case "ARCHIVED":
+        return "Archived"
       default:
         return status.replace("_", " ")
     }
@@ -41,8 +42,9 @@ export function MyPositionsList({ positions }: MyPositionsListProps) {
         return "bg-yellow-100 text-yellow-800"
       case "ACTIVE":
         return "bg-green-100 text-green-800"
-      case "CLOSED":
-      case "FILLED":
+      case "CAMPAIGN_SENT":
+        return "bg-purple-100 text-purple-800"
+      case "ARCHIVED":
         return "bg-gray-100 text-gray-800"
       default:
         return "bg-gray-100 text-gray-800"

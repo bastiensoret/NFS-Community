@@ -60,70 +60,38 @@ export function PositionsTable({ initialPositions, userRole, pagination, pending
   }
 
   const handleTabChange = (value: string) => {
-    const status = value === "pending" ? "PENDING_APPROVAL" : "ACTIVE"
+    let status = "ACTIVE"
+    switch (value) {
+      case "pending":
+        status = "PENDING_APPROVAL"
+        break
+      case "campaign":
+        status = "CAMPAIGN_SENT"
+        break
+      case "archived":
+        status = "ARCHIVED"
+        break
+      case "draft":
+        status = "DRAFT"
+        break
+      default:
+        status = "ACTIVE"
+    }
+    
     const params = new URLSearchParams(searchParams.toString())
     params.set("status", status)
     params.set("page", "1") 
     router.push(pathname + "?" + params.toString())
   }
 
-  const handlePageChange = (newPage: number) => {
-    router.push(pathname + "?" + createQueryString("page", String(newPage)))
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this position?")) return
-
-    try {
-      const response = await fetch(`/api/positions/${id}`, {
-        method: "DELETE",
-      })
-
-      if (response.ok) {
-        setPositions(positions.filter(pos => pos.id !== id))
-        router.refresh()
-      }
-    } catch (error) {
-      console.error("Failed to delete position:", error)
+  const getTabValue = () => {
+    switch (currentStatus) {
+      case "PENDING_APPROVAL": return "pending"
+      case "CAMPAIGN_SENT": return "campaign"
+      case "ARCHIVED": return "archived"
+      case "DRAFT": return "draft"
+      default: return "active"
     }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "ACTIVE":
-        return "bg-green-100 text-green-800"
-      case "CLOSED":
-        return "bg-gray-100 text-gray-800"
-      case "FILLED":
-        return "bg-blue-100 text-blue-800"
-      case "PENDING_APPROVAL":
-        return "bg-yellow-100 text-yellow-800"
-      case "PENDING_REVIEW":
-        return "bg-yellow-100 text-yellow-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getLocationString = (position: Position) => {
-    const parts = []
-    if (position.location) parts.push(position.location)
-    else if (position.workLocation?.city) parts.push(position.workLocation.city)
-    
-    if (position.country) parts.push(position.country)
-    else if (position.workLocation?.country) parts.push(position.workLocation.country)
-    
-    return parts.join(", ") || "Not specified"
-  }
-
-  const getOnSiteRequirement = (position: Position) => {
-    if (position.workArrangement?.on_site_days_per_week !== undefined) {
-      return `${position.workArrangement.on_site_days_per_week} days`
-    }
-    if (position.workLocation?.officeDaysRequired !== undefined) {
-      return `${position.workLocation.officeDaysRequired} days`
-    }
-    return "Not specified"
   }
 
   return (
@@ -143,21 +111,21 @@ export function PositionsTable({ initialPositions, userRole, pagination, pending
         )}
       </div>
 
-      {isAdmin && (
-        <Tabs value={currentStatus === "PENDING_APPROVAL" ? "pending" : "active"} onValueChange={handleTabChange} className="w-full">
-          <TabsList>
-            <TabsTrigger value="active">Active Positions</TabsTrigger>
-            <TabsTrigger value="pending" className="relative">
-              Pending Approval
-              {pendingCount > 0 && (
-                <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
-                  {pendingCount}
-                </span>
-              )}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      )}
+      <Tabs value={getTabValue()} onValueChange={handleTabChange} className="w-full">
+        <TabsList>
+          <TabsTrigger value="active">Active</TabsTrigger>
+          <TabsTrigger value="campaign">Campaign Sent</TabsTrigger>
+          <TabsTrigger value="archived">Archived</TabsTrigger>
+          <TabsTrigger value="pending" className="relative">
+            Pending Approval
+            {pendingCount > 0 && (
+              <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
+                {pendingCount}
+              </span>
+            )}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       {positions.length === 0 ? (
         <Card>

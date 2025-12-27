@@ -39,22 +39,51 @@ export default async function PositionDetailsPage({
     notFound()
   }
 
+  // Visibility Check: DRAFTs are private to Creator and Super Admin
+  if (position.status === "DRAFT") {
+    const isCreator = position.creatorId === session.user?.id
+    const isSuperAdmin = session.user?.role === "SUPER_ADMIN"
+    
+    if (!isCreator && !isSuperAdmin) {
+      redirect("/dashboard/positions")
+    }
+  }
+
   const location = position.workLocation as unknown as WorkLocation
   const workArrangement = position.workArrangement as unknown as { remote_allowed?: boolean, on_site_days_per_week?: number } | null
   const languages = position.languageRequirements as unknown as { language: string, level: string, mandatory: boolean }[] | null
   
-  const canManage = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN" || session.user?.role === "RECRUITER"
-  const canValidate = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN"
+  const isSuperAdmin = session.user?.role === "SUPER_ADMIN"
+  const isAdmin = session.user?.role === "ADMIN"
+  const isGatekeeper = session.user?.isGatekeeper || false
+  const isRecruiter = session.user?.role === "RECRUITER"
+  const isCreator = position.creatorId === session.user?.id
+
+  // Edit Permissions:
+  // - Admin, Super Admin, Recruiter can edit generally
+  // - Creator can edit if DRAFT
+  // - Restriction: Nobody (except Super Admin) can edit if finalized (ARCHIVED/CAMPAIGN_SENT)
+  const isFinalized = position.status === "ARCHIVED" || position.status === "CAMPAIGN_SENT"
+  const isDraft = position.status === "DRAFT"
+  
+  let canManage = isAdmin || isSuperAdmin || isRecruiter || (isCreator && isDraft)
+  
+  if (isFinalized && !isSuperAdmin) {
+    canManage = false
+  }
+
+  // Gatekeeper: At least Administrator role AND isGatekeeper flag (or Super Admin)
+  const canValidate = (isGatekeeper && session.user?.role !== "USER") || isSuperAdmin
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "ACTIVE":
         return "bg-green-100 text-green-800"
-      case "CLOSED":
+      case "CAMPAIGN_SENT":
+        return "bg-purple-100 text-purple-800"
+      case "ARCHIVED":
         return "bg-gray-100 text-gray-800"
-      case "FILLED":
-        return "bg-blue-100 text-blue-800"
-      case "PENDING_REVIEW":
+      case "PENDING_APPROVAL":
         return "bg-yellow-100 text-yellow-800"
       default:
         return "bg-gray-100 text-gray-800"
@@ -102,6 +131,12 @@ export default async function PositionDetailsPage({
           <Badge className={getStatusColor(position.status)}>
             {position.status.replace('_', ' ')}
           </Badge>
+          
+          {/* Gatekeeper Approval Button */}
+          {canValidate && position.status === "PENDING_APPROVAL" && (
+            <ApprovePositionButton positionId={position.id} />
+          )}
+
           {canManage && (
             <Link href={`/dashboard/positions/${position.id}/edit`}>
               <Button>

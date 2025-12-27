@@ -21,6 +21,7 @@ export default async function PositionsPage({
   const skip = (page - 1) * limit
 
   const isAdmin = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN"
+  const isSuperAdmin = session.user?.role === "SUPER_ADMIN"
 
   // Build where clause
   const where: any = {}
@@ -35,10 +36,17 @@ export default async function PositionsPage({
     where.status = "ACTIVE"
   }
 
-  // Security check: Only admins can see PENDING_APPROVAL via this generic list
-  if (where.status === "PENDING_APPROVAL" && !isAdmin) {
-    where.status = "ACTIVE" // Fallback or redirect
+  // Security & Visibility Rules
+  if (where.status === "PENDING_APPROVAL") {
+    // Visible to everyone as per workflow requirements
+  } else if (where.status === "DRAFT") {
+    // Drafts are ONLY visible to their Creator and Super Admin.
+    // Regular Admins cannot see others' drafts.
+    if (!isSuperAdmin) {
+      where.creatorId = session.user.id
+    }
   }
+  // Other statuses (ACTIVE, CAMPAIGN_SENT, ARCHIVED) are visible to everyone.
 
   const [positions, total, pendingCount] = await Promise.all([
     prisma.jobPosting.findMany({
@@ -48,8 +56,8 @@ export default async function PositionsPage({
       take: limit,
     }),
     prisma.jobPosting.count({ where }),
-    // Count pending positions for the badge/tab if admin
-    isAdmin ? prisma.jobPosting.count({ where: { status: "PENDING_APPROVAL" } }) : Promise.resolve(0)
+    // Count pending positions for the badge/tab for all users
+    prisma.jobPosting.count({ where: { status: "PENDING_APPROVAL" } })
   ])
 
   return (

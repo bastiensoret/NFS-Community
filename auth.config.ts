@@ -35,6 +35,7 @@ export default {
       if (user) {
         token.id = user.id
         token.role = user.role
+        token.isGatekeeper = user.isGatekeeper
         if (user.image) {
           token.picture = user.image
         }
@@ -54,6 +55,7 @@ export default {
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        session.user.isGatekeeper = token.isGatekeeper as boolean
         session.user.tenantId = token.tenantId as string
         if (token.picture) {
           session.user.image = token.picture

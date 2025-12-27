@@ -25,6 +25,7 @@ const LEVELS = ["Basic", "Intermediate", "Advanced", "Native"]
 
 interface Position {
   id: string
+  creatorId?: string | null
   // Core Fields
   reference?: string | null
   jobTitle: string
@@ -143,6 +144,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
   }
 
   const canEditStatus = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
+  const isDraft = position.status === "DRAFT"
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -186,12 +188,11 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="ACTIVE">Active</SelectItem>
-                        <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
-                        <SelectItem value="PENDING_REVIEW">Pending Review</SelectItem>
                         <SelectItem value="DRAFT">Draft</SelectItem>
-                        <SelectItem value="FILLED">Filled</SelectItem>
-                        <SelectItem value="CLOSED">Closed</SelectItem>
+                        <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
+                        <SelectItem value="ACTIVE">Active</SelectItem>
+                        <SelectItem value="CAMPAIGN_SENT">Campaign Sent</SelectItem>
+                        <SelectItem value="ARCHIVED">Archived</SelectItem>
                       </SelectContent>
                     </Select>
                     {!canEditStatus && <p className="text-xs text-gray-500">Only Admins can change status.</p>}
@@ -458,9 +459,21 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
         </Tabs>
 
         <div className="flex gap-4 pt-6">
-          <Button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save changes"}
+          <Button type="submit" disabled={loading} variant={isDraft ? "outline" : "default"}>
+            {loading ? "Saving..." : (isDraft ? "Save Draft" : "Save changes")}
           </Button>
+          
+          {isDraft && (
+            <Button 
+                type="button" 
+                disabled={loading} 
+                onClick={handleSubmitForApproval}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+                Submit for Approval
+            </Button>
+          )}
+
           <Button
             type="button"
             variant="outline"
@@ -472,4 +485,3 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
       </form>
     </div>
   )
-}

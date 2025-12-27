@@ -30,7 +30,7 @@ export const jobPostingSchema = z.object({
   industrySector: z.enum(["Banking", "Insurance", "Finance", "IT", "Healthcare", "Consulting", "Other"]).optional(),
   
   // Metadata/System
-  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "FILLED", "PENDING_APPROVAL", "PENDING_REVIEW"]).default("ACTIVE"),
+  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "PENDING_APPROVAL", "CAMPAIGN_SENT"]).default("ACTIVE"),
   
   // Legacy fields (kept for compatibility)
   externalReference: z.string().optional(),

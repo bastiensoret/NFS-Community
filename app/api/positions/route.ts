@@ -5,19 +5,43 @@ import { z } from "zod"
 import { withAuth } from "@/lib/api-utils"
 import { Prisma } from "@prisma/client"
 
-export const GET = withAuth(async (request) => {
+export const GET = withAuth(async (request, session) => {
   const { searchParams } = new URL(request.url)
   const page = parseInt(searchParams.get("page") || "1")
   const limit = parseInt(searchParams.get("limit") || "10")
+  const status = searchParams.get("status")
   const skip = (page - 1) * limit
+
+  const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN"
+  const isSuperAdmin = session.user.role === "SUPER_ADMIN"
+
+  const where: any = {}
+
+  if (status) {
+    where.status = status
+  } else {
+    where.status = "ACTIVE"
+  }
+
+  // Visibility Rules
+  if (where.status === "PENDING_APPROVAL") {
+    // Visible to all
+  } else if (where.status === "DRAFT") {
+    // Only visible to Creator and Super Admin
+    if (!isSuperAdmin) {
+      where.creatorId = session.user.id
+    }
+  }
+  // Other statuses are visible to everyone
 
   const [jobPostings, total] = await Promise.all([
     prisma.jobPosting.findMany({
+      where,
       orderBy: { postingDate: "desc" },
       skip,
       take: limit,
     }),
-    prisma.jobPosting.count(),
+    prisma.jobPosting.count({ where }),
   ])
 
   return NextResponse.json({

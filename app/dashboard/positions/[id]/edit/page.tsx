@@ -14,13 +14,6 @@ export default async function EditPositionPage({
     redirect("/auth/signin")
   }
 
-  // Only admins and recruiters can edit
-  const canManage = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN" || session.user?.role === "RECRUITER"
-  
-  if (!canManage) {
-    redirect("/dashboard/positions")
-  }
-
   const { id } = await params
   const position = await prisma.jobPosting.findUnique({
     where: { id },
@@ -30,5 +23,19 @@ export default async function EditPositionPage({
     notFound()
   }
 
-  return <EditPositionForm position={position} userRole={session.user?.role || "USER"} />
+  // Permission Logic
+  const userRole = session.user?.role
+  const isCreator = position.creatorId === session.user?.id
+  const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
+  const isRecruiter = userRole === "RECRUITER"
+
+  // Basic Users can only edit their own DRAFT positions
+  // Admins/Recruiters can edit positions generally (subject to other workflow constraints in the form/API)
+  const canEdit = isAdmin || isRecruiter || (isCreator && position.status === "DRAFT")
+
+  if (!canEdit) {
+    redirect("/dashboard/positions")
+  }
+
+  return <EditPositionForm position={position} userRole={userRole || "USER"} />
 }

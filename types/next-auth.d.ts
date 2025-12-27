@@ -10,6 +10,7 @@ declare module "next-auth" {
       name?: string | null
       image?: string | null
       role: UserRole
+      isGatekeeper: boolean
       tenantId?: string
     }
   }
@@ -20,6 +21,7 @@ declare module "next-auth" {
     name?: string | null
     image?: string | null
     role: UserRole
+    isGatekeeper: boolean
   }
 }
 
@@ -27,6 +29,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     role: UserRole
+    isGatekeeper: boolean
     tenantId?: string
   }
 }
