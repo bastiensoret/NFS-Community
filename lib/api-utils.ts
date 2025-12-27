@@ -25,10 +25,7 @@ export function withAuth<T = any>(
 
       // Rate Limiting
       // Limit to 60 requests per minute per user
-      const isAllowed = await checkRateLimit(session.user.id || "unknown", {
-        tokensPerInterval: 60,
-        interval: "minute"
-      })
+      const isAllowed = await checkRateLimit(session.user.id || "unknown", 60)
 
       if (!isAllowed) {
         return NextResponse.json(
@@ -45,10 +42,11 @@ export function withAuth<T = any>(
       }
 
       return await handler(req, session, context)
-    } catch (error) {
-      console.error("API Error:", error)
+    } catch (error: any) {
+      console.error("API Error details:", error)
       
-      if (error instanceof ZodError) {
+      // Check for ZodError (instanceof or shape)
+      if (error instanceof ZodError || (error?.name === 'ZodError') || error?.errors) {
         return NextResponse.json(
           { error: "Validation Error", details: error.errors },
           { status: 400 }

@@ -32,7 +32,10 @@ export default async function PositionDetailsPage({
   const { id } = await params
   const position = await prisma.jobPosting.findUnique({
     where: { id },
-    include: { creator: true },
+    include: { 
+      creator: true,
+      languageRequirements: true 
+    },
   })
 
   if (!position) {
@@ -49,10 +52,12 @@ export default async function PositionDetailsPage({
     }
   }
 
+  // Cast legacy workLocation if needed (it is Json? in schema)
   const location = position.workLocation as unknown as WorkLocation
-  const workArrangement = position.workArrangement as unknown as { remote_allowed?: boolean, on_site_days_per_week?: number } | null
-  const languages = position.languageRequirements as unknown as { language: string, level: string, mandatory: boolean }[] | null
   
+  // Use relation for languages
+  const languages = position.languageRequirements
+
   const isSuperAdmin = session.user?.role === "SUPER_ADMIN"
   const isAdmin = session.user?.role === "ADMIN"
   const isGatekeeper = session.user?.isGatekeeper || false
@@ -99,6 +104,17 @@ export default async function PositionDetailsPage({
     else if (location?.country) parts.push(location.country)
     
     return parts.join(", ") || "Not specified"
+  }
+
+  const getOnSiteString = () => {
+    if (position.remoteAllowed) {
+        return position.onSiteDays 
+            ? `${position.onSiteDays} days/week on-site (Remote Allowed)`
+            : "Remote Allowed"
+    }
+    // Fallback to legacy
+    if (location?.workArrangement) return location.workArrangement.replace('_', ' ').toLowerCase()
+    return "On-site"
   }
 
   return (

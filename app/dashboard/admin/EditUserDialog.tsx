@@ -22,6 +22,8 @@ import {
 import { ROLES, ROLE_DISPLAY_NAMES } from "@/lib/roles"
 import { useRouter } from "next/navigation"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { updateUserAction } from "@/app/actions/admin"
+import { toast } from "sonner"
 
 type User = {
   id: string
@@ -63,30 +65,33 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
     setError("")
 
     try {
-      const response = await fetch("/api/admin/update-user", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          role: selectedRole,
-          isGatekeeper: isGatekeeper,
-        }),
+      // @ts-ignore - Role string compatibility
+      const result = await updateUserAction({
+        userId: user.id,
+        role: selectedRole as any,
+        isGatekeeper: isGatekeeper,
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.error || "Failed to update user")
-        setLoading(false)
-        return
+      if (result.success) {
+        toast.success("User updated successfully")
+        router.refresh()
+        onOpenChange(false)
+      } else {
+        if (result.validationErrors) {
+            const errorMessages = Object.entries(result.validationErrors)
+                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                .join('\n')
+            setError(`Validation Failed: ${errorMessages}`)
+            toast.error("Validation Failed")
+        } else {
+            setError(result.error || "Failed to update user")
+            toast.error(result.error || "Failed to update user")
+        }
       }
-
-      router.refresh()
-      onOpenChange(false)
     } catch (err) {
+      console.error(err)
       setError("An error occurred while updating the user")
+      toast.error("An error occurred")
     } finally {
       setLoading(false)
     }

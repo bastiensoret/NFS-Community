@@ -2,11 +2,11 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
 export const GET = async (request: Request) => {
-  // Optional: Check for authorization if you want to secure this endpoint
-  // const authHeader = request.headers.get('authorization');
-  // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-  //   return new Response('Unauthorized', { status: 401 });
-  // }
+  // Check for authorization to secure this endpoint
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
 
   try {
     const twoWeeksAgo = new Date()

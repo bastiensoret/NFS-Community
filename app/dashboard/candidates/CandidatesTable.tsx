@@ -9,6 +9,8 @@ import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { deleteCandidateAction } from "@/app/actions/candidates"
+import { toast } from "sonner"
 
 interface Candidate {
   id: string
@@ -28,6 +30,7 @@ interface PaginationProps {
   limit: number
   total: number
   totalPages: number
+  nextCursor?: string
 }
 
 interface CandidatesTableProps {
@@ -53,20 +56,41 @@ export function CandidatesTable({ initialCandidates, userRole, pagination }: Can
     router.push(pathname + "?" + createQueryString("page", String(newPage)))
   }
 
+  const handleNextPage = () => {
+    if (pagination.nextCursor) {
+        const params = new URLSearchParams(searchParams.toString())
+        params.set("cursor", pagination.nextCursor)
+        params.set("page", String(pagination.page + 1))
+        router.push(pathname + "?" + params.toString())
+    } else {
+        handlePageChange(pagination.page + 1)
+    }
+  }
+
+  const handlePrevPage = () => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete("cursor")
+      params.set("page", String(pagination.page - 1))
+      router.push(pathname + "?" + params.toString())
+  }
+
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this candidate?")) return
 
     try {
-      const response = await fetch(`/api/candidates/${id}`, {
-        method: "DELETE",
-      })
+      const result = await deleteCandidateAction(id)
 
-      if (response.ok) {
+      if (result.success) {
         setCandidates(candidates.filter(c => c.id !== id))
         router.refresh()
+        toast.success("Candidate deleted successfully")
+      } else {
+        console.error("Failed to delete candidate:", result.error)
+        toast.error(result.error || "Failed to delete candidate")
       }
     } catch (error) {
       console.error("Failed to delete candidate:", error)
+      toast.error("An error occurred")
     }
   }
 

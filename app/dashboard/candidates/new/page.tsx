@@ -10,6 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
+import { createCandidateAction } from "@/app/actions/candidates"
+import { type CandidateInput } from "@/lib/validations"
+import { toast } from "sonner"
 
 export default function NewCandidatePage() {
   const router = useRouter()
@@ -83,34 +86,40 @@ export default function NewCandidatePage() {
     e.preventDefault()
     setLoading(true)
 
-    try {
-      const response = await fetch("/api/candidates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          desiredRoles,
-          skills,
-          industries,
-          certifications,
-          profileDataJson: {
-            ...formData,
-            desiredRoles,
-            skills,
-            industries,
-            certifications,
-          }
-        }),
-      })
+    const payload: CandidateInput = {
+      ...formData,
+      desiredRoles,
+      skills,
+      industries,
+      certifications,
+      profileDataJson: {
+        ...formData,
+        desiredRoles,
+        skills,
+        industries,
+        certifications,
+      }
+    }
 
-      if (response.ok) {
+    try {
+      const result = await createCandidateAction(payload)
+
+      if (result.success) {
+        toast.success("Candidate created successfully")
         router.push("/dashboard/candidates")
+        router.refresh()
       } else {
-        const error = await response.json()
-        alert(error.error || "Failed to create candidate")
+        if (result.validationErrors) {
+            const errorMessages = Object.entries(result.validationErrors)
+                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                .join('\n')
+            toast.error("Validation Failed", { description: errorMessages })
+        } else {
+            toast.error(result.error || "Failed to create candidate")
+        }
       }
     } catch (error) {
-      alert("Failed to create candidate")
+      toast.error("Failed to create candidate")
     } finally {
       setLoading(false)
     }

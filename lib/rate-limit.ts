@@ -1,45 +1,49 @@
-import { RateLimiter } from "limiter"
+import { LRUCache } from 'lru-cache'
 
-type RateLimitConfig = {
-  tokensPerInterval: number
-  interval: number | "second" | "minute" | "hour" | "day"
-  fireImmediately?: boolean
+type RateLimitOptions = {
+  interval: number // milliseconds
+  uniqueTokenPerInterval: number // max number of unique tokens
 }
 
-const limiters = new Map<string, RateLimiter>()
+function rateLimit(options: RateLimitOptions) {
+  const tokenCache = new LRUCache<string, number[]>({
+    max: options.uniqueTokenPerInterval || 500,
+    ttl: options.interval || 60000,
+  })
 
-const DEFAULT_CONFIG: RateLimitConfig = {
-  tokensPerInterval: 10,
-  interval: "minute",
-  fireImmediately: true
-}
+  return {
+    check: (limit: number, token: string) =>
+      new Promise<void>((resolve, reject) => {
+        const tokenCount = tokenCache.get(token) || [0]
+        if (tokenCount[0] === 0) {
+          tokenCache.set(token, tokenCount)
+        }
+        tokenCount[0] += 1
 
-export async function checkRateLimit(
-  identifier: string, 
-  config: RateLimitConfig = DEFAULT_CONFIG
-): Promise<boolean> {
-  if (!limiters.has(identifier)) {
-    limiters.set(
-      identifier, 
-      new RateLimiter({ 
-        tokensPerInterval: config.tokensPerInterval, 
-        interval: config.interval,
-        fireImmediately: config.fireImmediately 
-      })
-    )
+        const currentUsage = tokenCount[0]
+        const isRateLimited = currentUsage > limit
+        
+        if (isRateLimited) {
+          reject(new Error('Rate limit exceeded'))
+        } else {
+          resolve()
+        }
+      }),
   }
-
-  const limiter = limiters.get(identifier)!
-  const remainingRequests = await limiter.removeTokens(1)
-  
-  return remainingRequests >= 0
 }
 
-// Clean up old limiters periodically to prevent memory leaks
-setInterval(() => {
-  // This is a naive cleanup strategy. 
-  // In a production app with high traffic, use an LRU cache or Redis.
-  if (limiters.size > 10000) {
-    limiters.clear()
+// Global limiter instance
+const limiter = rateLimit({
+  interval: 60 * 1000, // 1 minute
+  uniqueTokenPerInterval: 500,
+})
+
+export async function checkRateLimit(identifier: string, limit: number = 10) {
+  try {
+    // Limit to 'limit' requests per minute per identifier
+    await limiter.check(limit, identifier)
+    return true
+  } catch {
+    return false
   }
-}, 1000 * 60 * 60) // Clear every hour
+}

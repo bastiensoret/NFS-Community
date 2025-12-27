@@ -7,32 +7,48 @@ export const jobPostingSchema = z.object({
   companyName: z.string().min(1, "Company name is required"),
   location: z.string().min(1, "Location is required"),
   country: z.enum(["Belgium", "Netherlands", "Luxembourg", "France"]),
-  startDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
-  durationMonths: z.coerce.number().min(0, "Duration must be positive").optional(),
-  seniorityLevel: z.enum(["Junior", "Medior", "Senior", "Expert"]),
+  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "PENDING_APPROVAL", "CAMPAIGN_SENT"]).default("ACTIVE"),
 
-  // Extended Manual
+  // Details
   description: z.string().optional(),
+  industrySector: z.enum(["Banking", "Insurance", "Finance", "IT", "Healthcare", "Consulting", "Other"]).optional(),
+  seniorityLevel: z.enum(["Junior", "Medior", "Senior", "Expert"]),
+  employmentType: z.string().optional(),
+  durationMonths: z.coerce.number().min(0, "Duration must be positive").optional(),
+  startDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
+  endDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
+  extensionPossible: z.boolean().optional(),
+
+  // Work Arrangement (Flattened)
+  remoteAllowed: z.boolean().optional(),
+  onSiteDays: z.coerce.number().min(1).max(5).nullable().optional(),
+
+  // Salary (Flattened)
+  minSalary: z.coerce.number().optional(),
+  maxSalary: z.coerce.number().optional(),
+  currency: z.string().default("EUR"),
+
+  // Contact (Flattened)
+  contactName: z.string().optional(),
+  contactEmail: z.string().email("Invalid email").optional().or(z.literal("")),
+  contactPhone: z.string().optional(),
+
+  // Arrays
   responsibilities: z.array(z.string()).optional(),
   skills: z.array(z.string()).optional(),
-  
+  objectives: z.array(z.string()).optional(),
+  education: z.array(z.string()).optional(),
+  experience: z.array(z.string()).optional(),
+  languages: z.array(z.string()).optional(), // Legacy simple list
+
+  // Relations (Input for JobPostingLanguage)
   languageRequirements: z.array(z.object({
     language: z.enum(["French", "Dutch", "English", "German", "Italian", "Spanish"]),
     level: z.enum(["Basic", "Intermediate", "Advanced", "Native"]),
     mandatory: z.boolean()
   })).optional(),
 
-  workArrangement: z.object({
-    remote_allowed: z.boolean().optional(),
-    on_site_days_per_week: z.coerce.number().min(1).max(5).nullable().optional()
-  }).optional(),
-
-  industrySector: z.enum(["Banking", "Insurance", "Finance", "IT", "Healthcare", "Consulting", "Other"]).optional(),
-  
-  // Metadata/System
-  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "PENDING_APPROVAL", "CAMPAIGN_SENT"]).default("ACTIVE"),
-  
-  // Legacy fields (kept for compatibility)
+  // Legacy fields (kept for compatibility but deprecated)
   externalReference: z.string().optional(),
   source: z.string().optional(),
   sourceUrl: z.string().optional().or(z.literal("")),
@@ -41,33 +57,12 @@ export const jobPostingSchema = z.object({
   roleCategory: z.string().optional(),
   roleProfile: z.string().optional(),
   workLocation: z.any().optional(),
-  employmentType: z.string().optional(),
   contractDuration: z.string().optional(),
-  endDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
-  extensionPossible: z.boolean().optional(),
   missionContext: z.string().optional(),
-  objectives: z.union([z.string(), z.array(z.string())]).optional().transform(val => {
-    if (!val) return [];
-    return Array.isArray(val) ? val : [val];
-  }),
-  education: z.union([z.string(), z.array(z.string())]).optional().nullable().transform(val => {
-    if (!val) return [];
-    return Array.isArray(val) ? val : [val];
-  }),
-  experience: z.union([z.string(), z.array(z.string())]).optional().nullable().transform(val => {
-    if (!val) return [];
-    return Array.isArray(val) ? val : [val];
-  }),
-  languages: z.union([z.string(), z.array(z.string())]).optional().transform(val => {
-    if (!val) return [];
-    return Array.isArray(val) ? val : [val];
-  }),
   industry: z.string().optional(),
   domain: z.string().optional(),
   travelRequired: z.string().optional(),
-  salaryRange: z.any().optional(),
   applicationMethod: z.string().optional(),
-  contactPerson: z.any().optional(),
   applicationDeadline: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
 })
 
@@ -98,3 +93,10 @@ export const passwordSchema = z.object({
   message: "Passwords do not match",
   path: ["confirmPassword"],
 })
+
+export type JobPostingFormValues = z.infer<typeof jobPostingSchema>
+export type JobPostingInput = z.input<typeof jobPostingSchema>
+export type CandidateFormValues = z.infer<typeof candidateSchema>
+export type CandidateInput = z.input<typeof candidateSchema>
+export type ProfileFormValues = z.infer<typeof profileSchema>
+export type PasswordFormValues = z.infer<typeof passwordSchema>

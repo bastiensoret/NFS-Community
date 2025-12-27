@@ -6,7 +6,7 @@ import { redirect } from "next/navigation"
 export default async function PositionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; limit?: string; status?: string }>
+  searchParams: Promise<{ page?: string; limit?: string; status?: string; cursor?: string }>
 }) {
   const session = await auth()
   
@@ -18,8 +18,8 @@ export default async function PositionsPage({
   const page = Number(resolvedParams?.page) || 1
   const limit = Number(resolvedParams?.limit) || 10
   const status = resolvedParams?.status
-  const skip = (page - 1) * limit
-
+  const cursor = resolvedParams?.cursor
+  
   const isAdmin = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN"
   const isSuperAdmin = session.user?.role === "SUPER_ADMIN"
 
@@ -27,50 +27,60 @@ export default async function PositionsPage({
   const where: any = {}
   
   if (status) {
-    // If status is specifically requested
     where.status = status
   } else {
-    // Default view: Show ACTIVE positions. 
-    // If admin, they might want to see everything? 
-    // Usually "Positions" tab shows the main active list.
     where.status = "ACTIVE"
   }
 
   // Security & Visibility Rules
   if (where.status === "PENDING_APPROVAL") {
-    // Visible to everyone as per workflow requirements
+    // Visible to everyone
   } else if (where.status === "DRAFT") {
-    // Drafts are ONLY visible to their Creator and Super Admin.
-    // Regular Admins cannot see others' drafts.
     if (!isSuperAdmin) {
       where.creatorId = session.user.id
     }
   }
-  // Other statuses (ACTIVE, CAMPAIGN_SENT, ARCHIVED) are visible to everyone.
+
+  const queryOptions: any = {
+    where,
+    orderBy: [
+      { postingDate: "desc" },
+      { id: "desc" }
+    ],
+    take: limit,
+  }
+
+  if (cursor) {
+    queryOptions.skip = 1
+    queryOptions.cursor = { id: cursor }
+  } else {
+    queryOptions.skip = (page - 1) * limit
+  }
 
   const [positions, total, pendingCount] = await Promise.all([
-    prisma.jobPosting.findMany({
-      where,
-      orderBy: { postingDate: "desc" },
-      skip,
-      take: limit,
-    }),
+    prisma.jobPosting.findMany(queryOptions),
     prisma.jobPosting.count({ where }),
-    // Count pending positions for the badge/tab for all users
     prisma.jobPosting.count({ where: { status: "PENDING_APPROVAL" } })
   ])
+
+  let nextCursor = undefined
+  if (positions.length === limit) {
+    nextCursor = positions[positions.length - 1].id
+  }
 
   return (
     <PositionsTable 
       initialPositions={positions} 
       userRole={session.user?.role}
+      currentUserId={session.user?.id}
       pendingCount={pendingCount}
       currentStatus={where.status}
       pagination={{
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
+        nextCursor
       }}
     />
   )

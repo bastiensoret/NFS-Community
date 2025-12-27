@@ -1,11 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Shield, Building2, Search, UserCog } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Shield, Building2, Search, UserCog, ChevronLeft, ChevronRight } from "lucide-react"
 import { getRoleDisplayName } from "@/lib/roles"
 import { EditUserDialog } from "./EditUserDialog"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useDebounce } from "@/lib/hooks/use-debounce"
 
 type User = {
   id: string
@@ -20,28 +23,45 @@ type User = {
   image: string | null
 }
 
-export function UserManagementList({ users }: { users: User[] }) {
-  const [searchQuery, setSearchQuery] = useState("")
+interface PaginationProps {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+export function UserManagementList({ users, pagination }: { users: User[], pagination: PaginationProps }) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "")
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+
+  // Debounce search update
+  const debouncedSearch = useDebounce(searchQuery, 300)
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (debouncedSearch) {
+      params.set("query", debouncedSearch)
+    } else {
+      params.delete("query")
+    }
+    params.set("page", "1") // Reset to page 1 on search
+    router.push(pathname + "?" + params.toString())
+  }, [debouncedSearch, router, pathname]) // Don't include searchParams to avoid loop
 
   const handleUserClick = (user: User) => {
     setSelectedUser(user)
     setDialogOpen(true)
   }
 
-  const filteredUsers = users.filter((user) => {
-    const searchLower = searchQuery.toLowerCase()
-    const fullName = user.firstName && user.lastName 
-      ? `${user.firstName} ${user.lastName}`.toLowerCase()
-      : (user.name || "").toLowerCase()
-    
-    return (
-      fullName.includes(searchLower) ||
-      user.email.toLowerCase().includes(searchLower) ||
-      user.role.toLowerCase().includes(searchLower)
-    )
-  })
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", String(newPage))
+    router.push(pathname + "?" + params.toString())
+  }
 
   return (
     <div className="space-y-4">
@@ -56,13 +76,13 @@ export function UserManagementList({ users }: { users: User[] }) {
         />
       </div>
 
-      {filteredUsers.length === 0 ? (
+      {users.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           No users found matching "{searchQuery}"
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredUsers.map((user) => (
+          {users.map((user) => (
             <div
               key={user.id}
               onClick={() => handleUserClick(user)}
@@ -105,6 +125,32 @@ export function UserManagementList({ users }: { users: User[] }) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {users.length > 0 && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page <= 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <div className="text-sm text-gray-500">
+              Page {pagination.page} of {pagination.totalPages}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
         </div>
       )}
 

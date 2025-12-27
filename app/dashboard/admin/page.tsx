@@ -5,18 +5,40 @@ import { Users, Shield, UserCog } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 import { UserManagementList } from "./UserManagementList"
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; query?: string }>
+}) {
   const session = await auth()
   
   if (!session || session.user?.role !== "SUPER_ADMIN") {
     redirect("/dashboard")
   }
 
-  const [usersCount, adminCount, gatekeeperCount, usersList] = await Promise.all([
+  const resolvedParams = await searchParams
+  const page = Number(resolvedParams?.page) || 1
+  const query = resolvedParams?.query || ""
+  const limit = 10
+  const skip = (page - 1) * limit
+
+  // Build where clause for search
+  const where: any = {}
+  if (query) {
+    where.OR = [
+      { name: { contains: query, mode: "insensitive" } },
+      { email: { contains: query, mode: "insensitive" } },
+      { firstName: { contains: query, mode: "insensitive" } },
+      { lastName: { contains: query, mode: "insensitive" } },
+    ]
+  }
+
+  const [usersCount, adminCount, gatekeeperCount, usersList, totalUsers] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: { in: ["ADMIN", "SUPER_ADMIN"] } } }),
     prisma.user.count({ where: { isGatekeeper: true } }),
     prisma.user.findMany({
+      where,
       select: {
         id: true,
         name: true,
@@ -30,7 +52,10 @@ export default async function AdminPage() {
         image: true,
       },
       orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
     }),
+    prisma.user.count({ where }),
   ])
 
   return (
@@ -81,7 +106,15 @@ export default async function AdminPage() {
           <CardDescription>All registered users in the system</CardDescription>
         </CardHeader>
         <CardContent>
-          <UserManagementList users={usersList} />
+          <UserManagementList 
+            users={usersList} 
+            pagination={{
+              page,
+              limit,
+              total: totalUsers,
+              totalPages: Math.ceil(totalUsers / limit)
+            }}
+          />
         </CardContent>
       </Card>
     </div>

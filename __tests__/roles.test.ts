@@ -17,30 +17,30 @@ describe('Roles and Permissions', () => {
 
   describe('hasPermission', () => {
     it('should correctly check permissions for BASIC_USER', () => {
-      expect(hasPermission(ROLES.BASIC_USER, 'canViewJobs')).toBe(true)
-      expect(hasPermission(ROLES.BASIC_USER, 'canPostJobs')).toBe(false)
+      expect(hasPermission(ROLES.BASIC_USER, 'canViewPositions')).toBe(true)
+      expect(hasPermission(ROLES.BASIC_USER, 'canPostPositions')).toBe(false)
     })
 
     it('should correctly check permissions for USER', () => {
-      expect(hasPermission(ROLES.USER, 'canPostJobs')).toBe(true)
+      expect(hasPermission(ROLES.USER, 'canPostPositions')).toBe(true)
       expect(hasPermission(ROLES.USER, 'canProposeCandidates')).toBe(true)
-      expect(hasPermission(ROLES.USER, 'canValidateJobs')).toBe(false)
+      expect(hasPermission(ROLES.USER, 'canValidatePositions')).toBe(false)
     })
 
     it('should correctly check permissions for ADMIN', () => {
-      expect(hasPermission(ROLES.ADMIN, 'canValidateJobs')).toBe(true)
+      expect(hasPermission(ROLES.ADMIN, 'canValidatePositions')).toBe(true)
       expect(hasPermission(ROLES.ADMIN, 'canViewAllCandidates')).toBe(true)
       expect(hasPermission(ROLES.ADMIN, 'canManageUsers')).toBe(false)
     })
 
     it('should correctly check permissions for SUPER_ADMIN', () => {
       expect(hasPermission(ROLES.SUPER_ADMIN, 'canManageUsers')).toBe(true)
-      expect(hasPermission(ROLES.SUPER_ADMIN, 'canApproveJobPostings')).toBe(true)
+      expect(hasPermission(ROLES.SUPER_ADMIN, 'canApprovePositions')).toBe(true)
     })
 
     it('should return false for invalid role', () => {
       // @ts-ignore
-      expect(hasPermission('INVALID', 'canViewJobs')).toBe(false)
+      expect(hasPermission('INVALID', 'canViewPositions')).toBe(false)
     })
   })
 

@@ -6,7 +6,7 @@ import { redirect } from "next/navigation"
 export default async function CandidatesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; limit?: string }>
+  searchParams: Promise<{ page?: string; limit?: string; cursor?: string }>
 }) {
   const session = await auth()
   
@@ -17,19 +17,32 @@ export default async function CandidatesPage({
   const resolvedParams = await searchParams
   const page = Number(resolvedParams?.page) || 1
   const limit = Number(resolvedParams?.limit) || 10
-  const skip = (page - 1) * limit
+  const cursor = resolvedParams?.cursor
+  
+  const queryOptions: any = {
+    orderBy: [
+      { createdAt: "desc" },
+      { id: "desc" }
+    ],
+    take: limit,
+  }
+
+  if (cursor) {
+    queryOptions.skip = 1
+    queryOptions.cursor = { id: cursor }
+  } else {
+    queryOptions.skip = (page - 1) * limit
+  }
 
   const [candidates, total] = await Promise.all([
-    prisma.candidate.findMany({
-      orderBy: { createdAt: "desc" },
-      skip,
-      take: limit,
-    }),
+    prisma.candidate.findMany(queryOptions),
     prisma.candidate.count(),
   ])
 
-  // Data is now natively typed from Prisma (arrays are arrays, not strings)
-  // We don't need manual JSON.parse anymore.
+  let nextCursor = undefined
+  if (candidates.length === limit) {
+    nextCursor = candidates[candidates.length - 1].id
+  }
   
   return (
     <CandidatesTable 
@@ -39,7 +52,8 @@ export default async function CandidatesPage({
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
+        nextCursor
       }}
     />
   )

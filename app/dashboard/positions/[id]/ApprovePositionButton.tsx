@@ -4,6 +4,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, XCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { updatePositionAction } from "@/app/actions/positions"
+import { toast } from "sonner"
 
 interface ApprovePositionButtonProps {
   positionId: string
@@ -18,23 +20,17 @@ export function ApprovePositionButton({ positionId }: ApprovePositionButtonProps
 
     setLoading(true)
     try {
-      // Set to CAMPAIGN_SENT to trigger the workflow
-      const response = await fetch(`/api/positions/${positionId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "CAMPAIGN_SENT" }),
-      })
+      const result = await updatePositionAction(positionId, { status: "CAMPAIGN_SENT" })
 
-      if (response.ok) {
+      if (result.success) {
+        toast.success("Position approved and campaign launched!")
         router.refresh()
-        // Optionally redirect if needed, or just refresh to show new status
       } else {
-        const error = await response.json()
-        alert(error.error || "Failed to approve position")
+        toast.error(result.error || "Failed to approve position")
       }
     } catch (error) {
       console.error("Error approving position:", error)
-      alert("An error occurred")
+      toast.error("An error occurred")
     } finally {
       setLoading(false)
     }

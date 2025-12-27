@@ -27,6 +27,9 @@ model User {
   createdPositions JobPosting[] @relation("CreatedPositions")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@index([email])
+  @@index([role])
 }
 
 model Account {
@@ -93,56 +96,84 @@ model Candidate {
 
 model JobPosting {
   id                    String    @id @default(cuid())
+  reference             String?   @unique // Auto-generated reference
+  
+  // Core Fields
+  jobTitle              String
+  companyName           String
+  location              String
+  country               String
+  status                String    @default("ACTIVE")
+  
+  // Details
+  description           String
+  industrySector        String?
+  seniorityLevel        String
+  employmentType        String    @default("CONTRACT")
+  durationMonths        Float?
+  startDate             DateTime?
+  endDate               DateTime?
+  contractDuration      String?   // Legacy, prefer durationMonths/dates
+  extensionPossible     Boolean   @default(false)
+  
+  // Work Arrangement (Flattened)
+  remoteAllowed         Boolean   @default(false)
+  onSiteDays            Int?
+
+  // Salary (Flattened)
+  minSalary             Float?
+  maxSalary             Float?
+  currency              String?   @default("EUR")
+
+  // Contact (Flattened)
+  contactName           String?
+  contactEmail          String?
+  contactPhone          String?
+
+  // Arrays (Postgres specific)
+  responsibilities      String[]
+  skills                String[]
+  objectives            String[]
+  education             String[]
+  experience            String[]
+  languages             String[]  // Simple list (Legacy compat)
+
+  // Relations
+  languageRequirements  JobPostingLanguage[]
+  
+  // Metadata
+  postingDate           DateTime  @default(now())
+  lastUpdated           DateTime  @updatedAt
+  viewCount             Int       @default(0)
+  applicationCount      Int       @default(0)
+  
+  creatorId             String?
+  creator               User?     @relation("CreatedPositions", fields: [creatorId], references: [id])
+
+  // Legacy / Unused (To be removed)
   externalReference     String?
   source                String?
   sourceUrl             String?
-  jobTitle              String
-  companyName           String
   companyDivision       String?
   organizationalUnit    String?
   roleCategory          String?
   roleProfile           String?
-  seniorityLevel        String
-  workLocation          Json
-  employmentType        String
-  contractDuration      String?
-  startDate             DateTime?
-  endDate               DateTime?
-  extensionPossible     Boolean   @default(false)
-  description           String
+  workLocation          Json?     // Deprecated
   missionContext        String?
-  responsibilities      String[]
-  objectives            String[]
-  education             String[]
-  experience            String[]
-  skills                String[]
-  languages             String[]
   industry              String?
   domain                String?
   travelRequired        String?
-  salaryRange           Json?
   applicationMethod     String?
-  contactPerson         Json?
   applicationDeadline   DateTime?
-  postingDate           DateTime  @default(now())
-  lastUpdated           DateTime  @updatedAt
-  status                String    @default("ACTIVE")
-  viewCount             Int       @default(0)
-  applicationCount      Int       @default(0)
+}
 
-  // New fields based on updated schema requirements
-  reference             String?
-  location              String?
-  country               String?
-  durationMonths        Float?
-  workArrangement       Json?
-  languageRequirements  Json?
-  detailedRequirements  Json?
-  educationRequirements Json?
-  contractDetails       Json?
-  industrySector        String?
-  creatorId             String?
-  creator               User?     @relation("CreatedPositions", fields: [creatorId], references: [id])
+model JobPostingLanguage {
+  id           String     @id @default(cuid())
+  jobPostingId String
+  jobPosting   JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  language     String
+  level        String
+  mandatory    Boolean    @default(false)
 }
 
 enum IndustrySector {

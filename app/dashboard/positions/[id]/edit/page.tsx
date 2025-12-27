@@ -17,6 +17,9 @@ export default async function EditPositionPage({
   const { id } = await params
   const position = await prisma.jobPosting.findUnique({
     where: { id },
+    include: {
+      languageRequirements: true
+    }
   })
 
   if (!position) {

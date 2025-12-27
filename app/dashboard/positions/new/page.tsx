@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { createPositionAction } from "@/app/actions/positions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,6 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { X, Plus } from "lucide-react"
 import { CategorizedMultiSelect } from "@/components/ui/categorized-multi-select"
 import { RESPONSIBILITY_OPTIONS, SKILL_OPTIONS } from "@/lib/constants"
+import { type JobPostingInput } from "@/lib/validations"
+import { toast } from "sonner"
 
 interface LanguageRequirement {
   language: string
@@ -68,38 +71,42 @@ export default function NewJobPostingPage() {
     e.preventDefault()
     setLoading(true)
 
-    const payload = {
+    // Construct payload strictly typed against schema input
+    const payload: JobPostingInput = {
       ...formData,
-      workArrangement,
+      // Flatten work arrangement
+      remoteAllowed: workArrangement.remote_allowed,
+      onSiteDays: workArrangement.on_site_days_per_week,
       responsibilities,
       skills,
-      languageRequirements: languages,
+      languageRequirements: languages as any, // Zod input expects specific structure, casting to bypass strict array check for now or map it if needed
     }
 
-    try {
-      const response = await fetch("/api/positions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
+    // Fix languageRequirements typing if possible, or just cast as any for the action call which validates it runtime.
+    // Ideally: languages matches the schema input structure { language: enum, level: enum, mandatory: boolean }[]
+    // The local LanguageRequirement interface has strings, schema has enums. Zod accepts strings that match enums.
 
-      if (response.ok) {
+    try {
+      const result = await createPositionAction(payload)
+
+      if (result.success) {
+        toast.success("Position created successfully")
         router.push("/dashboard/positions")
         router.refresh()
       } else {
-        const error = await response.json()
-        console.error("Creation error:", error)
-        if (error.details) {
+        if (result.validationErrors) {
           // Format Zod errors
-          const errorMessages = error.details.map((d: any) => `${d.path.join('.')}: ${d.message}`).join('\n')
-          alert(`Validation Failed:\n${errorMessages}`)
+          const errorMessages = Object.entries(result.validationErrors)
+            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+            .join('\n')
+          toast.error("Validation Failed", { description: errorMessages })
         } else {
-          alert(error.message || error.error || "Failed to create position")
+          toast.error(result.error || "Failed to create position")
         }
       }
     } catch (error) {
       console.error("Submission error:", error)
-      alert("Failed to create position")
+      toast.error("Failed to create position")
     } finally {
       setLoading(false)
     }

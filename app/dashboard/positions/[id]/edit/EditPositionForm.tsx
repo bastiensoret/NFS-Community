@@ -36,18 +36,28 @@ interface Position {
   durationMonths?: number | null
   seniorityLevel: string
 
+  // New Flattened Fields
+  remoteAllowed?: boolean
+  onSiteDays?: number | null
+  minSalary?: number | null
+  maxSalary?: number | null
+  currency?: string | null
+  contactName?: string | null
+  contactEmail?: string | null
+  contactPhone?: string | null
+
   // Extended Manual
   description: string
   responsibilities: string[]
   skills: string[]
-  languageRequirements?: any
-  workArrangement?: any
-  industrySector?: string | null
+  languageRequirements?: any[]
   
-  // Legacy/Other
+  // Legacy/Other (kept for compatibility)
+  workArrangement?: any // Json
+  industrySector?: string | null
   status: string
   employmentType: string
-  workLocation?: any
+  workLocation?: any // Json
   contractDuration?: string | null
 }
 
@@ -55,14 +65,31 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   
-  // Parse complex fields or default them
-  const initialWorkArrangement = position.workArrangement || (position.workLocation?.workArrangement ? {
-    remote_allowed: position.workLocation.workArrangement !== 'ON_SITE',
-    on_site_days_per_week: position.workLocation.officeDaysRequired
-  } : {
-    remote_allowed: true,
-    on_site_days_per_week: 2
-  })
+  // Determine initial Work Arrangement from new fields or legacy JSON
+  const getInitialWorkArrangement = () => {
+    if (position.remoteAllowed !== undefined) {
+      return {
+        remote_allowed: position.remoteAllowed,
+        on_site_days_per_week: position.onSiteDays ?? 2
+      }
+    }
+    // Fallback to legacy
+    if (position.workArrangement) {
+        return position.workArrangement
+    }
+    if (position.workLocation?.workArrangement) {
+      return {
+        remote_allowed: position.workLocation.workArrangement !== 'ON_SITE',
+        on_site_days_per_week: position.workLocation.officeDaysRequired
+      }
+    }
+    return {
+      remote_allowed: true,
+      on_site_days_per_week: 2
+    }
+  }
+
+  const initialWorkArrangement = getInitialWorkArrangement()
 
   const initialLanguages: LanguageRequirement[] = Array.isArray(position.languageRequirements) 
     ? position.languageRequirements 
@@ -108,36 +135,80 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     e.preventDefault()
     setLoading(true)
 
-    const payload = {
+    const payload: JobPostingInput = {
       ...formData,
       reference: position.reference, // Preserve original reference
-      workArrangement,
+      // Flatten Work Arrangement
+      remoteAllowed: workArrangement.remote_allowed,
+      onSiteDays: workArrangement.on_site_days_per_week,
+      
       responsibilities,
       skills,
-      languageRequirements: languages,
+      languageRequirements: languages as any,
     }
 
     try {
-      const response = await fetch(`/api/positions/${position.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
+      const result = await updatePositionAction(position.id, payload)
 
-      if (response.ok) {
+      if (result.success) {
+        toast.success("Position updated successfully")
         router.push(`/dashboard/positions/${position.id}`)
         router.refresh()
       } else {
-        const error = await response.json()
-        if (error.details) {
-            const errorMessages = error.details.map((d: any) => `${d.path.join('.')}: ${d.message}`).join('\n')
-            alert(`Validation Failed:\n${errorMessages}`)
+        if (result.validationErrors) {
+            const errorMessages = Object.entries(result.validationErrors)
+                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                .join('\n')
+            toast.error("Validation Failed", { description: errorMessages })
         } else {
-            alert(error.error || "Failed to update position")
+            toast.error(result.error || "Failed to update position")
         }
       }
     } catch (error) {
-      alert("Failed to update position")
+      toast.error("Failed to update position")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmitForApproval = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (!confirm("Are you sure you want to submit this position for approval? You will not be able to edit it afterwards.")) return
+    
+    setLoading(true)
+
+    const payload: JobPostingInput = {
+      ...formData,
+      reference: position.reference,
+      // Flatten Work Arrangement
+      remoteAllowed: workArrangement.remote_allowed,
+      onSiteDays: workArrangement.on_site_days_per_week,
+
+      responsibilities,
+      skills,
+      languageRequirements: languages as any,
+      status: "PENDING_APPROVAL"
+    }
+
+    try {
+      const result = await updatePositionAction(position.id, payload)
+
+      if (result.success) {
+        toast.success("Position submitted for approval successfully")
+        router.push(`/dashboard/positions/${position.id}`)
+        router.refresh()
+      } else {
+        if (result.validationErrors) {
+            const errorMessages = Object.entries(result.validationErrors)
+                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                .join('\n')
+            toast.error("Validation Failed", { description: errorMessages })
+        } else {
+            toast.error(result.error || "Failed to submit for approval")
+        }
+      }
+    } catch (error) {
+      toast.error("Failed to submit for approval")
     } finally {
       setLoading(false)
     }
@@ -485,3 +556,4 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
       </form>
     </div>
   )
+}
