@@ -41,14 +41,21 @@ export const POST = withAuth(async (request, session) => {
   const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN"
   const initialStatus = isAdmin ? (validatedData.status || "ACTIVE") : "PENDING_APPROVAL"
 
+  // Generate Reference ID if not provided
+  let reference = validatedData.reference
+  if (!reference) {
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "")
+    const randomSuffix = Math.floor(Math.random() * 1000).toString().padStart(3, "0")
+    reference = `POS-${dateStr}-${randomSuffix}`
+  }
+
     const jobPosting = await prisma.jobPosting.create({
     data: {
       // New Core Fields
-      reference: validatedData.reference,
+      reference: reference,
       location: validatedData.location,
       country: validatedData.country,
       durationMonths: validatedData.durationMonths,
-      urgent: validatedData.urgent,
       industrySector: validatedData.industrySector,
       
       // New Complex Fields (JSON)
@@ -57,9 +64,6 @@ export const POST = withAuth(async (request, session) => {
       detailedRequirements: validatedData.detailedRequirements as Prisma.InputJsonValue,
       educationRequirements: validatedData.educationRequirements as Prisma.InputJsonValue,
       contractDetails: validatedData.contractDetails as Prisma.InputJsonValue,
-      contactInfo: validatedData.contactInfo as Prisma.InputJsonValue,
-      department: validatedData.department,
-      applicationInstructions: validatedData.applicationInstructions,
 
       // Creator
       creatorId: session.user.id,

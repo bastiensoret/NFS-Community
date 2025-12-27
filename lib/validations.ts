@@ -2,14 +2,14 @@ import { z } from "zod"
 
 export const jobPostingSchema = z.object({
   // Core Fields
-  reference: z.string().min(1, "Reference is required"),
+  reference: z.string().optional(), // Auto-generated
   jobTitle: z.string().min(1, "Job title is required"),
   companyName: z.string().min(1, "Company name is required"),
   location: z.string().min(1, "Location is required"),
-  country: z.string().min(2, "Country code is required"),
+  country: z.enum(["Belgium", "Netherlands", "Luxembourg", "France"]),
   startDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
   durationMonths: z.coerce.number().min(0, "Duration must be positive").optional(),
-  seniorityLevel: z.enum(["Junior", "Mid", "Senior"]).or(z.string()),
+  seniorityLevel: z.enum(["Junior", "Medior", "Senior", "Expert"]),
 
   // Extended Manual
   description: z.string().optional(),
@@ -17,53 +17,18 @@ export const jobPostingSchema = z.object({
   skills: z.array(z.string()).optional(),
   
   languageRequirements: z.array(z.object({
-    language: z.string(),
+    language: z.enum(["French", "Dutch", "English", "German", "Italian", "Spanish"]),
     level: z.enum(["Basic", "Intermediate", "Advanced", "Native"]),
     mandatory: z.boolean()
   })).optional(),
 
   workArrangement: z.object({
     remote_allowed: z.boolean().optional(),
-    on_site_days_per_week: z.coerce.number().nullable().optional()
-  }).optional(),
-
-  contactInfo: z.object({
-    contact_person: z.string().nullable().optional(),
-    email: z.string().nullable().optional()
+    on_site_days_per_week: z.coerce.number().min(1).max(5).nullable().optional()
   }).optional(),
 
   industrySector: z.enum(["Banking", "Insurance", "Finance", "IT", "Healthcare", "Consulting", "Other"]).optional(),
-  urgent: z.boolean().default(false).optional(),
-
-  // Extended Auto
-  detailedRequirements: z.object({
-    technical_skills: z.array(z.object({
-      skill_name: z.string(),
-      years_experience: z.coerce.number().nullable().optional(),
-      proficiency_level: z.enum(["Basic", "Intermediate", "Advanced", "Expert"]).optional(),
-      mandatory: z.boolean().optional()
-    })).optional(),
-    soft_skills: z.array(z.string()).optional(),
-    years_experience_required: z.object({
-      minimum: z.coerce.number(),
-      maximum: z.coerce.number().nullable().optional()
-    }).optional()
-  }).optional(),
   
-  educationRequirements: z.object({
-    minimum_level: z.enum(["High School", "Bachelor", "Master", "PhD"]).nullable().optional(),
-    fields_of_study: z.array(z.string()).optional()
-  }).optional(),
-
-  contractDetails: z.object({
-    contract_type: z.enum(["External", "Permanent", "Fixed-term", "Freelance"]).nullable().optional(),
-    end_date: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
-    renewable: z.boolean().optional()
-  }).optional(),
-
-  department: z.string().optional().nullable(),
-  applicationInstructions: z.string().optional().nullable(),
-
   // Metadata/System
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "FILLED", "PENDING_APPROVAL", "PENDING_REVIEW"]).default("ACTIVE"),
   

@@ -30,5 +30,5 @@ export default async function EditPositionPage({
     notFound()
   }
 
-  return <EditPositionForm position={position} />
+  return <EditPositionForm position={position} userRole={session.user?.role || "USER"} />
 }

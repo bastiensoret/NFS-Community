@@ -28,7 +28,6 @@ interface Position {
   workArrangement?: any // Json
   startDate?: Date | null
   contractDuration?: string | null
-  urgent?: boolean
 }
 
 interface PaginationProps {
@@ -179,9 +178,6 @@ export function PositionsTable({ initialPositions, userRole, pagination, pending
                           <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded w-fit">
                             {position.reference || position.externalReference}
                           </span>
-                          {position.urgent && (
-                            <Badge variant="destructive" className="h-5 text-[10px] px-1.5">Urgent</Badge>
-                          )}
                         </div>
                       )}
                       <CardTitle className="text-lg leading-tight">{position.jobTitle}</CardTitle>

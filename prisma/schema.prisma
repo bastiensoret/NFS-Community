@@ -135,15 +135,11 @@ model JobPosting {
   location              String?
   country               String?
   durationMonths        Float?
-  urgent                Boolean   @default(false)
   workArrangement       Json?
   languageRequirements  Json?
   detailedRequirements  Json?
   educationRequirements Json?
   contractDetails       Json?
-  department            String?
-  applicationInstructions String?
-  contactInfo           Json?
   industrySector        String?
   creatorId             String?
   creator               User?     @relation("CreatedPositions", fields: [creatorId], references: [id])

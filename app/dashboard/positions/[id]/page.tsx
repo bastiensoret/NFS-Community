@@ -32,6 +32,7 @@ export default async function PositionDetailsPage({
   const { id } = await params
   const position = await prisma.jobPosting.findUnique({
     where: { id },
+    include: { creator: true },
   })
 
   if (!position) {
@@ -41,7 +42,6 @@ export default async function PositionDetailsPage({
   const location = position.workLocation as unknown as WorkLocation
   const workArrangement = position.workArrangement as unknown as { remote_allowed?: boolean, on_site_days_per_week?: number } | null
   const languages = position.languageRequirements as unknown as { language: string, level: string, mandatory: boolean }[] | null
-  const contactInfo = position.contactInfo as unknown as { contact_person?: string, email?: string } | null
   
   const canManage = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN" || session.user?.role === "RECRUITER"
   const canValidate = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN"
@@ -89,11 +89,13 @@ export default async function PositionDetailsPage({
                   {position.reference || position.externalReference}
                 </span>
               )}
-              {position.urgent && (
-                <Badge variant="destructive" className="ml-2">Urgent</Badge>
-              )}
             </div>
-            <p className="text-gray-500">{position.companyName} {position.department && `• ${position.department}`}</p>
+            <p className="text-gray-500">{position.companyName}</p>
+            {canValidate && position.creator && (
+               <p className="text-sm text-gray-400 mt-1">
+                 Created by: {position.creator.name || position.creator.email}
+               </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -171,13 +173,6 @@ export default async function PositionDetailsPage({
                   </ul>
                 </div>
               )}
-              
-              {position.applicationInstructions && (
-                <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
-                  <h3 className="font-semibold mb-2 text-blue-900">Application Instructions</h3>
-                  <p className="text-blue-800 text-sm whitespace-pre-wrap">{position.applicationInstructions}</p>
-                </div>
-              )}
             </CardContent>
           </Card>
 
@@ -216,17 +211,6 @@ export default async function PositionDetailsPage({
                 <div>
                   <span className="text-sm text-gray-500 block mb-1">Application method</span>
                   <span className="font-medium">{position.applicationMethod}</span>
-                </div>
-              )}
-              {contactInfo && (contactInfo.contact_person || contactInfo.email) && (
-                <div className="col-span-2 border-t pt-4 mt-2">
-                  <h4 className="font-medium mb-2">Contact Person</h4>
-                  {contactInfo.contact_person && <div className="text-sm font-medium">{contactInfo.contact_person}</div>}
-                  {contactInfo.email && (
-                    <a href={`mailto:${contactInfo.email}`} className="text-sm text-blue-600 hover:underline">
-                      {contactInfo.email}
-                    </a>
-                  )}
                 </div>
               )}
             </CardContent>
