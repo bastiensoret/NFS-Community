@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Users, Shield, UserCog } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 import { UserManagementList } from "./UserManagementList"
+import { Prisma } from "@prisma/client"
 
 export default async function AdminPage({
   searchParams,
@@ -23,7 +24,7 @@ export default async function AdminPage({
   const skip = (page - 1) * limit
 
   // Build where clause for search
-  const where: any = {}
+  const where: Prisma.UserWhereInput = {}
   if (query) {
     where.OR = [
       { name: { contains: query, mode: "insensitive" } },

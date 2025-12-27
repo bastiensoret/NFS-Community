@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "predev": "rimraf .next",
+    "check-env": "node check-env.js",
     "clean": "rimraf .next",
+    "prebuild": "npm run check-env && npm run clean",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

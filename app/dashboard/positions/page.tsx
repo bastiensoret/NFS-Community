@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { PositionsTable } from "./PositionsTable"
 import { redirect } from "next/navigation"
+import { Prisma } from "@prisma/client"
 
 export default async function PositionsPage({
   searchParams,
@@ -24,7 +25,7 @@ export default async function PositionsPage({
   const isSuperAdmin = session.user?.role === "SUPER_ADMIN"
 
   // Build where clause
-  const where: any = {}
+  const where: Prisma.JobPostingWhereInput = {}
   
   if (status) {
     where.status = status
@@ -41,7 +42,7 @@ export default async function PositionsPage({
     }
   }
 
-  const queryOptions: any = {
+  const queryOptions: Prisma.JobPostingFindManyArgs = {
     where,
     orderBy: [
       { postingDate: "desc" },
@@ -70,11 +71,11 @@ export default async function PositionsPage({
 
   return (
     <PositionsTable 
-      initialPositions={positions} 
+      initialPositions={positions as any} 
       userRole={session.user?.role}
       currentUserId={session.user?.id}
       pendingCount={pendingCount}
-      currentStatus={where.status}
+      currentStatus={typeof where.status === 'string' ? where.status : "ACTIVE"}
       pagination={{
         page,
         limit,

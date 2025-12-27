@@ -23,6 +23,18 @@ interface LanguageRequirement {
 const LANGUAGES = ["French", "Dutch", "English", "German", "Italian", "Spanish"]
 const LEVELS = ["Basic", "Intermediate", "Advanced", "Native"]
 
+interface WorkArrangement {
+  remote_allowed?: boolean
+  on_site_days_per_week?: number
+}
+
+interface LegacyWorkLocation {
+  city?: string
+  country?: string
+  workArrangement?: string
+  officeDaysRequired?: number
+}
+
 interface Position {
   id: string
   creatorId?: string | null
@@ -50,14 +62,14 @@ interface Position {
   description: string
   responsibilities: string[]
   skills: string[]
-  languageRequirements?: any[]
+  languageRequirements?: LanguageRequirement[]
   
   // Legacy/Other (kept for compatibility)
-  workArrangement?: any // Json
+  workArrangement?: WorkArrangement | unknown // Json
   industrySector?: string | null
   status: string
   employmentType: string
-  workLocation?: any // Json
+  workLocation?: LegacyWorkLocation | unknown // Json
   contractDuration?: string | null
 }
 

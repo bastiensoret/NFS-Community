@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { CandidatesTable } from "./CandidatesTable"
 import { redirect } from "next/navigation"
+import { Prisma } from "@prisma/client"
 
 export default async function CandidatesPage({
   searchParams,
@@ -19,7 +20,7 @@ export default async function CandidatesPage({
   const limit = Number(resolvedParams?.limit) || 10
   const cursor = resolvedParams?.cursor
   
-  const queryOptions: any = {
+  const queryOptions: Prisma.CandidateFindManyArgs = {
     orderBy: [
       { createdAt: "desc" },
       { id: "desc" }

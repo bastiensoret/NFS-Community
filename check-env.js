@@ -43,6 +43,7 @@ async function checkConfig() {
 
   if (missing || hasPlaceholders) {
     console.error('\n⚠️ CONFIGURATION ERROR: You must update .env.local with real credentials.');
+    process.exit(1);
   } else {
     console.log('\n✅ All checked environment variables are present and look valid.');
   }
