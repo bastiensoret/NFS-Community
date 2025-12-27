@@ -1,69 +1,46 @@
 "use server"
 
-import { auth } from "@/auth"
+import { authenticated, handleActionError, ActionError, type ActionState } from "@/lib/action-utils"
 import { prisma } from "@/lib/prisma"
 import { jobPostingSchema, type JobPostingInput } from "@/lib/validations"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
-import { Prisma } from "@prisma/client"
-import { checkRateLimit } from "@/lib/rate-limit"
-import { hasPermission } from "@/lib/roles"
-
-export type ActionState = {
-  error?: string
-  success?: boolean
-  validationErrors?: Record<string, string[]>
-}
 
 // Alternative: Accept JSON-like object directly since we are calling from a client component that manages state
 export async function createPositionAction(data: JobPostingInput): Promise<ActionState> {
-  const session = await auth()
-
-  if (!session || !session.user) {
-    return { error: "Unauthorized" }
-  }
-
-  const isAllowed = await checkRateLimit(session.user.id || "unknown", 60)
-  if (!isAllowed) {
-    return { error: "Too Many Requests" }
-  }
-
-  if (!hasPermission(session.user.role, 'canPostPositions')) {
-    return { error: "Forbidden: Insufficient permissions" }
-  }
-
-  const validatedFields = jobPostingSchema.safeParse(data)
-
-  if (!validatedFields.success) {
-    return {
-      error: "Validation Error",
-      validationErrors: validatedFields.error.flatten().fieldErrors as Record<string, string[]>
-    }
-  }
-
-  const validatedData = validatedFields.data
-
-  // Determine initial status based on user role
-  const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN"
-  
-  let initialStatus = validatedData.status || (isAdmin ? "ACTIVE" : "DRAFT")
-
-  if (!isAdmin) {
-    // Non-admins can strictly only create DRAFT or PENDING_APPROVAL
-    if (initialStatus !== "DRAFT" && initialStatus !== "PENDING_APPROVAL") {
-      initialStatus = "DRAFT"
-    }
-  }
-
-  // Generate Reference ID if not provided
-  let reference = validatedData.reference
-  if (!reference) {
-    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "")
-    const randomSuffix = Math.floor(Math.random() * 1000).toString().padStart(3, "0")
-    reference = `POS-${dateStr}-${randomSuffix}`
-  }
-
   try {
+    const user = await authenticated('canPostPositions')
+
+    const validatedFields = jobPostingSchema.safeParse(data)
+
+    if (!validatedFields.success) {
+      return {
+        error: "Validation Error",
+        validationErrors: validatedFields.error.flatten().fieldErrors as Record<string, string[]>
+      }
+    }
+
+    const validatedData = validatedFields.data
+
+    // Determine initial status based on user role
+    const isAdmin = user.role === "ADMIN" || user.role === "SUPER_ADMIN"
+    
+    let initialStatus = validatedData.status || (isAdmin ? "ACTIVE" : "DRAFT")
+
+    if (!isAdmin) {
+      // Non-admins can strictly only create DRAFT or PENDING_APPROVAL
+      if (initialStatus !== "DRAFT" && initialStatus !== "PENDING_APPROVAL") {
+        initialStatus = "DRAFT"
+      }
+    }
+
+    // Generate Reference ID if not provided
+    let reference = validatedData.reference
+    if (!reference) {
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "")
+      const randomSuffix = Math.floor(Math.random() * 1000).toString().padStart(3, "0")
+      reference = `POS-${dateStr}-${randomSuffix}`
+    }
+
     await prisma.jobPosting.create({
       data: {
         // New Core Fields
@@ -88,7 +65,7 @@ export async function createPositionAction(data: JobPostingInput): Promise<Actio
         contactPhone: validatedData.contactPhone,
 
         // Creator
-        creatorId: session.user.id,
+        creatorId: user.id,
 
         // Existing Fields
         externalReference: validatedData.externalReference,
@@ -135,90 +112,80 @@ export async function createPositionAction(data: JobPostingInput): Promise<Actio
     revalidatePath("/dashboard/positions")
     return { success: true }
   } catch (error) {
-    console.error("Database Error:", error)
-    return { error: "Failed to create position" }
+    return handleActionError(error)
   }
 }
 
 export async function updatePositionAction(id: string, data: Partial<JobPostingInput>): Promise<ActionState> {
-  const session = await auth()
-
-  if (!session || !session.user) {
-    return { error: "Unauthorized" }
-  }
-
-  const isAllowed = await checkRateLimit(session.user.id || "unknown", 60)
-  if (!isAllowed) {
-    return { error: "Too Many Requests" }
-  }
-
-  const validatedFields = jobPostingSchema.partial().safeParse(data)
-
-  if (!validatedFields.success) {
-    return {
-      error: "Validation Error",
-      validationErrors: validatedFields.error.flatten().fieldErrors as Record<string, string[]>
-    }
-  }
-
-  const validatedBody = validatedFields.data
-
-  // Fetch existing position
-  const existingPosition = await prisma.jobPosting.findUnique({
-    where: { id }
-  })
-
-  if (!existingPosition) {
-    return { error: "Position not found" }
-  }
-
-  // Fetch user details for granular permissions
-  const user = await prisma.user.findUnique({ 
-    where: { id: session.user.id } 
-  })
-
-  const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN"
-  const isGatekeeper = user?.isGatekeeper || false
-  const isCreator = existingPosition.creatorId === session.user.id
-
-  // 1. Permission Check
-  if (!isAdmin && !isCreator && !isGatekeeper) {
-    return { error: "Unauthorized" }
-  }
-
-  // Block editing if finalized
-  const isFinalized = existingPosition.status === "CAMPAIGN_SENT" || existingPosition.status === "ARCHIVED"
-  if (isFinalized && user?.role !== "SUPER_ADMIN") {
-    return { error: "Position is finalized and cannot be edited." }
-  }
-
-  // 2. Workflow Rules for Basic Users
-  if (!isAdmin) {
-    const isApproving = isGatekeeper && existingPosition.status === "PENDING_APPROVAL"
-
-    if (existingPosition.status !== "DRAFT" && !isApproving) {
-      return { error: "Position cannot be edited after submission. Please contact an administrator." }
-    }
-
-    if (validatedBody.status && validatedBody.status !== "DRAFT" && validatedBody.status !== "PENDING_APPROVAL" && !isApproving) {
-      return { error: "Invalid status transition." }
-    }
-  }
-
-  // 3. Status Transition Logic
-  let newStatus = validatedBody.status
-  
-  if (newStatus && newStatus !== existingPosition.status) {
-    if (newStatus === "CAMPAIGN_SENT" || newStatus === "ARCHIVED") {
-        const canApprove = isGatekeeper || user?.role === "SUPER_ADMIN"
-        if (!canApprove) {
-            return { error: "Only Gatekeepers can approve positions and launch campaigns" }
-        }
-    }
-  }
-
   try {
-    const jobPosting = await prisma.jobPosting.update({
+    const sessionUser = await authenticated()
+
+    const validatedFields = jobPostingSchema.partial().safeParse(data)
+
+    if (!validatedFields.success) {
+      return {
+        error: "Validation Error",
+        validationErrors: validatedFields.error.flatten().fieldErrors as Record<string, string[]>
+      }
+    }
+
+    const validatedBody = validatedFields.data
+
+    // Fetch existing position
+    const existingPosition = await prisma.jobPosting.findUnique({
+      where: { id }
+    })
+
+    if (!existingPosition) {
+      throw new ActionError("Position not found")
+    }
+
+    // Fetch user details for granular permissions (refreshing from DB to be safe)
+    const user = await prisma.user.findUnique({ 
+      where: { id: sessionUser.id } 
+    })
+
+    const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN"
+    const isGatekeeper = user?.isGatekeeper || false
+    const isCreator = existingPosition.creatorId === sessionUser.id
+
+    // 1. Permission Check
+    if (!isAdmin && !isCreator && !isGatekeeper) {
+      throw new ActionError("Unauthorized")
+    }
+
+    // Block editing if finalized
+    const isFinalized = existingPosition.status === "CAMPAIGN_SENT" || existingPosition.status === "ARCHIVED"
+    if (isFinalized && user?.role !== "SUPER_ADMIN") {
+      throw new ActionError("Position is finalized and cannot be edited.")
+    }
+
+    // 2. Workflow Rules for Basic Users
+    if (!isAdmin) {
+      const isApproving = isGatekeeper && existingPosition.status === "PENDING_APPROVAL"
+
+      if (existingPosition.status !== "DRAFT" && !isApproving) {
+        throw new ActionError("Position cannot be edited after submission. Please contact an administrator.")
+      }
+
+      if (validatedBody.status && validatedBody.status !== "DRAFT" && validatedBody.status !== "PENDING_APPROVAL" && !isApproving) {
+        throw new ActionError("Invalid status transition.")
+      }
+    }
+
+    // 3. Status Transition Logic
+    let newStatus = validatedBody.status
+    
+    if (newStatus && newStatus !== existingPosition.status) {
+      if (newStatus === "CAMPAIGN_SENT" || newStatus === "ARCHIVED") {
+          const canApprove = isGatekeeper || user?.role === "SUPER_ADMIN"
+          if (!canApprove) {
+              throw new ActionError("Only Gatekeepers can approve positions and launch campaigns")
+          }
+      }
+    }
+
+    await prisma.jobPosting.update({
       where: { id },
       data: {
         // New Fields
@@ -290,40 +257,30 @@ export async function updatePositionAction(id: string, data: Partial<JobPostingI
     revalidatePath("/dashboard/positions")
     return { success: true }
   } catch (error) {
-    console.error("Database Error:", error)
-    return { error: "Failed to update position" }
+    return handleActionError(error)
   }
 }
 
 export async function deletePositionAction(id: string): Promise<ActionState> {
-  const session = await auth()
-
-  if (!session || !session.user) {
-    return { error: "Unauthorized" }
-  }
-
-  const isAllowed = await checkRateLimit(session.user.id || "unknown", 60)
-  if (!isAllowed) {
-    return { error: "Too Many Requests" }
-  }
-
-  const position = await prisma.jobPosting.findUnique({
-    where: { id },
-    select: { creatorId: true }
-  })
-
-  if (!position) {
-    return { error: "Position not found" }
-  }
-
-  const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN"
-  const isCreator = position.creatorId === session.user.id
-
-  if (!isAdmin && !isCreator) {
-    return { error: "Unauthorized" }
-  }
-
   try {
+    const user = await authenticated()
+
+    const position = await prisma.jobPosting.findUnique({
+      where: { id },
+      select: { creatorId: true }
+    })
+
+    if (!position) {
+      throw new ActionError("Position not found")
+    }
+
+    const isAdmin = user.role === "ADMIN" || user.role === "SUPER_ADMIN"
+    const isCreator = position.creatorId === user.id
+
+    if (!isAdmin && !isCreator) {
+      throw new ActionError("Unauthorized")
+    }
+
     await prisma.jobPosting.delete({
       where: { id }
     })
@@ -331,7 +288,6 @@ export async function deletePositionAction(id: string): Promise<ActionState> {
     revalidatePath("/dashboard/positions")
     return { success: true }
   } catch (error) {
-    console.error("Database Error:", error)
-    return { error: "Failed to delete position" }
+    return handleActionError(error)
   }
 }

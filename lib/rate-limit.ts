@@ -1,49 +1,52 @@
-import { LRUCache } from 'lru-cache'
+import { prisma } from "@/lib/prisma"
 
-type RateLimitOptions = {
-  interval: number // milliseconds
-  uniqueTokenPerInterval: number // max number of unique tokens
-}
+export async function checkRateLimit(identifier: string, limit: number = 10, windowDuration: number = 60000): Promise<boolean> {
+  const now = new Date()
+  const windowStart = new Date(now.getTime() - windowDuration)
 
-function rateLimit(options: RateLimitOptions) {
-  const tokenCache = new LRUCache<string, number[]>({
-    max: options.uniqueTokenPerInterval || 500,
-    ttl: options.interval || 60000,
-  })
-
-  return {
-    check: (limit: number, token: string) =>
-      new Promise<void>((resolve, reject) => {
-        const tokenCount = tokenCache.get(token) || [0]
-        if (tokenCount[0] === 0) {
-          tokenCache.set(token, tokenCount)
-        }
-        tokenCount[0] += 1
-
-        const currentUsage = tokenCount[0]
-        const isRateLimited = currentUsage > limit
-        
-        if (isRateLimited) {
-          reject(new Error('Rate limit exceeded'))
-        } else {
-          resolve()
-        }
-      }),
-  }
-}
-
-// Global limiter instance
-const limiter = rateLimit({
-  interval: 60 * 1000, // 1 minute
-  uniqueTokenPerInterval: 500,
-})
-
-export async function checkRateLimit(identifier: string, limit: number = 10) {
   try {
-    // Limit to 'limit' requests per minute per identifier
-    await limiter.check(limit, identifier)
+    // Clean up old entries (optional optimization, could be a cron job)
+    // We do this async without awaiting to not block the request
+    prisma.rateLimit.deleteMany({
+      where: { resetAt: { lt: now } }
+    }).catch(console.error)
+
+    const rateLimit = await prisma.rateLimit.findUnique({
+      where: { identifier }
+    })
+
+    if (!rateLimit || rateLimit.resetAt < now) {
+      // Create or reset
+      await prisma.rateLimit.upsert({
+        where: { identifier },
+        update: {
+          count: 1,
+          resetAt: new Date(now.getTime() + windowDuration)
+        },
+        create: {
+          identifier,
+          count: 1,
+          resetAt: new Date(now.getTime() + windowDuration)
+        }
+      })
+      return true
+    }
+
+    if (rateLimit.count >= limit) {
+      return false
+    }
+
+    // Increment
+    await prisma.rateLimit.update({
+      where: { identifier },
+      data: { count: { increment: 1 } }
+    })
+
     return true
-  } catch {
-    return false
+  } catch (error) {
+    console.error("Rate limit check failed:", error)
+    // Fail open if DB is down to avoid blocking legitimate users during outages
+    return true
   }
 }
+

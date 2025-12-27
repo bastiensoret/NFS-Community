@@ -74,6 +74,10 @@ export default function NewJobPostingPage() {
     // Construct payload strictly typed against schema input
     const payload: JobPostingInput = {
       ...formData,
+      status: formData.status as any,
+      country: formData.country as any, // Cast to enum type
+      seniorityLevel: formData.seniorityLevel as any, // Cast to enum type
+      industrySector: formData.industrySector as any, // Cast to enum type
       // Flatten work arrangement
       remoteAllowed: workArrangement.remote_allowed,
       onSiteDays: workArrangement.on_site_days_per_week,

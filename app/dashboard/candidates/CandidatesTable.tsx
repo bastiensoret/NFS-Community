@@ -11,6 +11,14 @@ import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { deleteCandidateAction } from "@/app/actions/candidates"
 import { toast } from "sonner"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 interface Candidate {
   id: string
@@ -44,6 +52,8 @@ export function CandidatesTable({ initialCandidates, userRole, pagination }: Can
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "RECRUITER"
 
   const createQueryString = (name: string, value: string) => {

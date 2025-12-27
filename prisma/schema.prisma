@@ -185,3 +185,11 @@ enum IndustrySector {
   Consulting
   Other
 }
+
+model RateLimit {
+  identifier String   @id
+  count      Int      @default(0)
+  resetAt    DateTime
+
+  @@index([resetAt])
+}

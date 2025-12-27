@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { updatePositionAction } from "@/app/actions/positions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,6 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { X, Plus } from "lucide-react"
 import { CategorizedMultiSelect } from "@/components/ui/categorized-multi-select"
 import { RESPONSIBILITY_OPTIONS, SKILL_OPTIONS } from "@/lib/constants"
+import { type JobPostingInput } from "@/lib/validations"
+import { toast } from "sonner"
 
 interface LanguageRequirement {
   language: string
@@ -87,12 +90,13 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     }
     // Fallback to legacy
     if (position.workArrangement) {
-        return position.workArrangement
+        return position.workArrangement as WorkArrangement
     }
-    if (position.workLocation?.workArrangement) {
+    if ((position.workLocation as any)?.workArrangement) {
+      const loc = position.workLocation as any
       return {
-        remote_allowed: position.workLocation.workArrangement !== 'ON_SITE',
-        on_site_days_per_week: position.workLocation.officeDaysRequired
+        remote_allowed: loc.workArrangement !== 'ON_SITE',
+        on_site_days_per_week: loc.officeDaysRequired
       }
     }
     return {
@@ -111,8 +115,8 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     // Core
     jobTitle: position.jobTitle,
     companyName: position.companyName,
-    location: position.location || position.workLocation?.city || "",
-    country: position.country || position.workLocation?.country || "Belgium",
+    location: position.location || (position.workLocation as any)?.city || "",
+    country: position.country || (position.workLocation as any)?.country || "Belgium",
     startDate: position.startDate ? new Date(position.startDate).toISOString().split('T')[0] : "",
     durationMonths: position.durationMonths || (position.contractDuration ? parseFloat(position.contractDuration) : 0),
     seniorityLevel: position.seniorityLevel,
@@ -123,7 +127,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     status: position.status,
   })
 
-  const [workArrangement, setWorkArrangement] = useState(initialWorkArrangement)
+  const [workArrangement, setWorkArrangement] = useState<WorkArrangement>(initialWorkArrangement as WorkArrangement)
   
   const [responsibilities, setResponsibilities] = useState<string[]>(position.responsibilities || [])
   const [skills, setSkills] = useState<string[]>(position.skills || [])
@@ -149,7 +153,10 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
 
     const payload: JobPostingInput = {
       ...formData,
-      reference: position.reference, // Preserve original reference
+      reference: position.reference || undefined, // Preserve original reference
+      seniorityLevel: formData.seniorityLevel as any,
+      industrySector: formData.industrySector as any,
+      status: formData.status as any,
       // Flatten Work Arrangement
       remoteAllowed: workArrangement.remote_allowed,
       onSiteDays: workArrangement.on_site_days_per_week,
@@ -169,7 +176,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
       } else {
         if (result.validationErrors) {
             const errorMessages = Object.entries(result.validationErrors)
-                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                .map(([field, messages]) => `${field}: ${(messages as string[]).join(', ')}`)
                 .join('\n')
             toast.error("Validation Failed", { description: errorMessages })
         } else {
@@ -191,7 +198,9 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
 
     const payload: JobPostingInput = {
       ...formData,
-      reference: position.reference,
+      reference: position.reference || undefined,
+      seniorityLevel: formData.seniorityLevel as any,
+      industrySector: formData.industrySector as any,
       // Flatten Work Arrangement
       remoteAllowed: workArrangement.remote_allowed,
       onSiteDays: workArrangement.on_site_days_per_week,

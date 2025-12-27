@@ -1,49 +1,29 @@
 "use server"
 
-import { auth } from "@/auth"
+import { authenticated, handleActionError, ActionError, type ActionState } from "@/lib/action-utils"
 import { prisma } from "@/lib/prisma"
 import { candidateSchema, type CandidateInput } from "@/lib/validations"
 import { revalidatePath } from "next/cache"
-import { checkRateLimit } from "@/lib/rate-limit"
-import { hasPermission } from "@/lib/roles"
 import { Prisma } from "@prisma/client"
 
-export type ActionState = {
-  error?: string
-  success?: boolean
-  validationErrors?: Record<string, string[]>
-}
+export { type ActionState }
 
 export async function createCandidateAction(data: CandidateInput): Promise<ActionState> {
-  const session = await auth()
-
-  if (!session || !session.user) {
-    return { error: "Unauthorized" }
-  }
-
-  // Rate Limiting
-  const isAllowed = await checkRateLimit(session.user.id || "unknown", 60)
-  if (!isAllowed) {
-    return { error: "Too Many Requests" }
-  }
-
-  // Permission Check
-  if (!hasPermission(session.user.role, 'canProposeCandidates')) {
-    return { error: "Forbidden: Insufficient permissions" }
-  }
-
-  const validatedFields = candidateSchema.safeParse(data)
-
-  if (!validatedFields.success) {
-    return {
-      error: "Validation Error",
-      validationErrors: validatedFields.error.flatten().fieldErrors as Record<string, string[]>
-    }
-  }
-
-  const validatedData = validatedFields.data
-
   try {
+    // Requires canProposeCandidates permission
+    const user = await authenticated('canProposeCandidates')
+
+    const validatedFields = candidateSchema.safeParse(data)
+
+    if (!validatedFields.success) {
+      return {
+        error: "Validation Error",
+        validationErrors: validatedFields.error.flatten().fieldErrors as Record<string, string[]>
+      }
+    }
+
+    const validatedData = validatedFields.data
+
     await prisma.candidate.create({
       data: {
         firstName: validatedData.firstName,
@@ -63,31 +43,21 @@ export async function createCandidateAction(data: CandidateInput): Promise<Actio
     revalidatePath("/dashboard/candidates")
     return { success: true }
   } catch (error) {
-    console.error("Database Error:", error)
-    return { error: "Failed to create candidate" }
+    return handleActionError(error)
   }
 }
 
 export async function deleteCandidateAction(id: string): Promise<ActionState> {
-  const session = await auth()
-
-  if (!session || !session.user) {
-    return { error: "Unauthorized" }
-  }
-
-  const isAllowed = await checkRateLimit(session.user.id || "unknown", 60)
-  if (!isAllowed) {
-    return { error: "Too Many Requests" }
-  }
-
-  const userRole = session.user.role
-  const canDelete = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "RECRUITER"
-
-  if (!canDelete) {
-    return { error: "Forbidden: Insufficient permissions" }
-  }
-
   try {
+    const user = await authenticated()
+
+    const userRole = user.role
+    const canDelete = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "RECRUITER"
+
+    if (!canDelete) {
+      throw new ActionError("Forbidden: Insufficient permissions")
+    }
+
     await prisma.candidate.delete({
       where: { id }
     })
@@ -95,7 +65,6 @@ export async function deleteCandidateAction(id: string): Promise<ActionState> {
     revalidatePath("/dashboard/candidates")
     return { success: true }
   } catch (error) {
-    console.error("Database Error:", error)
-    return { error: "Failed to delete candidate" }
+    return handleActionError(error)
   }
 }

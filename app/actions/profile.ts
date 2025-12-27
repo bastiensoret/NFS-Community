@@ -1,45 +1,33 @@
 "use server"
 
-import { auth } from "@/auth"
+import { authenticated, handleActionError, ActionError, type ActionState } from "@/lib/action-utils"
 import { prisma } from "@/lib/prisma"
 import { passwordSchema, profileSchema } from "@/lib/validations"
 import { revalidatePath } from "next/cache"
 import bcrypt from "bcryptjs"
-import { z } from "zod"
-
 import { writeFile } from "fs/promises"
 import { join } from "path"
 import { randomUUID } from "crypto"
 
-export type ActionState = {
-  success?: boolean
-  error?: string
-  fieldErrors?: Record<string, string[]>
-}
-
 export async function updateProfile(prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const session = await auth()
-  
-  if (!session?.user?.id) {
-    return { error: "Unauthorized" }
-  }
-
-  const rawData = {
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-  }
-
-  // Validate fields
-  const validatedFields = profileSchema.safeParse(rawData)
-
-  if (!validatedFields.success) {
-    return {
-      error: "Validation failed",
-      fieldErrors: validatedFields.error.flatten().fieldErrors,
-    }
-  }
-
   try {
+    const user = await authenticated()
+
+    const rawData = {
+      firstName: formData.get("firstName"),
+      lastName: formData.get("lastName"),
+    }
+
+    // Validate fields
+    const validatedFields = profileSchema.safeParse(rawData)
+
+    if (!validatedFields.success) {
+      return {
+        error: "Validation failed",
+        fieldErrors: validatedFields.error.flatten().fieldErrors,
+      }
+    }
+
     const { firstName, lastName } = validatedFields.data
     let imageUrl: string | undefined
 
@@ -78,7 +66,7 @@ export async function updateProfile(prevState: ActionState, formData: FormData):
     }
     
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: user.id },
       data: {
         firstName,
         lastName,
@@ -92,42 +80,37 @@ export async function updateProfile(prevState: ActionState, formData: FormData):
     
     return { success: true }
   } catch (error) {
-    console.error("Profile update error:", error)
-    return { error: "Failed to update profile" }
+    return handleActionError(error)
   }
 }
 
 export async function changePassword(prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const session = await auth()
-  
-  if (!session?.user?.id) {
-    return { error: "Unauthorized" }
-  }
-
-  const rawData = {
-    currentPassword: formData.get("currentPassword"),
-    newPassword: formData.get("newPassword"),
-    confirmPassword: formData.get("confirmPassword"),
-  }
-
-  const validatedFields = passwordSchema.safeParse(rawData)
-
-  if (!validatedFields.success) {
-    return {
-      error: "Validation failed",
-      fieldErrors: validatedFields.error.flatten().fieldErrors,
-    }
-  }
-
   try {
+    const sessionUser = await authenticated()
+
+    const rawData = {
+      currentPassword: formData.get("currentPassword"),
+      newPassword: formData.get("newPassword"),
+      confirmPassword: formData.get("confirmPassword"),
+    }
+
+    const validatedFields = passwordSchema.safeParse(rawData)
+
+    if (!validatedFields.success) {
+      return {
+        error: "Validation failed",
+        fieldErrors: validatedFields.error.flatten().fieldErrors,
+      }
+    }
+
     const { currentPassword, newPassword } = validatedFields.data
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: sessionUser.id },
     })
 
     if (!user || !user.password) {
-      return { error: "User not found" }
+      throw new ActionError("User not found")
     }
 
     const isPasswordValid = await bcrypt.compare(currentPassword, user.password)
@@ -144,7 +127,7 @@ export async function changePassword(prevState: ActionState, formData: FormData)
     const hashedPassword = await bcrypt.hash(newPassword, 10)
 
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: sessionUser.id },
       data: {
         password: hashedPassword,
       },
@@ -152,7 +135,6 @@ export async function changePassword(prevState: ActionState, formData: FormData)
 
     return { success: true }
   } catch (error) {
-    console.error("Password change error:", error)
-    return { error: "Failed to update password" }
+    return handleActionError(error)
   }
 }

@@ -302,29 +302,7 @@ export default async function PositionDetailsPage({
                 <Laptop className="h-5 w-5 text-gray-400 mt-0.5" />
                 <div>
                   <span className="text-sm text-gray-500 block">Work arrangement</span>
-                  {workArrangement ? (
-                    <>
-                      <span className="font-medium capitalize">
-                        {workArrangement.remote_allowed ? "Remote Allowed" : "On-site"}
-                      </span>
-                      {(workArrangement.on_site_days_per_week !== undefined && workArrangement.on_site_days_per_week !== null) && (
-                        <span className="text-sm text-gray-500 block mt-0.5">
-                          ({workArrangement.on_site_days_per_week} days on-site)
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-medium capitalize">
-                        {location?.workArrangement?.toLowerCase().replace('_', '-') || "Not specified"}
-                      </span>
-                      {(location?.officeDaysRequired !== undefined && location?.officeDaysRequired !== null) && (
-                        <span className="text-sm text-gray-500 block mt-0.5">
-                          ({location.officeDaysRequired} days on-site)
-                        </span>
-                      )}
-                    </>
-                  )}
+                  <span className="font-medium capitalize">{getOnSiteString()}</span>
                 </div>
               </div>
 

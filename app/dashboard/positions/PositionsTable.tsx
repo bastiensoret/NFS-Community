@@ -41,7 +41,7 @@ interface Position {
   seniorityLevel: string
   employmentType: string
   status: string
-  postingDate: Date
+  postingDate: string // Serialized
   reference?: string | null
   externalReference?: string | null
   location?: string | null
@@ -54,8 +54,8 @@ interface Position {
 
   // Legacy Fields (kept for display compatibility)
   workLocation: LegacyWorkLocation | null
-  workArrangement?: WorkArrangement | null
-  startDate?: Date | null
+  workArrangement?: any | null
+  startDate?: string | null // Serialized
   contractDuration?: string | null
 }
 
