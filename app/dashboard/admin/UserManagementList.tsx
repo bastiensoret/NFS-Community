@@ -1,14 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Shield, Building2, Search, UserCog, ChevronLeft, ChevronRight } from "lucide-react"
+import { Shield, Search, UserCog, ChevronLeft, ChevronRight } from "lucide-react"
 import { getRoleDisplayName } from "@/lib/roles"
 import { EditUserDialog } from "./EditUserDialog"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
-import { useDebounce } from "@/lib/hooks/use-debounce"
+import { useDebouncedCallback } from "use-debounce"
 
 type User = {
   id: string
@@ -34,23 +34,19 @@ export function UserManagementList({ users, pagination }: { users: User[], pagin
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "")
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  // Debounce search update
-  const debouncedSearch = useDebounce(searchQuery, 300)
-
-  useEffect(() => {
+  const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (debouncedSearch) {
-      params.set("query", debouncedSearch)
+    if (term) {
+      params.set("query", term)
     } else {
       params.delete("query")
     }
-    params.set("page", "1") // Reset to page 1 on search
-    router.push(pathname + "?" + params.toString())
-  }, [debouncedSearch, router, pathname]) // Don't include searchParams to avoid loop
+    params.set("page", "1")
+    router.replace(`${pathname}?${params.toString()}`)
+  }, 300)
 
   const handleUserClick = (user: User) => {
     setSelectedUser(user)
@@ -70,15 +66,15 @@ export function UserManagementList({ users, pagination }: { users: User[], pagin
         <Input
           type="text"
           placeholder="Search by name, email or role..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          defaultValue={searchParams.get("query")?.toString()}
+          onChange={(e) => handleSearch(e.target.value)}
           className="pl-10"
         />
       </div>
 
       {users.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          No users found matching "{searchQuery}"
+          No users found matching &quot;{searchParams.get("query")}&quot;
         </div>
       ) : (
         <div className="space-y-4">

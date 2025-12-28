@@ -78,6 +78,7 @@ export const candidateSchema = z.object({
   certifications: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
   location: z.string().optional(),
   profileDataJson: z.record(z.string(), z.any()).optional(),
+  status: z.enum(["DRAFT", "PENDING_APPROVAL", "ACTIVE", "INACTIVE"]).optional(),
 })
 
 export const profileSchema = z.object({

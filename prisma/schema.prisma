@@ -24,6 +24,7 @@ model User {
   sessions      Session[]
   company       Company?  @relation(fields: [companyId], references: [id])
   createdPositions JobPosting[] @relation("CreatedPositions")
+  createdCandidates Candidate[] @relation("CreatedCandidates")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -89,6 +90,11 @@ model Candidate {
   certifications    String[]
   location          String?
   profileDataJson   Json?
+  
+  status            String   @default("DRAFT")
+  creatorId         String?
+  creator           User?    @relation("CreatedCandidates", fields: [creatorId], references: [id])
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

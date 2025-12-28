@@ -5,20 +5,21 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { deleteCandidateAction } from "@/app/actions/candidates"
 import { toast } from "sonner"
+import { Input } from "@/components/ui/input"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { useDebouncedCallback } from "use-debounce"
 
 interface Candidate {
   id: string
@@ -30,7 +31,13 @@ interface Candidate {
   skills: string[]
   seniorityLevel: string | null
   location: string | null
-  createdAt: Date
+  createdAt: string | Date
+  status?: string
+  creator?: {
+    name: string | null
+    email: string | null
+  } | null
+  creatorId?: string | null
 }
 
 interface PaginationProps {
@@ -44,17 +51,36 @@ interface PaginationProps {
 interface CandidatesTableProps {
   initialCandidates: Candidate[]
   userRole?: string
+  currentUserId?: string
   pagination: PaginationProps
 }
 
-export function CandidatesTable({ initialCandidates, userRole, pagination }: CandidatesTableProps) {
+export function CandidatesTable({ initialCandidates, userRole, currentUserId, pagination }: CandidatesTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates)
-  const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
   const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "RECRUITER"
+
+  // Sync state with props when initialCandidates changes
+  if (candidates !== initialCandidates) {
+    setCandidates(initialCandidates)
+  }
+
+  const getStatusBadge = (status?: string) => {
+    switch (status) {
+      case "ACTIVE":
+        return <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>
+      case "PENDING_APPROVAL":
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>
+      case "DRAFT":
+        return <Badge variant="secondary">Draft</Badge>
+      case "INACTIVE":
+        return <Badge variant="destructive">Inactive</Badge>
+      default:
+        return <Badge variant="outline">Unknown</Badge>
+    }
+  }
 
   const createQueryString = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -62,27 +88,32 @@ export function CandidatesTable({ initialCandidates, userRole, pagination }: Can
     return params.toString()
   }
 
+  const handleSearch = useDebouncedCallback((term: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (term) {
+      params.set("query", term)
+    } else {
+      params.delete("query")
+    }
+    params.set("page", "1")
+    router.replace(`${pathname}?${params.toString()}`)
+  }, 300)
+
+  const handleStatusFilter = (status: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (status && status !== "ALL") {
+      params.set("status", status)
+    } else {
+      params.delete("status")
+    }
+    params.set("page", "1")
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
   const handlePageChange = (newPage: number) => {
     router.push(pathname + "?" + createQueryString("page", String(newPage)))
   }
 
-  const handleNextPage = () => {
-    if (pagination.nextCursor) {
-        const params = new URLSearchParams(searchParams.toString())
-        params.set("cursor", pagination.nextCursor)
-        params.set("page", String(pagination.page + 1))
-        router.push(pathname + "?" + params.toString())
-    } else {
-        handlePageChange(pagination.page + 1)
-    }
-  }
-
-  const handlePrevPage = () => {
-      const params = new URLSearchParams(searchParams.toString())
-      params.delete("cursor")
-      params.set("page", String(pagination.page - 1))
-      router.push(pathname + "?" + params.toString())
-  }
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this candidate?")) return
@@ -121,6 +152,34 @@ export function CandidatesTable({ initialCandidates, userRole, pagination }: Can
         )}
       </div>
 
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+          <Input
+            placeholder="Search candidates..."
+            className="pl-8"
+            onChange={(e) => handleSearch(e.target.value)}
+            defaultValue={searchParams.get("query")?.toString()}
+          />
+        </div>
+        <Select 
+            onValueChange={handleStatusFilter} 
+            defaultValue={searchParams.get("status") || "ALL"}
+        >
+          <SelectTrigger className="w-[180px]">
+            <Filter className="mr-2 h-4 w-4" />
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All Statuses</SelectItem>
+            <SelectItem value="DRAFT">Draft</SelectItem>
+            <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
+            <SelectItem value="ACTIVE">Active</SelectItem>
+            <SelectItem value="INACTIVE">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <Card>
         <CardContent>
           {candidates.length === 0 ? (
@@ -132,49 +191,58 @@ export function CandidatesTable({ initialCandidates, userRole, pagination }: Can
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Status</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Desired Roles</TableHead>
-                    <TableHead>Seniority</TableHead>
+                    <TableHead>Roles</TableHead>
                     <TableHead>Location</TableHead>
+                    <TableHead>Creator</TableHead>
                     <TableHead>Created</TableHead>
-                    {canManage && <TableHead className="text-right">Actions</TableHead>}
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {candidates.map((candidate) => (
+                  {candidates.map((candidate) => {
+                    const isOwner = currentUserId && candidate.creatorId === currentUserId
+                    const canEdit = canManage || (isOwner && candidate.status === 'DRAFT')
+                    const canDelete = canManage // Only admins/recruiters can delete based on requirements
+
+                    return (
                     <TableRow key={candidate.id}>
+                      <TableCell>{getStatusBadge(candidate.status)}</TableCell>
                       <TableCell className="font-medium">
                         {candidate.firstName} {candidate.lastName}
                       </TableCell>
                       <TableCell>{candidate.email}</TableCell>
-                      <TableCell>{candidate.phoneNumber || "-"}</TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {candidate.desiredRoles.slice(0, 2).map((role, idx) => (
+                          {candidate.desiredRoles.slice(0, 1).map((role, idx) => (
                             <Badge key={idx} variant="secondary" className="text-xs">
                               {role}
                             </Badge>
                           ))}
-                          {candidate.desiredRoles.length > 2 && (
+                          {candidate.desiredRoles.length > 1 && (
                             <Badge variant="secondary" className="text-xs">
-                              +{candidate.desiredRoles.length - 2}
+                              +{candidate.desiredRoles.length - 1}
                             </Badge>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>{candidate.seniorityLevel || "-"}</TableCell>
                       <TableCell>{candidate.location || "-"}</TableCell>
+                      <TableCell className="text-sm text-gray-500">
+                        {candidate.creator?.name || candidate.creator?.email || "-"}
+                      </TableCell>
                       <TableCell>{format(new Date(candidate.createdAt), "MMM d, yyyy")}</TableCell>
-                      {canManage && (
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          {canEdit && (
                             <Link href={`/dashboard/candidates/${candidate.id}`}>
                               <Button variant="ghost" size="icon">
                                 <Pencil className="h-4 w-4" />
                               </Button>
                             </Link>
+                          )}
+                          {canDelete && (
                             <Button
                               variant="ghost"
                               size="icon"
@@ -182,11 +250,12 @@ export function CandidatesTable({ initialCandidates, userRole, pagination }: Can
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
-                          </div>
-                        </TableCell>
-                      )}
+                          )}
+                        </div>
+                      </TableCell>
                     </TableRow>
-                  ))}
+                    )
+                  })}
                 </TableBody>
               </Table>
               

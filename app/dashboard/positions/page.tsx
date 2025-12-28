@@ -22,8 +22,17 @@ export default async function PositionsPage({
   const query = resolvedParams?.query
   const cursor = resolvedParams?.cursor
   
-  const isAdmin = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN"
-  const isSuperAdmin = session.user?.role === "SUPER_ADMIN"
+  // Fetch fresh user data for permissions
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true, isGatekeeper: true }
+  })
+
+  const userRole = user?.role || session.user.role
+  const isGatekeeper = user?.isGatekeeper || session.user.isGatekeeper
+  const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
+  const isRecruiter = userRole === "RECRUITER"
+  const canManage = isAdmin || isRecruiter || isGatekeeper
 
   // Build where clause
   const where: Prisma.JobPostingWhereInput = {}
@@ -31,8 +40,6 @@ export default async function PositionsPage({
   // Status Filter
   if (status && status !== "ALL") {
     where.status = status
-  } else {
-    where.status = { not: "DRAFT" }
   }
 
   // Search Filter
@@ -45,12 +52,40 @@ export default async function PositionsPage({
   }
 
   // Security & Visibility Rules
-  if (!isAdmin && !isSuperAdmin) {
-    // If specifically requesting DRAFT, only show own drafts
-    if (where.status === 'DRAFT') {
-        where.creatorId = session.user.id
+  if (!canManage) {
+    // Basic users see:
+    // 1. Their own positions (DRAFT, PENDING, etc.)
+    // 2. Publicly visible positions (CAMPAIGN_SENT / ACTIVE)
+    const visibilityFilter: Prisma.JobPostingWhereInput = {
+        OR: [
+            { creatorId: session.user.id },
+            { status: "CAMPAIGN_SENT" },
+            { status: "ACTIVE" } // Legacy support or Admin created
+        ]
     }
-    // Otherwise (ACTIVE, PENDING, etc) - visible to all
+
+    if (where.OR) {
+        where.AND = [
+            visibilityFilter,
+            { OR: where.OR }
+        ]
+        delete where.OR
+    } else {
+        where.AND = [visibilityFilter]
+    }
+  } else if (!status || status === "ALL") {
+     // For admins/managers, if no status filter is applied, maybe show everything?
+     // Or default to not showing ARCHIVED unless asked?
+     // Original logic was "not DRAFT".
+     // Let's keep showing everything or filter out DRAFT?
+     // Usually admins want to see what's happening.
+     // Let's default to hiding DRAFTs of others? No, Admins can see everything.
+     // Let's just default to showing all non-archived?
+     // Original: where.status = { not: "DRAFT" }
+     if (!status) {
+         // Default view: Everything except perhaps DRAFTs that are not theirs?
+         // Actually, simpler: show all.
+     }
   }
 
   const queryOptions: Prisma.JobPostingFindManyArgs = {

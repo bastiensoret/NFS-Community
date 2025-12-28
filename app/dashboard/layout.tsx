@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Users, Briefcase, LogOut, Home, Shield, User, ChevronsUpDown } from "lucide-react"
+import { Users, Briefcase, LogOut, Home, Shield, User, ChevronsUpDown, SquareKanban } from "lucide-react"
 import { getRoleDisplayName } from "@/lib/roles"
 import { prisma } from "@/lib/prisma"
 import {

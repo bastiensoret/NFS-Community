@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { deletePositionAction } from "@/app/actions/positions"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter } from "lucide-react"
@@ -27,7 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useDebounce } from "@/lib/hooks/use-debounce" // Assuming this hook exists or I'll implement a simple one inline
+import { useDebouncedCallback } from "use-debounce"
 
 interface WorkArrangement {
   remote_allowed?: boolean
@@ -62,7 +62,7 @@ interface Position {
 
   // Legacy Fields (kept for display compatibility)
   workLocation: LegacyWorkLocation | null
-  workArrangement?: any | null
+  workArrangement?: WorkArrangement | null
   startDate?: string | null // Serialized
   contractDuration?: string | null
 }
@@ -92,38 +92,32 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
-  // Filter States
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "")
-  // Debounce search query to avoid too many requests
-  const debouncedQuery = useDebounce(searchQuery, 500)
+  if (positions !== initialPositions) {
+    setPositions(initialPositions)
+  }
+  
+  const handleSearch = useDebouncedCallback((term: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (term) {
+      params.set("query", term)
+    } else {
+      params.delete("query")
+    }
+    params.set("page", "1")
+    router.replace(`${pathname}?${params.toString()}`)
+  }, 300)
 
-  useEffect(() => {
-      // Only trigger if the query actually changed from what's in URL
-      const currentQuery = searchParams.get("query") || ""
-      if (debouncedQuery !== currentQuery) {
-          const params = new URLSearchParams(searchParams.toString())
-          if (debouncedQuery) {
-              params.set("query", debouncedQuery)
-          } else {
-              params.delete("query")
-          }
-          params.set("page", "1") // Reset to first page on search
-          router.push(pathname + "?" + params.toString())
-      }
-  }, [debouncedQuery, searchParams, pathname, router])
-
-  // Update local state if URL changes (e.g. back button)
-  useEffect(() => {
-      const query = searchParams.get("query")
-      if (query !== null && query !== searchQuery) {
-          setSearchQuery(query)
-      }
-  }, [searchParams])
-
-  // Update positions when props change
-  useEffect(() => {
-      setPositions(initialPositions)
-  }, [initialPositions])
+  const handleStatusChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (value && value !== "ALL") {
+        params.set("status", value)
+    } else {
+        params.delete("status")
+    }
+    params.set("page", "1")
+    params.delete("cursor")
+    router.push(pathname + "?" + params.toString())
+  }
   
   const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
   const isRecruiter = userRole === "RECRUITER"
@@ -137,18 +131,6 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
     // Users can only edit their own DRAFTS
     if (position.creatorId === currentUserId && position.status === "DRAFT") return true
     return false
-  }
-
-  const handleStatusChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (value && value !== "ALL") {
-        params.set("status", value)
-    } else {
-        params.delete("status")
-    }
-    params.set("page", "1")
-    params.delete("cursor")
-    router.push(pathname + "?" + params.toString())
   }
 
   const handlePageChange = (newPage: number) => {
@@ -250,8 +232,8 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
               <Input
                 placeholder="Search positions..."
                 className="pl-9 h-10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                defaultValue={searchParams.get("query")?.toString()}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
             <div className="w-full sm:w-[200px]">
