@@ -7,7 +7,7 @@ import { Prisma } from "@prisma/client"
 export default async function PositionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; limit?: string; status?: string; cursor?: string }>
+  searchParams: Promise<{ page?: string; limit?: string; status?: string; query?: string; cursor?: string }>
 }) {
   const session = await auth()
   
@@ -19,6 +19,7 @@ export default async function PositionsPage({
   const page = Number(resolvedParams?.page) || 1
   const limit = Number(resolvedParams?.limit) || 10
   const status = resolvedParams?.status
+  const query = resolvedParams?.query
   const cursor = resolvedParams?.cursor
   
   const isAdmin = session.user?.role === "ADMIN" || session.user?.role === "SUPER_ADMIN"
@@ -27,19 +28,29 @@ export default async function PositionsPage({
   // Build where clause
   const where: Prisma.JobPostingWhereInput = {}
   
-  if (status) {
+  // Status Filter
+  if (status && status !== "ALL") {
     where.status = status
   } else {
-    where.status = "ACTIVE"
+    where.status = { not: "DRAFT" }
+  }
+
+  // Search Filter
+  if (query) {
+    where.OR = [
+      { jobTitle: { contains: query, mode: 'insensitive' } },
+      { companyName: { contains: query, mode: 'insensitive' } },
+      { reference: { contains: query, mode: 'insensitive' } },
+    ]
   }
 
   // Security & Visibility Rules
-  if (where.status === "PENDING_APPROVAL") {
-    // Visible to everyone
-  } else if (where.status === "DRAFT") {
-    if (!isSuperAdmin) {
-      where.creatorId = session.user.id
+  if (!isAdmin && !isSuperAdmin) {
+    // If specifically requesting DRAFT, only show own drafts
+    if (where.status === 'DRAFT') {
+        where.creatorId = session.user.id
     }
+    // Otherwise (ACTIVE, PENDING, etc) - visible to all
   }
 
   const queryOptions: Prisma.JobPostingFindManyArgs = {
@@ -87,7 +98,7 @@ export default async function PositionsPage({
       userRole={session.user?.role}
       currentUserId={session.user?.id}
       pendingCount={pendingCount}
-      currentStatus={typeof where.status === 'string' ? where.status : "ACTIVE"}
+      currentStatus={status || "ALL"}
       pagination={{
         page,
         limit,

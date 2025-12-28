@@ -1,16 +1,23 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { deletePositionAction } from "@/app/actions/positions"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -20,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { useDebounce } from "@/lib/hooks/use-debounce" // Assuming this hook exists or I'll implement a simple one inline
 
 interface WorkArrangement {
   remote_allowed?: boolean
@@ -76,13 +84,46 @@ interface PositionsTableProps {
   currentStatus?: string
 }
 
-export function PositionsTable({ initialPositions, userRole, currentUserId, pagination, pendingCount = 0, currentStatus = "ACTIVE" }: PositionsTableProps) {
+export function PositionsTable({ initialPositions, userRole, currentUserId, pagination, pendingCount = 0, currentStatus = "ALL" }: PositionsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [positions, setPositions] = useState<Position[]>(initialPositions)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  
+  // Filter States
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "")
+  // Debounce search query to avoid too many requests
+  const debouncedQuery = useDebounce(searchQuery, 500)
+
+  useEffect(() => {
+      // Only trigger if the query actually changed from what's in URL
+      const currentQuery = searchParams.get("query") || ""
+      if (debouncedQuery !== currentQuery) {
+          const params = new URLSearchParams(searchParams.toString())
+          if (debouncedQuery) {
+              params.set("query", debouncedQuery)
+          } else {
+              params.delete("query")
+          }
+          params.set("page", "1") // Reset to first page on search
+          router.push(pathname + "?" + params.toString())
+      }
+  }, [debouncedQuery, searchParams, pathname, router])
+
+  // Update local state if URL changes (e.g. back button)
+  useEffect(() => {
+      const query = searchParams.get("query")
+      if (query !== null && query !== searchQuery) {
+          setSearchQuery(query)
+      }
+  }, [searchParams])
+
+  // Update positions when props change
+  useEffect(() => {
+      setPositions(initialPositions)
+  }, [initialPositions])
   
   const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
   const isRecruiter = userRole === "RECRUITER"
@@ -98,73 +139,36 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
     return false
   }
 
-  const createQueryString = (name: string, value: string) => {
+  const handleStatusChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString())
-    params.set(name, value)
-    return params.toString()
-  }
-
-  const handleTabChange = (value: string) => {
-    let status = "ACTIVE"
-    switch (value) {
-      case "pending":
-        status = "PENDING_APPROVAL"
-        break
-      case "campaign":
-        status = "CAMPAIGN_SENT"
-        break
-      case "archived":
-        status = "ARCHIVED"
-        break
-      case "draft":
-        status = "DRAFT"
-        break
-      default:
-        status = "ACTIVE"
+    if (value && value !== "ALL") {
+        params.set("status", value)
+    } else {
+        params.delete("status")
     }
-    
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("status", status)
     params.set("page", "1")
-    params.delete("cursor") // Reset cursor on tab change
+    params.delete("cursor")
     router.push(pathname + "?" + params.toString())
   }
 
-  const getTabValue = () => {
-    switch (currentStatus) {
-      case "PENDING_APPROVAL": return "pending"
-      case "CAMPAIGN_SENT": return "campaign"
-      case "ARCHIVED": return "archived"
-      case "DRAFT": return "draft"
-      default: return "active"
-    }
-  }
-
   const handlePageChange = (newPage: number) => {
-    // For offset pagination fallback or if we want to reset
-    router.push(pathname + "?" + createQueryString("page", String(newPage)))
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", String(newPage))
+    // We might want to handle cursor here if we strictly use cursor pagination, 
+    // but for simple next/prev with page numbers, we rely on page param if API supports it or reset cursor
+    if (newPage === 1) params.delete("cursor")
+    router.push(pathname + "?" + params.toString())
   }
-
+  
   const handleNextPage = () => {
     if (pagination.nextCursor) {
         const params = new URLSearchParams(searchParams.toString())
         params.set("cursor", pagination.nextCursor)
-        params.set("page", String(pagination.page + 1)) // Keep page count for UI if desired
+        params.set("page", String(pagination.page + 1))
         router.push(pathname + "?" + params.toString())
     } else {
         handlePageChange(pagination.page + 1)
     }
-  }
-
-  const handlePrevPage = () => {
-      // Basic prev page support (resets cursor to rely on offset or previous stack)
-      // For true bi-directional cursor, we'd need 'prevCursor' or history.
-      // Fallback to offset for previous page is acceptable for hybrid approach
-      // OR we just go back to page - 1 without cursor (offset based)
-      const params = new URLSearchParams(searchParams.toString())
-      params.delete("cursor")
-      params.set("page", String(pagination.page - 1))
-      router.push(pathname + "?" + params.toString())
   }
 
   const confirmDelete = async () => {
@@ -194,17 +198,17 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
   const getStatusColor = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800 hover:bg-green-100"
       case "CAMPAIGN_SENT":
-        return "bg-purple-100 text-purple-800"
+        return "bg-purple-100 text-purple-800 hover:bg-purple-100"
       case "ARCHIVED":
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
       case "PENDING_APPROVAL":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
       case "DRAFT":
-        return "bg-blue-50 text-blue-700 border-blue-200"
+        return "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
     }
   }
 
@@ -221,41 +225,12 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
     return parts.join(", ") || "Not specified"
   }
 
-  const getOnSiteRequirement = (position: Position) => {
-    // 1. New Flattened Schema
-    if (position.remoteAllowed !== undefined) {
-      if (position.remoteAllowed) {
-         return position.onSiteDays ? `${position.onSiteDays} days/week on-site` : "Remote Allowed"
-      }
-      return "On-site"
-    }
-
-    // 2. Legacy JSON (workArrangement)
-    const wa = position.workArrangement
-    if (wa) {
-      if (wa.remote_allowed) {
-        return wa.on_site_days_per_week ? `${wa.on_site_days_per_week} days/week` : "Remote Allowed"
-      }
-      return "On-site"
-    }
-    
-    // 3. Oldest Legacy JSON (workLocation)
-    const legacyWa = position.workLocation
-    if (legacyWa) {
-       if (legacyWa.workArrangement === 'ON_SITE') return "On-site"
-       if (legacyWa.officeDaysRequired) return `${legacyWa.officeDaysRequired} days/week`
-       return "Remote Allowed"
-    }
-    
-    return "Not specified"
-  }
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Positions</h1>
-          <p className="text-gray-500 mt-2">Manage open positions</p>
+          <p className="text-gray-500 mt-1">Manage and track all job positions</p>
         </div>
         {canCreate && (
           <Link href="/dashboard/positions/new">
@@ -267,117 +242,117 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
         )}
       </div>
 
-      <Tabs value={getTabValue()} onValueChange={handleTabChange} className="w-full">
-        <TabsList>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger value="draft">Drafts</TabsTrigger>
-          <TabsTrigger value="campaign">Campaign Sent</TabsTrigger>
-          <TabsTrigger value="archived">Archived</TabsTrigger>
-          <TabsTrigger value="pending" className="relative">
-            Pending Approval
-            {pendingCount > 0 && (
-              <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
-                {pendingCount}
-              </span>
-            )}
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-
-      {positions.length === 0 ? (
-        <Card>
-          <CardContent className="text-center py-12">
-            <p className="text-gray-500">No positions found. Add your first position to get started.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {positions.map((position) => (
-              <Card key={position.id} className="flex flex-col">
-                <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start gap-2 mb-2">
-                    <div className="flex flex-col gap-1">
-                      {(position.reference || position.externalReference) && (
-                        <div className="flex gap-2">
-                          <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded w-fit">
-                            {position.reference || position.externalReference}
-                          </span>
+      <Card className="p-0 gap-0 overflow-hidden">
+        <div className="p-6 border-b space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Search positions..."
+                className="pl-9 h-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="w-full sm:w-[200px]">
+              <Select value={currentStatus} onValueChange={handleStatusChange}>
+                <SelectTrigger className="h-10">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-gray-500" />
+                    <SelectValue placeholder="Filter by status" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Statuses</SelectItem>
+                  <SelectItem value="ACTIVE">Active</SelectItem>
+                  <SelectItem value="PENDING_APPROVAL">
+                    Pending Approval
+                    {pendingCount > 0 && (
+                        <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-1.5 py-0.5 rounded-full">
+                            {pendingCount}
+                        </span>
+                    )}
+                  </SelectItem>
+                  <SelectItem value="CAMPAIGN_SENT">Campaign Sent</SelectItem>
+                  <SelectItem value="ARCHIVED">Archived</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+        
+        <div className="p-6">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="h-12">Posted Date</TableHead>
+                <TableHead className="h-12">Job Title</TableHead>
+                <TableHead className="h-12">Company</TableHead>
+                <TableHead className="h-12">Location</TableHead>
+                <TableHead className="h-12">Status</TableHead>
+                <TableHead className="text-right h-12">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {positions.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-32 text-center text-gray-500">
+                    No positions found matching your criteria.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                positions.map((position) => (
+                  <TableRow key={position.id} className="group">
+                    <TableCell className="py-4 text-gray-500">
+                       {format(new Date(position.postingDate), "MMM d, yyyy")}
+                    </TableCell>
+                    <TableCell className="py-4 font-medium text-gray-900">
+                      {position.jobTitle}
+                    </TableCell>
+                    <TableCell className="py-4 text-gray-600">{position.companyName}</TableCell>
+                    <TableCell className="py-4 text-gray-600">{getLocationString(position)}</TableCell>
+                    <TableCell className="py-4">
+                      <Badge className={`${getStatusColor(position.status)} border-0 px-2.5 py-0.5`}>
+                        {position.status.replace('_', ' ')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right py-4">
+                      {canEditPosition(position) && (
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Link href={`/dashboard/positions/${position.id}`}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-900">
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => setDeleteId(position.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       )}
-                      <CardTitle className="text-lg leading-tight">{position.jobTitle}</CardTitle>
-                    </div>
-                    <Badge className={getStatusColor(position.status)}>
-                      {position.status.replace('_', ' ')}
-                    </Badge>
-                  </div>
-                  <CardDescription className="font-medium text-gray-700">
-                    {position.companyName}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 text-sm space-y-3">
-                  <div className="grid grid-cols-2 gap-y-3 gap-x-2">
-                    <div>
-                      <span className="text-gray-500 block text-xs mb-0.5">Location</span>
-                      <span className="font-medium">{getLocationString(position)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block text-xs mb-0.5">Experience</span>
-                      <span className="font-medium capitalize">{position.seniorityLevel.toLowerCase()}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block text-xs mb-0.5">Start date</span>
-                      <span className="font-medium">
-                        {position.startDate ? format(new Date(position.startDate), "MMM d, yyyy") : "ASAP"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block text-xs mb-0.5">Duration</span>
-                      <span className="font-medium">
-                        {position.durationMonths 
-                          ? `${position.durationMonths} months` 
-                          : position.contractDuration 
-                            ? `${position.contractDuration} months` 
-                            : "Not specified"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 block text-xs mb-0.5">On-site</span>
-                      <span className="font-medium">{getOnSiteRequirement(position)}</span>
-                    </div>
-                  </div>
-                </CardContent>
-                {canEditPosition(position) && (
-                  <div className="px-6 py-4 bg-gray-50 rounded-b-lg border-t flex justify-end gap-2 mt-auto">
-                    <Link href={`/dashboard/positions/${position.id}`}>
-                      <Button variant="outline" size="sm" className="h-8">
-                        <Pencil className="h-3.5 w-3.5 mr-1.5" />
-                        Edit
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                      onClick={() => setDeleteId(position.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                      Delete
-                    </Button>
-                  </div>
-                )}
-              </Card>
-            ))}
-          </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
 
-          <div className="flex items-center justify-end space-x-2 py-4">
+      {/* Pagination */}
+      {positions.length > 0 && (
+        <div className="flex items-center justify-end space-x-2 py-4">
             <Button
               variant="outline"
               size="sm"
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 mr-2" />
               Previous
             </Button>
             <div className="text-sm text-gray-500">
@@ -386,14 +361,13 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handlePageChange(pagination.page + 1)}
+              onClick={handleNextPage}
               disabled={pagination.page >= pagination.totalPages}
             >
               Next
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
-          </div>
-        </>
+        </div>
       )}
 
       <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
@@ -417,3 +391,4 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
     </div>
   )
 }
+
