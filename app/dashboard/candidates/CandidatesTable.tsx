@@ -29,6 +29,9 @@ interface Candidate {
   phoneNumber: string | null
   desiredRoles: string[]
   skills: string[]
+  industries: string[]
+  certifications: string[]
+  languages: string[]
   seniorityLevel: string | null
   location: string | null
   createdAt: string | Date
@@ -152,36 +155,42 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
         )}
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Search candidates..."
-            className="pl-8"
-            onChange={(e) => handleSearch(e.target.value)}
-            defaultValue={searchParams.get("query")?.toString()}
-          />
+      <Card className="p-0 gap-0 overflow-hidden">
+        <div className="p-6 border-b space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Search candidates..."
+                className="pl-9 h-10"
+                onChange={(e) => handleSearch(e.target.value)}
+                defaultValue={searchParams.get("query")?.toString()}
+              />
+            </div>
+            <div className="w-full sm:w-[200px]">
+              <Select 
+                  onValueChange={handleStatusFilter} 
+                  defaultValue={searchParams.get("status") || "ALL"}
+              >
+                <SelectTrigger className="h-10">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-gray-500" />
+                    <SelectValue placeholder="Filter by status" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Statuses</SelectItem>
+                  <SelectItem value="DRAFT">Draft</SelectItem>
+                  <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
+                  <SelectItem value="ACTIVE">Active</SelectItem>
+                  <SelectItem value="INACTIVE">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
-        <Select 
-            onValueChange={handleStatusFilter} 
-            defaultValue={searchParams.get("status") || "ALL"}
-        >
-          <SelectTrigger className="w-[180px]">
-            <Filter className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Statuses</SelectItem>
-            <SelectItem value="DRAFT">Draft</SelectItem>
-            <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
-            <SelectItem value="ACTIVE">Active</SelectItem>
-            <SelectItem value="INACTIVE">Inactive</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
 
-      <Card>
-        <CardContent>
+        <CardContent className="p-6">
           {candidates.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500">No candidates found. Add your first candidate to get started.</p>
@@ -211,7 +220,9 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                     <TableRow key={candidate.id}>
                       <TableCell>{getStatusBadge(candidate.status)}</TableCell>
                       <TableCell className="font-medium">
-                        {candidate.firstName} {candidate.lastName}
+                        <Link href={`/dashboard/candidates/${candidate.id}`} className="hover:underline">
+                          {candidate.firstName} {candidate.lastName}
+                        </Link>
                       </TableCell>
                       <TableCell>{candidate.email}</TableCell>
                       <TableCell>
@@ -236,7 +247,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           {canEdit && (
-                            <Link href={`/dashboard/candidates/${candidate.id}`}>
+                            <Link href={`/dashboard/candidates/${candidate.id}/edit`}>
                               <Button variant="ghost" size="icon">
                                 <Pencil className="h-4 w-4" />
                               </Button>

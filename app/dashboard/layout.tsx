@@ -63,6 +63,14 @@ export default async function DashboardLayout({
               Positions
             </Button>
           </Link>
+          {(currentUser?.role === "GATEKEEPER" || currentUser?.role === "ADMIN" || currentUser?.role === "SUPER_ADMIN") && (
+            <Link href="/dashboard/gatekeeper">
+              <Button variant="ghost" className="w-full justify-start">
+                <SquareKanban className="mr-2 h-4 w-4" />
+                Gatekeeper Board
+              </Button>
+            </Link>
+          )}
         </nav>
 
         <div className="px-4 pb-2">

@@ -5,14 +5,20 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { X } from "lucide-react"
 import { createCandidateAction } from "@/app/actions/candidates"
 import { type CandidateInput } from "@/lib/validations"
 import { toast } from "sonner"
+import { MultiSelect } from "@/components/ui/multi-select"
+import { CategorizedMultiSelect } from "@/components/ui/categorized-multi-select"
+import { 
+  SKILL_OPTIONS, 
+  ROLE_OPTIONS, 
+  INDUSTRY_OPTIONS, 
+  CERTIFICATION_OPTIONS, 
+  LANGUAGES 
+} from "@/lib/constants"
 
 export default function NewCandidatePage() {
   const router = useRouter()
@@ -25,62 +31,12 @@ export default function NewCandidatePage() {
     seniorityLevel: "",
     location: "",
   })
+  
   const [desiredRoles, setDesiredRoles] = useState<string[]>([])
   const [skills, setSkills] = useState<string[]>([])
   const [industries, setIndustries] = useState<string[]>([])
   const [certifications, setCertifications] = useState<string[]>([])
-  const [currentInput, setCurrentInput] = useState({
-    role: "",
-    skill: "",
-    industry: "",
-    certification: "",
-  })
-
-  const addItem = (type: 'role' | 'skill' | 'industry' | 'certification') => {
-    const value = currentInput[type].trim()
-    if (!value) return
-
-    switch (type) {
-      case 'role':
-        if (!desiredRoles.includes(value)) {
-          setDesiredRoles([...desiredRoles, value])
-        }
-        break
-      case 'skill':
-        if (!skills.includes(value)) {
-          setSkills([...skills, value])
-        }
-        break
-      case 'industry':
-        if (!industries.includes(value)) {
-          setIndustries([...industries, value])
-        }
-        break
-      case 'certification':
-        if (!certifications.includes(value)) {
-          setCertifications([...certifications, value])
-        }
-        break
-    }
-    setCurrentInput({ ...currentInput, [type]: "" })
-  }
-
-  const removeItem = (type: 'role' | 'skill' | 'industry' | 'certification', value: string) => {
-    switch (type) {
-      case 'role':
-        setDesiredRoles(desiredRoles.filter(r => r !== value))
-        break
-      case 'skill':
-        setSkills(skills.filter(s => s !== value))
-        break
-      case 'industry':
-        setIndustries(industries.filter(i => i !== value))
-        break
-      case 'certification':
-        setCertifications(certifications.filter(c => c !== value))
-        break
-    }
-  }
+  const [languages, setLanguages] = useState<string[]>([])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -92,12 +48,14 @@ export default function NewCandidatePage() {
       skills,
       industries,
       certifications,
+      languages,
       profileDataJson: {
         ...formData,
         desiredRoles,
         skills,
         industries,
         certifications,
+        languages,
       }
     }
 
@@ -192,11 +150,10 @@ export default function NewCandidatePage() {
                     <SelectValue placeholder="Select level" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="JUNIOR">Junior</SelectItem>
-                    <SelectItem value="MID">Mid</SelectItem>
-                    <SelectItem value="SENIOR">Senior</SelectItem>
-                    <SelectItem value="LEAD">Lead</SelectItem>
-                    <SelectItem value="EXPERT">Expert</SelectItem>
+                    <SelectItem value="Junior">Junior</SelectItem>
+                    <SelectItem value="Medior">Medior</SelectItem>
+                    <SelectItem value="Senior">Senior</SelectItem>
+                    <SelectItem value="Expert">Expert</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -212,110 +169,52 @@ export default function NewCandidatePage() {
 
             <div className="space-y-2">
               <Label>Desired Roles</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="e.g., Product Owner, Business Analyst"
-                  value={currentInput.role}
-                  onChange={(e) => setCurrentInput({ ...currentInput, role: e.target.value })}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('role'))}
-                />
-                <Button type="button" onClick={() => addItem('role')}>Add</Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {desiredRoles.map((role) => (
-                  <Badge key={role} variant="secondary">
-                    {role}
-                    <button
-                      type="button"
-                      onClick={() => removeItem('role', role)}
-                      className="ml-2"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
+              <MultiSelect
+                options={ROLE_OPTIONS}
+                selected={desiredRoles}
+                onChange={setDesiredRoles}
+                placeholder="Select desired roles..."
+              />
             </div>
 
             <div className="space-y-2">
               <Label>Skills</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="e.g., JavaScript, Project Management"
-                  value={currentInput.skill}
-                  onChange={(e) => setCurrentInput({ ...currentInput, skill: e.target.value })}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('skill'))}
-                />
-                <Button type="button" onClick={() => addItem('skill')}>Add</Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {skills.map((skill) => (
-                  <Badge key={skill} variant="secondary">
-                    {skill}
-                    <button
-                      type="button"
-                      onClick={() => removeItem('skill', skill)}
-                      className="ml-2"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
+              <CategorizedMultiSelect
+                options={SKILL_OPTIONS}
+                selected={skills}
+                onChange={setSkills}
+                placeholder="Select skills..."
+              />
             </div>
 
             <div className="space-y-2">
               <Label>Industries</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="e.g., Banking, Insurance"
-                  value={currentInput.industry}
-                  onChange={(e) => setCurrentInput({ ...currentInput, industry: e.target.value })}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('industry'))}
-                />
-                <Button type="button" onClick={() => addItem('industry')}>Add</Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {industries.map((industry) => (
-                  <Badge key={industry} variant="secondary">
-                    {industry}
-                    <button
-                      type="button"
-                      onClick={() => removeItem('industry', industry)}
-                      className="ml-2"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
+              <MultiSelect
+                options={INDUSTRY_OPTIONS}
+                selected={industries}
+                onChange={setIndustries}
+                placeholder="Select industries..."
+              />
             </div>
 
             <div className="space-y-2">
               <Label>Certifications</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="e.g., PMP, SCRUM Master"
-                  value={currentInput.certification}
-                  onChange={(e) => setCurrentInput({ ...currentInput, certification: e.target.value })}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('certification'))}
-                />
-                <Button type="button" onClick={() => addItem('certification')}>Add</Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {certifications.map((cert) => (
-                  <Badge key={cert} variant="secondary">
-                    {cert}
-                    <button
-                      type="button"
-                      onClick={() => removeItem('certification', cert)}
-                      className="ml-2"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
+              <MultiSelect
+                options={CERTIFICATION_OPTIONS}
+                selected={certifications}
+                onChange={setCertifications}
+                placeholder="Select certifications..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Languages</Label>
+              <MultiSelect
+                options={LANGUAGES}
+                selected={languages}
+                onChange={setLanguages}
+                placeholder="Select languages..."
+              />
             </div>
 
             <div className="flex gap-4 pt-4">

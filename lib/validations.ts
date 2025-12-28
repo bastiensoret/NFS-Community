@@ -76,6 +76,7 @@ export const candidateSchema = z.object({
   industries: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
   seniorityLevel: z.string().optional(),
   certifications: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
+  languages: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]).optional(),
   location: z.string().optional(),
   profileDataJson: z.record(z.string(), z.any()).optional(),
   status: z.enum(["DRAFT", "PENDING_APPROVAL", "ACTIVE", "INACTIVE"]).optional(),

@@ -83,3 +83,47 @@ export const SKILL_OPTIONS = {
     "Adaptability to regulatory changes"
   ]
 }
+
+export const INDUSTRY_OPTIONS = [
+  "Banking",
+  "Insurance",
+  "Finance",
+  "IT",
+  "Healthcare",
+  "Consulting",
+  "Other"
+]
+
+export const LANGUAGES = ["French", "Dutch", "English", "German", "Italian", "Spanish"]
+export const LANGUAGE_LEVELS = ["Basic", "Intermediate", "Advanced", "Native"]
+
+export const ROLE_OPTIONS = [
+  "Compliance Officer",
+  "AML Analyst",
+  "KYC Analyst",
+  "Risk Manager",
+  "Internal Auditor",
+  "Legal Counsel",
+  "Data Privacy Officer",
+  "Project Manager",
+  "Business Analyst",
+  "Product Owner",
+  "Scrum Master"
+]
+
+export const CERTIFICATION_OPTIONS = [
+  "CAMS (Certified Anti-Money Laundering Specialist)",
+  "CAMS-Audit",
+  "CAMS-FCI",
+  "CGSS (Certified Global Sanctions Specialist)",
+  "ICA Diploma in Governance, Risk and Compliance",
+  "ICA Diploma in Financial Crime Prevention",
+  "CFE (Certified Fraud Examiner)",
+  "CISSP (Certified Information Systems Security Professional)",
+  "CISA (Certified Information Systems Auditor)",
+  "CRISC (Certified in Risk and Information Systems Control)",
+  "PMP (Project Management Professional)",
+  "PRINCE2",
+  "CSM (Certified ScrumMaster)",
+  "CIPP/E (Certified Information Privacy Professional/Europe)"
+]

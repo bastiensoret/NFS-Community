@@ -247,10 +247,25 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
 
       <form onSubmit={handleSubmit}>
         <Tabs defaultValue="core" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="core">Core information</TabsTrigger>
-            <TabsTrigger value="requirements">Requirements</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-6 rounded-none border-b">
+            <TabsTrigger 
+              value="core"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+            >
+              Core information
+            </TabsTrigger>
+            <TabsTrigger 
+              value="requirements"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+            >
+              Requirements
+            </TabsTrigger>
+            <TabsTrigger 
+              value="details"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+            >
+              Details
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="core">
