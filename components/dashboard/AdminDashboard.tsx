@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, UserCheck, Clock, AlertTriangle, TrendingUp, Eye } from "lucide-react"
+import { Users, UserCheck, Flame, TrendingUp, Eye } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -31,18 +31,18 @@ export function AdminDashboard({
 
       {/* Priority Actions */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-orange-800 dark:text-orange-200">
+            <CardTitle className="text-sm font-medium">
               Candidates pending approval
             </CardTitle>
-            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            {pendingCandidatesCount > 0 && <Flame className="h-4 w-4 text-muted-foreground" />}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-800 dark:text-orange-200">{pendingCandidatesCount}</div>
-            <p className="text-xs text-muted-foreground">Need your attention</p>
+            <div className="text-2xl font-bold">{pendingCandidatesCount}</div>
+            <p className="text-xs text-muted-foreground">Awaiting approval</p>
             {pendingCandidatesCount > 0 && (
-              <Button variant="link" className="p-0 h-auto text-orange-600 hover:text-orange-700 dark:text-orange-400" asChild>
+              <Button variant="link" className="p-0 h-auto" asChild>
                 <Link href="/dashboard/candidates?status=PENDING_APPROVAL">
                   Review now <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
@@ -51,18 +51,18 @@ export function AdminDashboard({
           </CardContent>
         </Card>
 
-        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-200">
+            <CardTitle className="text-sm font-medium">
               Positions pending approval
             </CardTitle>
-            <Clock className="h-4 w-4 text-blue-600" />
+            {pendingPositionsCount > 0 && <Flame className="h-4 w-4 text-muted-foreground" />}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">{pendingPositionsCount}</div>
+            <div className="text-2xl font-bold">{pendingPositionsCount}</div>
             <p className="text-xs text-muted-foreground">Awaiting approval</p>
             {pendingPositionsCount > 0 && (
-              <Button variant="link" className="p-0 h-auto text-blue-600 hover:text-blue-700 dark:text-blue-400" asChild>
+              <Button variant="link" className="p-0 h-auto" asChild>
                 <Link href="/dashboard/positions?status=PENDING_APPROVAL">
                   Review now <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
@@ -120,7 +120,7 @@ export function AdminDashboard({
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Candidate management</CardTitle>
@@ -177,26 +177,6 @@ export function AdminDashboard({
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>System management</CardTitle>
-            <CardDescription>Administrative tasks</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Link href="/dashboard/admin" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">User management</div>
-              <div className="text-sm text-muted-foreground">Manage user accounts</div>
-            </Link>
-            <Link href="/dashboard/gatekeeper" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">Gatekeeping</div>
-              <div className="text-sm text-muted-foreground">View kanban board</div>
-            </Link>
-            <Link href="/dashboard/profile" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">Profile settings</div>
-              <div className="text-sm text-muted-foreground">Update your profile</div>
-            </Link>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )
