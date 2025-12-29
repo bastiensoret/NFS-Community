@@ -9,10 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { X, Plus } from "lucide-react"
-import { CategorizedMultiSelect } from "@/components/ui/categorized-multi-select"
+import { CategorizedDropdownMultiSelect } from "@/components/ui/categorized-dropdown-multi-select"
 import { RESPONSIBILITY_OPTIONS, SKILL_OPTIONS } from "@/lib/constants"
 import { type JobPostingInput } from "@/lib/validations"
 import { toast } from "sonner"
@@ -124,324 +123,283 @@ export default function NewJobPostingPage() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <Tabs defaultValue="core" className="space-y-6">
-          <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-6 rounded-none border-b">
-            <TabsTrigger 
-              value="core" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
-            >
-              Core info
-            </TabsTrigger>
-            <TabsTrigger 
-              value="requirements"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
-            >
-              Requirements
-            </TabsTrigger>
-            <TabsTrigger 
-              value="details"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
-            >
-              Details
-            </TabsTrigger>
-          </TabsList>
+        <Card>
+          <CardHeader>
+            <CardTitle>Position Information</CardTitle>
+            <CardDescription>Create a new job opportunity</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="jobTitle">Job Title *</Label>
+                <Input
+                  id="jobTitle"
+                  required
+                  placeholder="e.g. Project Officer"
+                  value={formData.jobTitle}
+                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name *</Label>
+                <Input
+                  id="companyName"
+                  required
+                  placeholder="e.g. BNP Paribas Fortis"
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                />
+              </div>
+            </div>
 
-          <TabsContent value="core">
-            <Card>
-              <CardHeader>
-                <CardTitle>Core Information</CardTitle>
-                <CardDescription>Mandatory fields required to display a position</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="jobTitle">Job Title *</Label>
-                    <Input
-                      id="jobTitle"
-                      required
-                      placeholder="e.g. Project Officer"
-                      value={formData.jobTitle}
-                      onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="companyName">Company Name *</Label>
-                    <Input
-                      id="companyName"
-                      required
-                      placeholder="e.g. BNP Paribas Fortis"
-                      value={formData.companyName}
-                      onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    />
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Location (City) *</Label>
+                <Input
+                  id="location"
+                  required
+                  placeholder="e.g. Brussels"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country">Location (Country) *</Label>
+                <Select
+                  value={formData.country}
+                  onValueChange={(value) => setFormData({ ...formData, country: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Belgium">Belgium</SelectItem>
+                    <SelectItem value="Netherlands">Netherlands</SelectItem>
+                    <SelectItem value="Luxembourg">Luxembourg</SelectItem>
+                    <SelectItem value="France">France</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location (City) *</Label>
-                    <Input
-                      id="location"
-                      required
-                      placeholder="e.g. Brussels"
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="country">Location (Country) *</Label>
-                    <Select
-                      value={formData.country}
-                      onValueChange={(value) => setFormData({ ...formData, country: value })}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startDate">Start Date *</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  required
+                  value={formData.startDate}
+                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="durationMonths">Mission duration (Months) *</Label>
+                <Input
+                  id="durationMonths"
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  required
+                  value={formData.durationMonths}
+                  onChange={(e) => setFormData({ ...formData, durationMonths: parseFloat(e.target.value) || 0 })}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="seniorityLevel">Experience Level *</Label>
+                <Select
+                  value={formData.seniorityLevel}
+                  onValueChange={(value) => setFormData({ ...formData, seniorityLevel: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Junior">Junior (-2 years)</SelectItem>
+                    <SelectItem value="Medior">Medior (2-5 years)</SelectItem>
+                    <SelectItem value="Senior">Senior (5-8 years)</SelectItem>
+                    <SelectItem value="Expert">Expert (+8 years)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="industrySector">Industry Sector</Label>
+                <Select
+                  value={formData.industrySector}
+                  onValueChange={(value) => setFormData({ ...formData, industrySector: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Banking">Banking</SelectItem>
+                    <SelectItem value="Insurance">Insurance</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="IT">IT</SelectItem>
+                    <SelectItem value="Healthcare">Healthcare</SelectItem>
+                    <SelectItem value="Consulting">Consulting</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Job Description</Label>
+              <Textarea
+                id="description"
+                rows={4}
+                placeholder="Brief description of the role and context..."
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Key Responsibilities</Label>
+                <CategorizedDropdownMultiSelect
+                  options={RESPONSIBILITY_OPTIONS}
+                  selected={responsibilities}
+                  onChange={setResponsibilities}
+                  placeholder="Select responsibilities..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Required Skills</Label>
+                <CategorizedDropdownMultiSelect
+                  options={SKILL_OPTIONS}
+                  selected={skills}
+                  onChange={setSkills}
+                  placeholder="Select skills..."
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Languages</Label>
+              <div className="flex items-end justify-between p-4 border rounded-lg bg-muted/50">
+                <div className="flex gap-4 items-end">
+                  <div className="w-[200px] space-y-1">
+                    <Label className="text-xs">Language</Label>
+                    <Select 
+                      value={newLanguage.language}
+                      onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Belgium">Belgium</SelectItem>
-                        <SelectItem value="Netherlands">Netherlands</SelectItem>
-                        <SelectItem value="Luxembourg">Luxembourg</SelectItem>
-                        <SelectItem value="France">France</SelectItem>
+                        {LANGUAGES.map(lang => (
+                          <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="startDate">Start Date *</Label>
-                    <Input
-                      id="startDate"
-                      type="date"
-                      required
-                      value={formData.startDate}
-                      onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="durationMonths">Mission duration (Months) *</Label>
-                    <Input
-                      id="durationMonths"
-                      type="number"
-                      step="0.5"
-                      min="0"
-                      required
-                      value={formData.durationMonths}
-                      onChange={(e) => setFormData({ ...formData, durationMonths: parseFloat(e.target.value) || 0 })}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="seniorityLevel">Experience Level *</Label>
-                    <Select
-                      value={formData.seniorityLevel}
-                      onValueChange={(value) => setFormData({ ...formData, seniorityLevel: value })}
+                  <div className="w-[150px] space-y-1">
+                    <Label className="text-xs">Level</Label>
+                    <Select 
+                      value={newLanguage.level} 
+                      onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Junior">Junior (-2 years)</SelectItem>
-                        <SelectItem value="Medior">Medior (2-5 years)</SelectItem>
-                        <SelectItem value="Senior">Senior (5-8 years)</SelectItem>
-                        <SelectItem value="Expert">Expert (+8 years)</SelectItem>
+                        {LEVELS.map(level => (
+                          <SelectItem key={level} value={level}>{level}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="industrySector">Industry Sector</Label>
-                    <Select
-                      value={formData.industrySector}
-                      onValueChange={(value) => setFormData({ ...formData, industrySector: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Banking">Banking</SelectItem>
-                        <SelectItem value="Insurance">Insurance</SelectItem>
-                        <SelectItem value="Finance">Finance</SelectItem>
-                        <SelectItem value="IT">IT</SelectItem>
-                        <SelectItem value="Healthcare">Healthcare</SelectItem>
-                        <SelectItem value="Consulting">Consulting</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                   <div className="space-y-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Input 
-                      id="status"
-                      value="Pending Creation"
-                      disabled
-                    />
-                    <p className="text-xs text-muted-foreground">Status is managed automatically.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="requirements">
-            <Card>
-              <CardHeader>
-                <CardTitle>Requirements & Skills</CardTitle>
-                <CardDescription>Detailed requirements for the candidate</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-8">
-                <div className="space-y-2">
-                  <Label htmlFor="description">Job Description</Label>
-                  <Textarea
-                    id="description"
-                    rows={6}
-                    placeholder="Brief description of the role and context..."
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Key Responsibilities</Label>
-                  <CategorizedMultiSelect
-                    options={RESPONSIBILITY_OPTIONS}
-                    selected={responsibilities}
-                    onChange={setResponsibilities}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Required Skills</Label>
-                  <CategorizedMultiSelect
-                    options={SKILL_OPTIONS}
-                    selected={skills}
-                    onChange={setSkills}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Languages</Label>
-                  <div className="flex items-end justify-between p-4 border rounded-lg bg-muted/50">
-                    <div className="flex gap-4 items-end">
-                      <div className="w-[200px] space-y-1">
-                        <Label className="text-xs">Language</Label>
-                        <Select 
-                          value={newLanguage.language}
-                          onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
-                        >
-                          <SelectTrigger className="bg-background">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {LANGUAGES.map(lang => (
-                              <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="w-[150px] space-y-1">
-                        <Label className="text-xs">Level</Label>
-                        <Select 
-                          value={newLanguage.level} 
-                          onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
-                        >
-                          <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {LEVELS.map(level => (
-                              <SelectItem key={level} value={level}>{level}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex items-center space-x-2 pb-3">
-                        <Checkbox 
-                          id="lang-mandatory"
-                          checked={newLanguage.mandatory}
-                          onCheckedChange={(checked) => setNewLanguage({...newLanguage, mandatory: checked as boolean})}
-                          className="bg-background"
-                        />
-                        <Label htmlFor="lang-mandatory" className="text-xs">Mandatory</Label>
-                      </div>
-                    </div>
-                    <Button type="button" onClick={addLanguage} size="icon"><Plus className="h-4 w-4" /></Button>
-                  </div>
-                  
-                  <div className="space-y-2 mt-2">
-                    {languages.map((lang, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 bg-card border rounded text-sm shadow-sm">
-                        <div className="flex gap-4 items-center">
-                          <span className="font-semibold text-foreground w-24">{lang.language}</span>
-                          <span className="text-muted-foreground">{lang.level}</span>
-                          {lang.mandatory && <span className="text-xs font-medium text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Mandatory</span>}
-                        </div>
-                        <Button type="button" variant="ghost" size="icon" onClick={() => removeLanguage(idx)}>
-                          <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="details">
-            <Card>
-              <CardHeader>
-                <CardTitle>Additional Details</CardTitle>
-                <CardDescription>Work arrangement specifics</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="remote" className="text-base">Homeworking allowed</Label>
-                      <p className="text-sm text-muted-foreground">Is the candidate allowed to work from home?</p>
-                    </div>
+                  <div className="flex items-center space-x-2 pb-3">
                     <Checkbox 
-                      id="remote"
-                      checked={workArrangement.remote_allowed}
-                      onCheckedChange={(checked) => setWorkArrangement({ ...workArrangement, remote_allowed: checked as boolean })}
-                      className="h-5 w-5"
+                      id="lang-mandatory"
+                      checked={newLanguage.mandatory}
+                      onCheckedChange={(checked) => setNewLanguage({...newLanguage, mandatory: checked as boolean})}
+                      className="bg-background"
                     />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="officeDays">Minimum onsite days per week</Label>
-                    <div className="flex items-center gap-4">
-                      <Input
-                        id="officeDays"
-                        type="number"
-                        min="1"
-                        max="5"
-                        className="w-24"
-                        value={workArrangement.on_site_days_per_week || 0}
-                        onChange={(e) => setWorkArrangement({ ...workArrangement, on_site_days_per_week: parseInt(e.target.value) })}
-                      />
-                      <span className="text-sm text-muted-foreground">days/week required in office</span>
-                    </div>
+                    <Label htmlFor="lang-mandatory" className="text-xs">Mandatory</Label>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                <Button type="button" onClick={addLanguage} size="icon"><Plus className="h-4 w-4" /></Button>
+              </div>
+              
+              <div className="space-y-2 mt-2">
+                {languages.map((lang, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-2 bg-card border rounded text-sm shadow-sm">
+                    <div className="flex gap-4 items-center">
+                      <span className="font-semibold text-foreground w-24">{lang.language}</span>
+                      <span className="text-muted-foreground">{lang.level}</span>
+                      {lang.mandatory && <span className="text-xs font-medium text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Mandatory</span>}
+                    </div>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeLanguage(idx)}>
+                      <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        <div className="flex gap-4 pt-6">
-          <Button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create Position"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-          >
-            Cancel
-          </Button>
-        </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="space-y-0.5">
+                  <Label htmlFor="remote" className="text-base">Homeworking allowed</Label>
+                  <p className="text-sm text-muted-foreground">Is the candidate allowed to work from home?</p>
+                </div>
+                <Checkbox 
+                  id="remote"
+                  checked={workArrangement.remote_allowed}
+                  onCheckedChange={(checked) => setWorkArrangement({ ...workArrangement, remote_allowed: checked as boolean })}
+                  className="h-5 w-5"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="officeDays">Minimum onsite days per week</Label>
+                <div className="flex items-center gap-4">
+                  <Input
+                    id="officeDays"
+                    type="number"
+                    min="1"
+                    max="5"
+                    className="w-24"
+                    value={workArrangement.on_site_days_per_week || 0}
+                    onChange={(e) => setWorkArrangement({ ...workArrangement, on_site_days_per_week: parseInt(e.target.value) })}
+                  />
+                  <span className="text-sm text-muted-foreground">days/week required in office</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Input 
+                  id="status"
+                  value="Pending Creation"
+                  disabled
+                />
+                <p className="text-xs text-muted-foreground">Status is managed automatically.</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-4">
+              <Button type="submit" disabled={loading}>
+                {loading ? "Creating..." : "Create Position"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </form>
     </div>
   )

@@ -267,7 +267,7 @@ export async function deletePositionAction(id: string): Promise<ActionState> {
 
     const position = await prisma.jobPosting.findUnique({
       where: { id },
-      select: { creatorId: true }
+      select: { creatorId: true, status: true }
     })
 
     if (!position) {
@@ -277,8 +277,18 @@ export async function deletePositionAction(id: string): Promise<ActionState> {
     const isAdmin = user.role === "ADMIN" || user.role === "SUPER_ADMIN"
     const isCreator = position.creatorId === user.id
 
+    // Permission check
     if (!isAdmin && !isCreator) {
       throw new ActionError("Unauthorized")
+    }
+
+    // Status check: users can only delete their own positions until PENDING_APPROVAL status
+    // Admins can delete any position
+    if (!isAdmin && isCreator) {
+      const deletableStatuses = ["DRAFT", "PENDING_APPROVAL"]
+      if (!deletableStatuses.includes(position.status)) {
+        throw new ActionError("Position can only be deleted while in Draft or Pending Approval status")
+      }
     }
 
     await prisma.jobPosting.delete({

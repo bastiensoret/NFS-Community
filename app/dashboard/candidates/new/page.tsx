@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createCandidateAction } from "@/app/actions/candidates"
 import { type CandidateInput } from "@/lib/validations"
 import { toast } from "sonner"
-import { MultiSelect } from "@/components/ui/multi-select"
-import { CategorizedMultiSelect } from "@/components/ui/categorized-multi-select"
+import { DropdownMultiSelect } from "@/components/ui/dropdown-multi-select"
+import { CategorizedDropdownMultiSelect } from "@/components/ui/categorized-dropdown-multi-select"
 import { 
   SKILL_OPTIONS, 
   ROLE_OPTIONS, 
@@ -167,49 +167,53 @@ export default function NewCandidatePage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Desired Roles</Label>
-              <MultiSelect
-                options={ROLE_OPTIONS}
-                selected={desiredRoles}
-                onChange={setDesiredRoles}
-                placeholder="Select desired roles..."
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Desired Roles</Label>
+                <DropdownMultiSelect
+                  options={ROLE_OPTIONS}
+                  selected={desiredRoles}
+                  onChange={setDesiredRoles}
+                  placeholder="Select desired roles..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Skills</Label>
+                <CategorizedDropdownMultiSelect
+                  options={SKILL_OPTIONS}
+                  selected={skills}
+                  onChange={setSkills}
+                  placeholder="Select skills..."
+                />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Skills</Label>
-              <CategorizedMultiSelect
-                options={SKILL_OPTIONS}
-                selected={skills}
-                onChange={setSkills}
-                placeholder="Select skills..."
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Industries</Label>
+                <DropdownMultiSelect
+                  options={INDUSTRY_OPTIONS}
+                  selected={industries}
+                  onChange={setIndustries}
+                  placeholder="Select industries..."
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label>Industries</Label>
-              <MultiSelect
-                options={INDUSTRY_OPTIONS}
-                selected={industries}
-                onChange={setIndustries}
-                placeholder="Select industries..."
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Certifications</Label>
-              <MultiSelect
-                options={CERTIFICATION_OPTIONS}
-                selected={certifications}
-                onChange={setCertifications}
-                placeholder="Select certifications..."
-              />
+              <div className="space-y-2">
+                <Label>Certifications</Label>
+                <DropdownMultiSelect
+                  options={CERTIFICATION_OPTIONS}
+                  selected={certifications}
+                  onChange={setCertifications}
+                  placeholder="Select certifications..."
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label>Languages</Label>
-              <MultiSelect
+              <DropdownMultiSelect
                 options={LANGUAGES}
                 selected={languages}
                 onChange={setLanguages}

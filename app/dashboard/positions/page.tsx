@@ -31,8 +31,7 @@ export default async function PositionsPage({
   const userRole = user?.role || session.user.role
   const isGatekeeper = user?.isGatekeeper || session.user.isGatekeeper
   const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
-  const isRecruiter = userRole === "RECRUITER"
-  const canManage = isAdmin || isRecruiter || isGatekeeper
+  const canManage = isAdmin || isGatekeeper
 
   // Build where clause
   const where: Prisma.JobPostingWhereInput = {}

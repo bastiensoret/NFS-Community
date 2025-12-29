@@ -73,7 +73,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates)
-  const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "RECRUITER"
+  const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
 
   // Sync state with props when initialCandidates changes
   if (candidates !== initialCandidates) {
@@ -224,7 +224,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                   {candidates.map((candidate) => {
                     const isOwner = currentUserId && candidate.creatorId === currentUserId
                     const canEdit = canManage || (isOwner && candidate.status === 'DRAFT')
-                    const canDelete = canManage // Only admins/recruiters can delete based on requirements
+                    const canDelete = canManage // Only admins can delete based on requirements
 
                     return (
                     <TableRow key={candidate.id}>

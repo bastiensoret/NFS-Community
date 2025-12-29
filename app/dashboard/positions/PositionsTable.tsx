@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter } from "lucide-react"
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter, Eye } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
@@ -130,16 +130,25 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
   }
   
   const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
-  const isRecruiter = userRole === "RECRUITER"
   const isUser = userRole === "USER"
   
   // Who can create positions?
-  const canCreate = isAdmin || isRecruiter || isUser
+  const canCreate = isAdmin || isUser
 
   const canEditPosition = (position: Position) => {
-    if (isAdmin || isRecruiter) return true
+    if (isAdmin) return true
     // Users can only edit their own DRAFTS
     if (position.creatorId === currentUserId && position.status === "DRAFT") return true
+    return false
+  }
+
+  const canDeletePosition = (position: Position) => {
+    if (isAdmin) return true
+    // Users can only delete their own positions until PENDING_APPROVAL status
+    if (position.creatorId === currentUserId) {
+      const deletableStatuses = ["DRAFT", "PENDING_APPROVAL"]
+      return deletableStatuses.includes(position.status)
+    }
     return false
   }
 
@@ -307,13 +316,25 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
                       {getStatusBadge(position.status)}
                     </TableCell>
                     <TableCell className="text-right py-4">
-                      {canEditPosition(position) && (
-                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link href={`/dashboard/positions/${position.id}`}>
+                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* View icon - always visible */}
+                        <Link href={`/dashboard/positions/${position.id}`}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        
+                        {/* Edit icon - only for those who can edit */}
+                        {canEditPosition(position) && (
+                          <Link href={`/dashboard/positions/${position.id}/edit`}>
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                               <Pencil className="h-4 w-4" />
                             </Button>
                           </Link>
+                        )}
+                        
+                        {/* Delete icon - only for those who can delete */}
+                        {canDeletePosition(position) && (
                           <Button
                             variant="ghost"
                             size="icon"
@@ -322,8 +343,8 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

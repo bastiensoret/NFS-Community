@@ -41,14 +41,13 @@ export default async function CandidateDetailsPage({
   const isGatekeeper = user?.isGatekeeper || session.user.isGatekeeper
   const isCreator = candidate.creatorId === session.user.id
   const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
-  const isRecruiter = userRole === "RECRUITER"
 
   // Visibility Logic
-  // - Admins, Recruiters, Gatekeepers: Can view all
+  // - Admins, Gatekeepers: Can view all
   // - Creators: Can view their own
   // - Others: Can view ACTIVE only
   
-  const canManage = isAdmin || isRecruiter || isGatekeeper
+  const canManage = isAdmin || isGatekeeper
   const isOwner = isCreator
 
   if (!canManage && !isOwner && candidate.status !== "ACTIVE") {

@@ -24,7 +24,7 @@ export default async function EditCandidatePage({
   }
 
   // Permission Check
-  // Admins, Recruiters, and Gatekeepers can view/edit
+  // Admins and Gatekeepers can view/edit
   // Creators can edit their own DRAFTs
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },

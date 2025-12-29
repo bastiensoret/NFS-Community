@@ -29,7 +29,7 @@ export default async function CandidatesPage({
   
   const userRole = user?.role || session.user.role
   const isGatekeeper = user?.isGatekeeper || session.user.isGatekeeper
-  const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "RECRUITER" || isGatekeeper
+  const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || isGatekeeper
 
   const where: Prisma.CandidateWhereInput = {}
 
