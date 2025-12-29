@@ -74,6 +74,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
   const searchParams = useSearchParams()
   const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates)
   const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
+  const canCreate = true // All authenticated users can create candidates
 
   // Sync state with props when initialCandidates changes
   if (candidates !== initialCandidates) {
@@ -155,7 +156,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
           <h1 className="text-3xl font-bold text-foreground">Candidates</h1>
           <p className="text-muted-foreground mt-2">Manage candidate profiles</p>
         </div>
-        {canManage && (
+        {canCreate && (
           <Link href="/dashboard/candidates/new">
             <Button>
               <Plus className="mr-2 h-4 w-4" />

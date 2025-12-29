@@ -129,7 +129,7 @@ export default async function PositionsPage({
   return (
     <PositionsTable 
       initialPositions={serializedPositions} 
-      userRole={session.user?.role}
+      userRole={userRole}
       currentUserId={session.user?.id}
       pendingCount={pendingCount}
       currentStatus={status || "ALL"}

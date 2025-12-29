@@ -84,20 +84,21 @@ export default function NewCandidatePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Add New Candidate</h1>
         <p className="text-muted-foreground mt-2">Create a new candidate profile</p>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Personal Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Candidate Information</CardTitle>
-            <CardDescription>Enter the candidate's details</CardDescription>
+            <CardTitle>Personal Information</CardTitle>
+            <CardDescription>Basic contact details of the candidate</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name *</Label>
                 <Input
@@ -118,7 +119,7 @@ export default function NewCandidatePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email *</Label>
                 <Input
@@ -139,7 +140,7 @@ export default function NewCandidatePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="seniorityLevel">Seniority Level</Label>
                 <Select
@@ -166,7 +167,16 @@ export default function NewCandidatePage() {
                 />
               </div>
             </div>
+          </CardContent>
+        </Card>
 
+        {/* Professional Profile */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Professional Profile</CardTitle>
+            <CardDescription>Candidate's professional preferences and expertise</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Desired Roles</Label>
@@ -220,21 +230,23 @@ export default function NewCandidatePage() {
                 placeholder="Select languages..."
               />
             </div>
-
-            <div className="flex gap-4 pt-4">
-              <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Candidate"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-              >
-                Cancel
-              </Button>
-            </div>
           </CardContent>
         </Card>
+
+        {/* Form Actions */}
+        <div className="flex gap-4 pt-4">
+          <Button type="submit" disabled={loading} className="min-w-32">
+            {loading ? "Creating..." : "Create Candidate"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="min-w-24"
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </div>
   )

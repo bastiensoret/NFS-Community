@@ -116,17 +116,18 @@ export default function NewJobPostingPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="w-full max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Add new position</h1>
         <p className="text-muted-foreground mt-2">Create a new job opportunity</p>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Basic Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Position Information</CardTitle>
-            <CardDescription>Create a new job opportunity</CardDescription>
+            <CardTitle>Basic Information</CardTitle>
+            <CardDescription>Core details about the position</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -182,6 +183,26 @@ export default function NewJobPostingPage() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="description">Job Description</Label>
+              <Textarea
+                id="description"
+                rows={4}
+                placeholder="Brief description of the role and context..."
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Position Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Position Details</CardTitle>
+            <CardDescription>Specific requirements and logistics</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="startDate">Start Date *</Label>
@@ -246,18 +267,16 @@ export default function NewJobPostingPage() {
                 </Select>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Job Description</Label>
-              <Textarea
-                id="description"
-                rows={4}
-                placeholder="Brief description of the role and context..."
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            </div>
-
+        {/* Skills & Requirements */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Skills & Requirements</CardTitle>
+            <CardDescription>Key responsibilities and required skills</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Key Responsibilities</Label>
@@ -279,13 +298,21 @@ export default function NewJobPostingPage() {
                 />
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="space-y-2">
-              <Label>Languages</Label>
-              <div className="flex items-end justify-between p-4 border rounded-lg bg-muted/50">
-                <div className="flex gap-4 items-end">
-                  <div className="w-[200px] space-y-1">
-                    <Label className="text-xs">Language</Label>
+        {/* Language Requirements */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Language Requirements</CardTitle>
+            <CardDescription>Specify required languages and proficiency levels</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <div className="p-4 border rounded-lg bg-muted/30">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Language</Label>
                     <Select 
                       value={newLanguage.language}
                       onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
@@ -300,13 +327,15 @@ export default function NewJobPostingPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="w-[150px] space-y-1">
-                    <Label className="text-xs">Level</Label>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Level</Label>
                     <Select 
                       value={newLanguage.level} 
                       onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
                     >
-                      <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         {LEVELS.map(level => (
                           <SelectItem key={level} value={level}>{level}</SelectItem>
@@ -314,39 +343,53 @@ export default function NewJobPostingPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex items-center space-x-2 pb-3">
+                  <div className="flex items-center space-x-2">
                     <Checkbox 
                       id="lang-mandatory"
                       checked={newLanguage.mandatory}
                       onCheckedChange={(checked) => setNewLanguage({...newLanguage, mandatory: checked as boolean})}
-                      className="bg-background"
                     />
-                    <Label htmlFor="lang-mandatory" className="text-xs">Mandatory</Label>
+                    <Label htmlFor="lang-mandatory" className="text-sm font-medium">Mandatory</Label>
                   </div>
+                  <Button type="button" onClick={addLanguage} className="w-full">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Language
+                  </Button>
                 </div>
-                <Button type="button" onClick={addLanguage} size="icon"><Plus className="h-4 w-4" /></Button>
               </div>
               
-              <div className="space-y-2 mt-2">
+              <div className="space-y-3">
                 {languages.map((lang, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-2 bg-card border rounded text-sm shadow-sm">
+                  <div key={idx} className="flex items-center justify-between p-3 bg-card border rounded-lg">
                     <div className="flex gap-4 items-center">
-                      <span className="font-semibold text-foreground w-24">{lang.language}</span>
+                      <span className="font-semibold text-foreground min-w-24">{lang.language}</span>
                       <span className="text-muted-foreground">{lang.level}</span>
-                      {lang.mandatory && <span className="text-xs font-medium text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Mandatory</span>}
+                      {lang.mandatory && <span className="text-xs font-medium text-destructive bg-destructive/10 px-2 py-1 rounded-full">Mandatory</span>}
                     </div>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => removeLanguage(idx)}>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => removeLanguage(idx)}>
                       <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                     </Button>
                   </div>
                 ))}
+                {languages.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">No language requirements added yet</p>
+                )}
               </div>
             </div>
+          </CardContent>
+        </Card>
 
+        {/* Work Arrangement */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Work Arrangement</CardTitle>
+            <CardDescription>Remote work and office requirements</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="space-y-0.5">
-                  <Label htmlFor="remote" className="text-base">Homeworking allowed</Label>
+                  <Label htmlFor="remote" className="text-base font-medium">Homeworking allowed</Label>
                   <p className="text-sm text-muted-foreground">Is the candidate allowed to work from home?</p>
                 </div>
                 <Checkbox 
@@ -373,7 +416,16 @@ export default function NewJobPostingPage() {
                 </div>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
+        {/* Status Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Status Information</CardTitle>
+            <CardDescription>Position status and workflow</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
@@ -385,21 +437,23 @@ export default function NewJobPostingPage() {
                 <p className="text-xs text-muted-foreground">Status is managed automatically.</p>
               </div>
             </div>
-
-            <div className="flex gap-4 pt-4">
-              <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Position"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-              >
-                Cancel
-              </Button>
-            </div>
           </CardContent>
         </Card>
+
+        {/* Form Actions */}
+        <div className="flex gap-4 pt-4">
+          <Button type="submit" disabled={loading} className="min-w-32">
+            {loading ? "Creating..." : "Create Position"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="min-w-24"
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </div>
   )

@@ -39,7 +39,7 @@ export default async function DashboardLayout({
   const currentUser = user || session.user
 
   return (
-    <div className="flex h-screen bg-muted/40">
+    <div className="fixed inset-0 flex bg-muted/40 overflow-hidden">
       <aside className="w-64 bg-background border-r flex flex-col">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-foreground">NFS Community</h1>
@@ -132,10 +132,8 @@ export default async function DashboardLayout({
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto">
-        <div className="p-8">
-          {children}
-        </div>
+      <main className="flex-1 overflow-auto p-8">
+        {children}
       </main>
     </div>
   )

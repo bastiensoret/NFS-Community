@@ -20,10 +20,12 @@ const SignUpForm = dynamic(() => import("./SignUpForm"), {
 
 export default function SignUpPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
-      <Suspense fallback={<div>Loading...</div>}>
-        <SignUpForm />
-      </Suspense>
+    <div className="h-full w-full overflow-auto bg-muted/40">
+      <div className="flex min-h-full items-center justify-center px-4 py-8">
+        <Suspense fallback={<div>Loading...</div>}>
+          <SignUpForm />
+        </Suspense>
+      </div>
     </div>
   )
 }
