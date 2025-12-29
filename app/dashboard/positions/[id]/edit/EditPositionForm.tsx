@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { X, Plus } from "lucide-react"
 import { CategorizedMultiSelect } from "@/components/ui/categorized-multi-select"
@@ -280,36 +280,13 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
         <p className="text-muted-foreground mt-2">Update job opportunity details</p>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <Tabs defaultValue="core" className="space-y-6">
-          <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-6 rounded-none border-b">
-            <TabsTrigger 
-              value="core"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
-            >
-              Core information
-            </TabsTrigger>
-            <TabsTrigger 
-              value="requirements"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
-            >
-              Requirements
-            </TabsTrigger>
-            <TabsTrigger 
-              value="details"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
-            >
-              Details
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="core">
-            <Card>
-              <CardHeader>
-                <CardTitle>Core information</CardTitle>
-                <CardDescription>Fields required to display a position</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Core information</CardTitle>
+            <CardDescription>Fields required to display a position</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Reference ID</Label>
@@ -457,15 +434,15 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="requirements">
-            <Card>
-              <CardHeader>
-                <CardTitle>Requirements & skills</CardTitle>
-                <CardDescription>Detailed requirements for the candidate</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-8">
+        <Separator />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Requirements & skills</CardTitle>
+            <CardDescription>Detailed requirements for the candidate</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-8">
                 <div className="space-y-2">
                   <Label htmlFor="description">Job Description</Label>
                   <Textarea
@@ -556,15 +533,15 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="details">
-            <Card>
-              <CardHeader>
-                <CardTitle>Additional details</CardTitle>
-                <CardDescription>Work arrangement specifics</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+        <Separator />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Additional details</CardTitle>
+            <CardDescription>Work arrangement specifics</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-0.5">
@@ -597,10 +574,8 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
 
-        <div className="flex gap-4 pt-6">
+        <div className="flex gap-4">
           <Button type="submit" disabled={loading} variant={isDraft ? "outline" : "default"}>
             {loading ? "Saving..." : (isDraft ? "Save Draft" : "Save changes")}
           </Button>

@@ -20,7 +20,7 @@ import {
   CERTIFICATION_OPTIONS, 
   LANGUAGES 
 } from "@/lib/constants"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Separator } from "@/components/ui/separator"
 
 interface Candidate {
   id: string
@@ -114,185 +114,166 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
         <p className="text-muted-foreground mt-2">Update candidate profile</p>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <Tabs defaultValue="info" className="space-y-6">
-          <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-6 rounded-none border-b">
-            <TabsTrigger 
-              value="info" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
-            >
-              Information
-            </TabsTrigger>
-            <TabsTrigger 
-              value="skills" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
-            >
-              Skills & experience
-            </TabsTrigger>
-          </TabsList>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Personal information</CardTitle>
+            <CardDescription>Basic details of the candidate</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name *</Label>
+                <Input
+                  id="firstName"
+                  required
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name *</Label>
+                <Input
+                  id="lastName"
+                  required
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                />
+              </div>
+            </div>
 
-          <TabsContent value="info">
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal information</CardTitle>
-                <CardDescription>Basic details of the candidate</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name *</Label>
-                    <Input
-                      id="firstName"
-                      required
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name *</Label>
-                    <Input
-                      id="lastName"
-                      required
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    />
-                  </div>
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
+                  id="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                />
+              </div>
+            </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phoneNumber">Phone Number</Label>
-                    <Input
-                      id="phoneNumber"
-                      value={formData.phoneNumber}
-                      onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                    />
-                  </div>
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  disabled={!isAdmin && formData.status !== 'DRAFT'}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DRAFT">Draft</SelectItem>
+                    <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="INACTIVE">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Input
-                      id="location"
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(value) => setFormData({ ...formData, status: value })}
-                      disabled={!isAdmin && formData.status !== 'DRAFT'}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="DRAFT">Draft</SelectItem>
-                        <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
-                        <SelectItem value="ACTIVE">Active</SelectItem>
-                        <SelectItem value="INACTIVE">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+        <Separator />
 
-          <TabsContent value="skills">
-            <Card>
-              <CardHeader>
-                <CardTitle>Skills & experience</CardTitle>
-                <CardDescription>Professional qualifications</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                   <Label htmlFor="seniorityLevel">Seniority Level</Label>
-                   <Select
-                     value={formData.seniorityLevel}
-                     onValueChange={(value) => setFormData({ ...formData, seniorityLevel: value })}
-                   >
-                     <SelectTrigger>
-                       <SelectValue placeholder="Select level" />
-                     </SelectTrigger>
-                     <SelectContent>
-                       {SENIORITY_LEVELS.map((level) => (
-                         <SelectItem key={level.value} value={level.value}>
-                           {level.label}
-                         </SelectItem>
-                       ))}
-                     </SelectContent>
-                   </Select>
-                 </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Skills & experience</CardTitle>
+            <CardDescription>Professional qualifications</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+               <Label htmlFor="seniorityLevel">Seniority Level</Label>
+               <Select
+                 value={formData.seniorityLevel}
+                 onValueChange={(value) => setFormData({ ...formData, seniorityLevel: value })}
+               >
+                 <SelectTrigger>
+                   <SelectValue placeholder="Select level" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   {SENIORITY_LEVELS.map((level) => (
+                     <SelectItem key={level.value} value={level.value}>
+                       {level.label}
+                     </SelectItem>
+                   ))}
+                 </SelectContent>
+               </Select>
+             </div>
 
-                <div className="space-y-2">
-                  <Label>Desired Roles</Label>
-                  <MultiSelect
-                    options={ROLE_OPTIONS}
-                    selected={desiredRoles}
-                    onChange={setDesiredRoles}
-                    placeholder="Select desired roles..."
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label>Desired Roles</Label>
+              <MultiSelect
+                options={ROLE_OPTIONS}
+                selected={desiredRoles}
+                onChange={setDesiredRoles}
+                placeholder="Select desired roles..."
+              />
+            </div>
 
-                <div className="space-y-2">
-                  <Label>Skills</Label>
-                  <CategorizedMultiSelect
-                    options={SKILL_OPTIONS}
-                    selected={skills}
-                    onChange={setSkills}
-                    placeholder="Select skills..."
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label>Skills</Label>
+              <CategorizedMultiSelect
+                options={SKILL_OPTIONS}
+                selected={skills}
+                onChange={setSkills}
+                placeholder="Select skills..."
+              />
+            </div>
 
-                <div className="space-y-2">
-                  <Label>Industries</Label>
-                  <MultiSelect
-                    options={INDUSTRY_OPTIONS}
-                    selected={industries}
-                    onChange={setIndustries}
-                    placeholder="Select industries..."
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label>Industries</Label>
+              <MultiSelect
+                options={INDUSTRY_OPTIONS}
+                selected={industries}
+                onChange={setIndustries}
+                placeholder="Select industries..."
+              />
+            </div>
 
-                <div className="space-y-2">
-                  <Label>Certifications</Label>
-                  <MultiSelect
-                    options={CERTIFICATION_OPTIONS}
-                    selected={certifications}
-                    onChange={setCertifications}
-                    placeholder="Select certifications..."
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label>Certifications</Label>
+              <MultiSelect
+                options={CERTIFICATION_OPTIONS}
+                selected={certifications}
+                onChange={setCertifications}
+                placeholder="Select certifications..."
+              />
+            </div>
 
-                <div className="space-y-2">
-                  <Label>Languages</Label>
-                  <MultiSelect
-                    options={LANGUAGES}
-                    selected={languages}
-                    onChange={setLanguages}
-                    placeholder="Select languages..."
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            <div className="space-y-2">
+              <Label>Languages</Label>
+              <MultiSelect
+                options={LANGUAGES}
+                selected={languages}
+                onChange={setLanguages}
+                placeholder="Select languages..."
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="flex gap-4 pt-4">
+        <div className="flex gap-4">
           <Button type="submit" disabled={loading}>
             {loading ? "Saving..." : "Save Changes"}
           </Button>
