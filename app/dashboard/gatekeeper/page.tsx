@@ -38,7 +38,7 @@ export default async function GatekeeperDashboardPage() {
     tags: c.skills.slice(0, 3),
     content: c.email,
     creator: c.creator?.name || c.creator?.email || "Unknown",
-    date: formatDistanceToNow(c.updatedAt, { addSuffix: true })
+    date: c.updatedAt.toISOString()
   }))
 
   // Fetch Positions
@@ -70,7 +70,7 @@ export default async function GatekeeperDashboardPage() {
       tags: [p.location, p.country],
       content: p.description ? p.description.substring(0, 100) + "..." : "",
       creator: p.creator?.name || p.creator?.email || "Unknown",
-      date: formatDistanceToNow(p.lastUpdated, { addSuffix: true })
+      date: p.lastUpdated.toISOString()
     }
   })
 

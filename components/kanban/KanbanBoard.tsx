@@ -38,6 +38,33 @@ export function KanbanBoard({ initialItems, columns, onStatusChange }: KanbanBoa
 
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns])
 
+  if (!mounted) {
+    return (
+      <div className="flex gap-4 overflow-x-auto pb-4 h-full min-h-[500px]">
+        {columns.map((col) => (
+          <div
+            key={col.id}
+            className="bg-muted/50 w-[350px] min-w-[350px] max-w-[350px] rounded-lg flex flex-col max-h-full"
+          >
+            <div className="p-4 font-semibold border-b border-border flex justify-between items-center bg-card rounded-t-lg">
+              {col.title}
+              <span className="bg-muted text-muted-foreground px-2 py-1 rounded-full text-xs">
+                {items.filter((item) => item.columnId === col.id).length}
+              </span>
+            </div>
+            <div className="flex-1 p-2 flex flex-col gap-2 overflow-y-auto min-h-[100px]">
+              {items
+                .filter((item) => item.columnId === col.id)
+                .map((item) => (
+                  <KanbanCard key={item.id} item={item} />
+                ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   function onDragStart(event: DragStartEvent) {
     if (event.active.data.current?.type === "Item") {
       setActiveItem(event.active.data.current.item)
@@ -123,6 +150,7 @@ export function KanbanBoard({ initialItems, columns, onStatusChange }: KanbanBoa
 
   return (
     <DndContext
+      id="kanban-board"
       sensors={sensors}
       onDragStart={onDragStart}
       onDragOver={onDragOver}

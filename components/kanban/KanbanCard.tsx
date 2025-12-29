@@ -4,6 +4,8 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { formatDistanceToNow, isValid, parseISO } from "date-fns"
+import { useEffect, useState } from "react"
 
 export type KanbanItem = {
   id: string
@@ -21,6 +23,23 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ item }: KanbanCardProps) {
+  const [formattedDate, setFormattedDate] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (item.date) {
+      try {
+        const date = parseISO(item.date)
+        if (isValid(date)) {
+          setFormattedDate(formatDistanceToNow(date, { addSuffix: true }))
+        } else {
+          setFormattedDate(item.date)
+        }
+      } catch (e) {
+        setFormattedDate(item.date)
+      }
+    }
+  }, [item.date])
+
   const {
     setNodeRef,
     attributes,
@@ -82,7 +101,7 @@ export function KanbanCard({ item }: KanbanCardProps) {
          </div>
          <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-2 border-t mt-2">
              <span>{item.creator}</span>
-             <span>{item.date}</span>
+             <span>{formattedDate || item.date}</span>
          </div>
       </CardContent>
     </Card>
