@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { ProfileForm } from "./ProfileForm"
 import { PasswordForm } from "./PasswordForm"
-import { MyPositionsList } from "./MyPositionsList"
+import { DeleteAccount } from "./DeleteAccount"
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -12,23 +12,9 @@ export default async function ProfilePage() {
     redirect("/auth/signin")
   }
 
-  const [user, createdPositions] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-    }),
-    prisma.jobPosting.findMany({
-      where: { creatorId: session.user.id },
-      orderBy: { postingDate: "desc" },
-      select: {
-        id: true,
-        jobTitle: true,
-        companyName: true,
-        status: true,
-        postingDate: true,
-        reference: true,
-      }
-    })
-  ])
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  })
 
   if (!user) {
     redirect("/auth/signin")
@@ -53,9 +39,9 @@ export default async function ProfilePage() {
           }} 
         />
         
-        <MyPositionsList positions={createdPositions} />
-
         <PasswordForm />
+        
+        <DeleteAccount />
       </div>
     </div>
   )

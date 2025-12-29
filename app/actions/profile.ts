@@ -9,6 +9,29 @@ import { writeFile } from "fs/promises"
 import { join } from "path"
 import { randomUUID } from "crypto"
 
+import { signOut } from "@/auth"
+
+export async function deleteAccount(): Promise<ActionState> {
+  try {
+    const user = await authenticated()
+
+    // Delete the user (cascading deletes for Account and Session are handled by Prisma schema)
+    // Note: Candidates and JobPostings have creatorId optional and no onDelete Cascade in schema
+    // We should decide if we want to nullify or delete them. 
+    // Given the request is simple "delete your account", we'll proceed with user deletion.
+    
+    await prisma.user.delete({
+      where: { id: user.id },
+    })
+
+    await signOut({ redirectTo: "/auth/signin" })
+    
+    return { success: true }
+  } catch (error) {
+    return handleActionError(error)
+  }
+}
+
 export async function updateProfile(prevState: ActionState, formData: FormData): Promise<ActionState> {
   try {
     const user = await authenticated()
