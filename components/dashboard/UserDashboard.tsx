@@ -216,8 +216,8 @@ export function UserDashboard({
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Create new content</CardDescription>
+          <CardTitle>Quick actions</CardTitle>
+          <CardDescription>Make our community grow.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
@@ -227,8 +227,8 @@ export function UserDashboard({
                   <Plus className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <div className="font-medium">Add New Candidate</div>
-                  <div className="text-sm text-muted-foreground">Create a new candidate profile</div>
+                  <div className="font-medium">Add candidate</div>
+                  <div className="text-sm text-muted-foreground">Create a new candidate profile.</div>
                 </div>
               </div>
             </Link>
@@ -238,8 +238,8 @@ export function UserDashboard({
                   <Plus className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <div className="font-medium">Create Position</div>
-                  <div className="text-sm text-muted-foreground">Add a new job opportunity</div>
+                  <div className="font-medium">Add position</div>
+                  <div className="text-sm text-muted-foreground">Create a new job opportunity.</div>
                 </div>
               </div>
             </Link>
@@ -247,36 +247,6 @@ export function UserDashboard({
         </CardContent>
       </Card>
 
-      {/* Getting Started */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Getting Started</CardTitle>
-          <CardDescription>Quick guide to make the most of your dashboard</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
-            <div>
-              <div className="font-medium">Create Candidates</div>
-              <div className="text-sm text-muted-foreground">Add candidate profiles to build your talent pool</div>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-green-500 mt-2"></div>
-            <div>
-              <div className="font-medium">Post Positions</div>
-              <div className="text-sm text-muted-foreground">Create job opportunities that need to be filled</div>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2"></div>
-            <div>
-              <div className="font-medium">Track Progress</div>
-              <div className="text-sm text-muted-foreground">Monitor the status of your positions and candidates</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

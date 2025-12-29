@@ -194,36 +194,6 @@ export function GatekeeperDashboard({
         </Card>
       </div>
 
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Gatekeeper Workflow</CardTitle>
-          <CardDescription>Your approval process at a glance</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-orange-500 mt-2"></div>
-            <div>
-              <div className="font-medium">Review Submissions</div>
-              <div className="text-sm text-muted-foreground">Check position details for completeness and accuracy</div>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-green-500 mt-2"></div>
-            <div>
-              <div className="font-medium">Approve Positions</div>
-              <div className="text-sm text-muted-foreground">Mark positions as ready for campaign launch</div>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
-            <div>
-              <div className="font-medium">Launch Campaigns</div>
-              <div className="text-sm text-muted-foreground">Send approved positions to candidates</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
