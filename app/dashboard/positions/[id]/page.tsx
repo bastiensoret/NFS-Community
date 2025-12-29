@@ -188,7 +188,7 @@ export default async function PositionDetailsPage({
 
               {position.skills.length > 0 && (
                 <div>
-                  <h3 className="font-semibold mb-2">Required Skills</h3>
+                  <h3 className="font-semibold mb-2">Required skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {position.skills.map((skill, i) => (
                       <Badge key={i} variant="secondary">{skill}</Badge>

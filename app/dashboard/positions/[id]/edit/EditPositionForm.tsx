@@ -253,7 +253,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
       <AlertDialog open={showSubmitAlert} onOpenChange={setShowSubmitAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Submit for Approval?</AlertDialogTitle>
+            <AlertDialogTitle>Submit for approval?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to submit this position for approval? You will not be able to edit it afterwards until it is reviewed.
             </AlertDialogDescription>
@@ -460,7 +460,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
           <TabsContent value="requirements">
             <Card>
               <CardHeader>
-                <CardTitle>Requirements & Skills</CardTitle>
+                <CardTitle>Requirements & skills</CardTitle>
                 <CardDescription>Detailed requirements for the candidate</CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">
@@ -559,7 +559,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
           <TabsContent value="details">
             <Card>
               <CardHeader>
-                <CardTitle>Additional Details</CardTitle>
+                <CardTitle>Additional details</CardTitle>
                 <CardDescription>Work arrangement specifics</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">

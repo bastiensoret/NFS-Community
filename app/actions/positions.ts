@@ -160,7 +160,7 @@ export async function updatePositionAction(id: string, data: Partial<JobPostingI
       throw new ActionError("Position is finalized and cannot be edited.")
     }
 
-    // 2. Workflow Rules for Basic Users
+    // 2. Workflow Rules for standard Users
     if (!isAdmin) {
       const isApproving = isGatekeeper && existingPosition.status === "PENDING_APPROVAL"
 

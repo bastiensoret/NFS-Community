@@ -86,7 +86,7 @@ export default function NewCandidatePage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Add New Candidate</h1>
+        <h1 className="text-3xl font-bold text-foreground">Add new candidate</h1>
         <p className="text-muted-foreground mt-2">Create a new candidate profile</p>
       </div>
 
@@ -94,7 +94,7 @@ export default function NewCandidatePage() {
         {/* Personal Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle>Personal information</CardTitle>
             <CardDescription>Basic contact details of the candidate</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -173,7 +173,7 @@ export default function NewCandidatePage() {
         {/* Professional Profile */}
         <Card>
           <CardHeader>
-            <CardTitle>Professional Profile</CardTitle>
+            <CardTitle>Professional profile</CardTitle>
             <CardDescription>Candidate's professional preferences and expertise</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

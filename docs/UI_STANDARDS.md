@@ -26,6 +26,7 @@ This project uses **shadcn/ui** for all UI components. To maintain consistency, 
   - `text-3xl font-bold` for H1
   - `text-xl font-semibold` for H2
   - `text-sm text-muted-foreground` for helper text
+- **Case Style**: All titles (H1, H2, Card titles, etc.) must be in **Sentence case** (e.g., "Add new candidate", "Personal information").
 
 ---
 

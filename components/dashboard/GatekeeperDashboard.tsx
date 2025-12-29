@@ -21,7 +21,7 @@ export function GatekeeperDashboard({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Gatekeeper Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground">Gatekeeping</h1>
         <p className="text-muted-foreground mt-2">Review and approve position submissions</p>
       </div>
 
@@ -30,7 +30,7 @@ export function GatekeeperDashboard({
         <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-orange-800 dark:text-orange-200">
-              Positions Pending Approval
+              Positions pending approval
             </CardTitle>
             <AlertTriangle className="h-4 w-4 text-orange-600" />
           </CardHeader>
@@ -40,7 +40,7 @@ export function GatekeeperDashboard({
             {pendingPositionsCount > 0 && (
               <Button variant="link" className="p-0 h-auto text-orange-600 hover:text-orange-700 dark:text-orange-400" asChild>
                 <Link href="/dashboard/positions?status=PENDING_APPROVAL">
-                  Review Now <ArrowRight className="ml-1 h-4 w-4" />
+                  Review now <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
             )}
@@ -50,7 +50,7 @@ export function GatekeeperDashboard({
         <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-green-800 dark:text-green-200">
-              Ready for Campaign
+              Ready for campaign
             </CardTitle>
             <Send className="h-4 w-4 text-green-600" />
           </CardHeader>
@@ -60,7 +60,7 @@ export function GatekeeperDashboard({
             {approvedPositionsCount > 0 && (
               <Button variant="link" className="p-0 h-auto text-green-600 hover:text-green-700 dark:text-green-400" asChild>
                 <Link href="/dashboard/positions?status=ACTIVE">
-                  Launch Campaigns <ArrowRight className="ml-1 h-4 w-4" />
+                  Launch campaigns <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
             )}
@@ -72,7 +72,7 @@ export function GatekeeperDashboard({
       <div className="grid gap-6 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Positions</CardTitle>
+            <CardTitle className="text-sm font-medium">Total positions</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -83,7 +83,7 @@ export function GatekeeperDashboard({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+            <CardTitle className="text-sm font-medium">Pending review</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -105,7 +105,7 @@ export function GatekeeperDashboard({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Campaigns Sent</CardTitle>
+            <CardTitle className="text-sm font-medium">Campaigns sent</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -119,7 +119,7 @@ export function GatekeeperDashboard({
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Position Review</CardTitle>
+            <CardTitle>Position review</CardTitle>
             <CardDescription>Review and approve position submissions</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -128,7 +128,7 @@ export function GatekeeperDashboard({
                 <div className="flex items-center gap-3">
                   <AlertTriangle className="h-5 w-5 text-orange-600" />
                   <div>
-                    <div className="font-medium">Review Pending Positions</div>
+                    <div className="font-medium">Review pending positions</div>
                     <div className="text-sm text-muted-foreground">Approve or reject submissions</div>
                   </div>
                 </div>
@@ -142,7 +142,7 @@ export function GatekeeperDashboard({
                 <div className="flex items-center gap-3">
                   <Send className="h-5 w-5 text-green-600" />
                   <div>
-                    <div className="font-medium">Launch Campaigns</div>
+                    <div className="font-medium">Launch campaigns</div>
                     <div className="text-sm text-muted-foreground">Send approved positions</div>
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export function GatekeeperDashboard({
               <div className="flex items-center gap-3">
                 <Eye className="h-5 w-5 text-blue-600" />
                 <div>
-                  <div className="font-medium">View All Positions</div>
+                  <div className="font-medium">View all positions</div>
                   <div className="text-sm text-muted-foreground">Browse all job postings</div>
                 </div>
               </div>
@@ -165,7 +165,7 @@ export function GatekeeperDashboard({
 
         <Card>
           <CardHeader>
-            <CardTitle>Tools & Resources</CardTitle>
+            <CardTitle>Tools & resources</CardTitle>
             <CardDescription>Additional gatekeeper tools</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -173,7 +173,7 @@ export function GatekeeperDashboard({
               <div className="flex items-center gap-3">
                 <Briefcase className="h-5 w-5 text-purple-600" />
                 <div>
-                  <div className="font-medium">Kanban Board</div>
+                  <div className="font-medium">Gatekeeping</div>
                   <div className="text-sm text-muted-foreground">Visual workflow management</div>
                 </div>
               </div>
@@ -182,7 +182,7 @@ export function GatekeeperDashboard({
               <div className="flex items-center gap-3">
                 <Briefcase className="h-5 w-5 text-primary" />
                 <div>
-                  <div className="font-medium">Create Position</div>
+                  <div className="font-medium">Create position</div>
                   <div className="text-sm text-muted-foreground">Add new job posting</div>
                 </div>
               </div>
@@ -191,7 +191,7 @@ export function GatekeeperDashboard({
               <div className="flex items-center gap-3">
                 <Eye className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <div className="font-medium">Profile Settings</div>
+                  <div className="font-medium">Profile settings</div>
                   <div className="text-sm text-muted-foreground">Update your profile</div>
                 </div>
               </div>

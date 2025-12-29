@@ -48,7 +48,7 @@ export default async function CandidatesPage({
   }
 
   if (!canManage) {
-    // Basic users see:
+    // Standard users see:
     // 1. Their own candidates (any status)
     // 2. Active candidates from others
     // We need to combine this with existing filters

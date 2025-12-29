@@ -25,7 +25,7 @@ export function AdminDashboard({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground">Admin dashboard</h1>
         <p className="text-muted-foreground mt-2">Manage candidates and positions</p>
       </div>
 
@@ -34,7 +34,7 @@ export function AdminDashboard({
         <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-orange-800 dark:text-orange-200">
-              Candidates Pending Approval
+              Candidates pending approval
             </CardTitle>
             <AlertTriangle className="h-4 w-4 text-orange-600" />
           </CardHeader>
@@ -44,7 +44,7 @@ export function AdminDashboard({
             {pendingCandidatesCount > 0 && (
               <Button variant="link" className="p-0 h-auto text-orange-600 hover:text-orange-700 dark:text-orange-400" asChild>
                 <Link href="/dashboard/candidates?status=PENDING_APPROVAL">
-                  Review Now <ArrowRight className="ml-1 h-4 w-4" />
+                  Review now <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
             )}
@@ -54,7 +54,7 @@ export function AdminDashboard({
         <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-200">
-              Positions Pending Approval
+              Positions pending approval
             </CardTitle>
             <Clock className="h-4 w-4 text-blue-600" />
           </CardHeader>
@@ -64,7 +64,7 @@ export function AdminDashboard({
             {pendingPositionsCount > 0 && (
               <Button variant="link" className="p-0 h-auto text-blue-600 hover:text-blue-700 dark:text-blue-400" asChild>
                 <Link href="/dashboard/positions?status=PENDING_APPROVAL">
-                  Review Now <ArrowRight className="ml-1 h-4 w-4" />
+                  Review now <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
             )}
@@ -76,7 +76,7 @@ export function AdminDashboard({
       <div className="grid gap-6 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Candidates</CardTitle>
+            <CardTitle className="text-sm font-medium">Total candidates</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -87,7 +87,7 @@ export function AdminDashboard({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Candidates</CardTitle>
+            <CardTitle className="text-sm font-medium">Active candidates</CardTitle>
             <UserCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -98,7 +98,7 @@ export function AdminDashboard({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Positions</CardTitle>
+            <CardTitle className="text-sm font-medium">Total positions</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -109,7 +109,7 @@ export function AdminDashboard({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Positions</CardTitle>
+            <CardTitle className="text-sm font-medium">Active positions</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -123,14 +123,14 @@ export function AdminDashboard({
       <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>Candidate Management</CardTitle>
+            <CardTitle>Candidate management</CardTitle>
             <CardDescription>Review and manage candidates</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Link href="/dashboard/candidates?status=PENDING_APPROVAL" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium">Review Pending</div>
+                  <div className="font-medium">Review pending</div>
                   <div className="text-sm text-muted-foreground">Approve candidate profiles</div>
                 </div>
                 {pendingCandidatesCount > 0 && (
@@ -139,11 +139,11 @@ export function AdminDashboard({
               </div>
             </Link>
             <Link href="/dashboard/candidates/new" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">Add Candidate</div>
+              <div className="font-medium">Add candidate</div>
               <div className="text-sm text-muted-foreground">Create new profile</div>
             </Link>
             <Link href="/dashboard/candidates" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">View All Candidates</div>
+              <div className="font-medium">View all candidates</div>
               <div className="text-sm text-muted-foreground">Browse all profiles</div>
             </Link>
           </CardContent>
@@ -151,14 +151,14 @@ export function AdminDashboard({
 
         <Card>
           <CardHeader>
-            <CardTitle>Position Management</CardTitle>
+            <CardTitle>Position management</CardTitle>
             <CardDescription>Manage job opportunities</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Link href="/dashboard/positions?status=PENDING_APPROVAL" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium">Review Pending</div>
+                  <div className="font-medium">Review pending</div>
                   <div className="text-sm text-muted-foreground">Approve positions</div>
                 </div>
                 {pendingPositionsCount > 0 && (
@@ -167,11 +167,11 @@ export function AdminDashboard({
               </div>
             </Link>
             <Link href="/dashboard/positions/new" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">Create Position</div>
+              <div className="font-medium">Create position</div>
               <div className="text-sm text-muted-foreground">Add new job posting</div>
             </Link>
             <Link href="/dashboard/positions" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">View All Positions</div>
+              <div className="font-medium">View all positions</div>
               <div className="text-sm text-muted-foreground">Browse all postings</div>
             </Link>
           </CardContent>
@@ -179,20 +179,20 @@ export function AdminDashboard({
 
         <Card>
           <CardHeader>
-            <CardTitle>System Management</CardTitle>
+            <CardTitle>System management</CardTitle>
             <CardDescription>Administrative tasks</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Link href="/dashboard/admin" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">User Management</div>
+              <div className="font-medium">User management</div>
               <div className="text-sm text-muted-foreground">Manage user accounts</div>
             </Link>
             <Link href="/dashboard/gatekeeper" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">Gatekeeper Board</div>
+              <div className="font-medium">Gatekeeping</div>
               <div className="text-sm text-muted-foreground">View kanban board</div>
             </Link>
             <Link href="/dashboard/profile" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="font-medium">Profile Settings</div>
+              <div className="font-medium">Profile settings</div>
               <div className="text-sm text-muted-foreground">Update your profile</div>
             </Link>
           </CardContent>

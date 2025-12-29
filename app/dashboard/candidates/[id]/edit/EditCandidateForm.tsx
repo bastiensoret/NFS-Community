@@ -109,7 +109,7 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Edit Candidate</h1>
+        <h1 className="text-3xl font-bold text-foreground">Edit candidate</h1>
         <p className="text-muted-foreground mt-2">Update candidate profile</p>
       </div>
 
@@ -126,14 +126,14 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
               value="skills" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
-              Skills & Experience
+              Skills & experience
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="info">
             <Card>
               <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
+                <CardTitle>Personal information</CardTitle>
                 <CardDescription>Basic details of the candidate</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -214,7 +214,7 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
           <TabsContent value="skills">
             <Card>
               <CardHeader>
-                <CardTitle>Skills & Experience</CardTitle>
+                <CardTitle>Skills & experience</CardTitle>
                 <CardDescription>Professional qualifications</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">

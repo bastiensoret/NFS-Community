@@ -126,7 +126,7 @@ export default function NewJobPostingPage() {
         {/* Basic Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
+            <CardTitle>Basic information</CardTitle>
             <CardDescription>Core details about the position</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -199,7 +199,7 @@ export default function NewJobPostingPage() {
         {/* Position Details */}
         <Card>
           <CardHeader>
-            <CardTitle>Position Details</CardTitle>
+            <CardTitle>Position details</CardTitle>
             <CardDescription>Specific requirements and logistics</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -273,7 +273,7 @@ export default function NewJobPostingPage() {
         {/* Skills & Requirements */}
         <Card>
           <CardHeader>
-            <CardTitle>Skills & Requirements</CardTitle>
+            <CardTitle>Skills & requirements</CardTitle>
             <CardDescription>Key responsibilities and required skills</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -304,7 +304,7 @@ export default function NewJobPostingPage() {
         {/* Language Requirements */}
         <Card>
           <CardHeader>
-            <CardTitle>Language Requirements</CardTitle>
+            <CardTitle>Language requirements</CardTitle>
             <CardDescription>Specify required languages and proficiency levels</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -382,7 +382,7 @@ export default function NewJobPostingPage() {
         {/* Work Arrangement */}
         <Card>
           <CardHeader>
-            <CardTitle>Work Arrangement</CardTitle>
+            <CardTitle>Work arrangement</CardTitle>
             <CardDescription>Remote work and office requirements</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -422,7 +422,7 @@ export default function NewJobPostingPage() {
         {/* Status Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Status Information</CardTitle>
+            <CardTitle>Status information</CardTitle>
             <CardDescription>Position status and workflow</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

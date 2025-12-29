@@ -318,7 +318,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Candidate</AlertDialogTitle>
+            <AlertDialogTitle>Delete candidate</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this candidate? This action cannot be undone.
             </AlertDialogDescription>

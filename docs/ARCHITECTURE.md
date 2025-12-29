@@ -20,7 +20,7 @@ Always adhere to the documentation rules:
 ## Key Concepts
 
 ### Role-Based Access Control (RBAC)
-- **Roles**: defined in `lib/roles.ts` (BASIC_USER, USER, ADMIN, SUPER_ADMIN).
+- **Roles**: defined in `lib/roles.ts` (USER, ADMIN, SUPER_ADMIN).
 - **Permissions**: Granular flags (e.g., `canPostPositions`).
 - **Enforcement**:
   - API Level: `withAuth` HOC in `lib/api-utils.ts`.

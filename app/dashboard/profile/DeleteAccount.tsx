@@ -49,7 +49,7 @@ export function DeleteAccount() {
   return (
     <Card className="border-destructive/50">
       <CardHeader>
-        <CardTitle className="text-destructive">Delete Account</CardTitle>
+        <CardTitle className="text-destructive">Delete account</CardTitle>
         <CardDescription>
           Permanently delete your account and all associated data. This action cannot be undone.
         </CardDescription>

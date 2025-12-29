@@ -5,7 +5,7 @@
 ### User
 - Identity and Auth (NextAuth integration).
 - Relations: `Company`, `JobPosting` (CreatedPositions), `Candidate` (CreatedCandidates).
-- Role: String (`BASIC_USER`, `USER`, `ADMIN`, `SUPER_ADMIN`, `RECRUITER`).
+- Role: String (`USER`, `ADMIN`, `SUPER_ADMIN`).
 - Fields: `email`, `password`, `isGatekeeper`, `tenantId`, `firstName`, `lastName`, `plan`, etc.
 
 ### JobPosting

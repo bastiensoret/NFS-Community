@@ -110,14 +110,14 @@ export default async function CandidateDetailsPage({
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Professional Profile</CardTitle>
+              <CardTitle>Professional profile</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               
               {/* Desired Roles */}
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                  <Briefcase className="h-4 w-4" /> Desired Roles
+                  <Briefcase className="h-4 w-4" /> Desired roles
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {candidate.desiredRoles.length > 0 ? (
@@ -208,7 +208,7 @@ export default async function CandidateDetailsPage({
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Key Details</CardTitle>
+              <CardTitle>Key details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         name: name || `${firstName || ""} ${lastName || ""}`.trim() || null,
         firstName: firstName || null,
         lastName: lastName || null,
-        role: "BASIC_USER",
+        role: "USER",
         plan: "FREE",
       },
     })

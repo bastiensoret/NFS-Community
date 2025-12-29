@@ -21,7 +21,7 @@ export function PasswordForm() {
     <form action={action}>
       <Card>
         <CardHeader>
-          <CardTitle>Change Password</CardTitle>
+          <CardTitle>Change password</CardTitle>
           <CardDescription>
             Ensure your account is secure by using a strong password.
           </CardDescription>

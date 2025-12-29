@@ -52,7 +52,7 @@ export default async function PositionsPage({
 
   // Security & Visibility Rules
   if (!canManage) {
-    // Basic users see:
+    // Standard users see:
     // 1. Their own positions (DRAFT, PENDING, etc.)
     // 2. Publicly visible positions (CAMPAIGN_SENT / ACTIVE)
     const visibilityFilter: Prisma.JobPostingWhereInput = {

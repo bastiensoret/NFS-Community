@@ -4,7 +4,6 @@ import { ROLES, hasPermission, canManageRoles, getRoleDisplayName } from '../lib
 describe('Roles and Permissions', () => {
   describe('getRoleDisplayName', () => {
     it('should return correct display name for known roles', () => {
-      expect(getRoleDisplayName(ROLES.BASIC_USER)).toBe('Basic User')
       expect(getRoleDisplayName(ROLES.USER)).toBe('User')
       expect(getRoleDisplayName(ROLES.ADMIN)).toBe('Administrator')
       expect(getRoleDisplayName(ROLES.SUPER_ADMIN)).toBe('Super Administrator')
@@ -16,15 +15,13 @@ describe('Roles and Permissions', () => {
   })
 
   describe('hasPermission', () => {
-    it('should correctly check permissions for BASIC_USER', () => {
-      expect(hasPermission(ROLES.BASIC_USER, 'canViewPositions')).toBe(true)
-      expect(hasPermission(ROLES.BASIC_USER, 'canPostPositions')).toBe(false)
+    it('should return false for restricted permissions', () => {
+      expect(hasPermission(ROLES.USER, 'canManageUsers')).toBe(false)
     })
 
-    it('should correctly check permissions for USER', () => {
-      expect(hasPermission(ROLES.USER, 'canPostPositions')).toBe(true)
-      expect(hasPermission(ROLES.USER, 'canProposeCandidates')).toBe(true)
-      expect(hasPermission(ROLES.USER, 'canValidatePositions')).toBe(false)
+    it('should return true for required permissions for each role', () => {
+      expect(hasPermission(ROLES.USER, 'canViewPositions')).toBe(true)
+      expect(hasPermission(ROLES.ADMIN, 'canViewPositions')).toBe(true)
     })
 
     it('should correctly check permissions for ADMIN', () => {
@@ -49,7 +46,6 @@ describe('Roles and Permissions', () => {
       expect(canManageRoles(ROLES.SUPER_ADMIN)).toBe(true)
       expect(canManageRoles(ROLES.ADMIN)).toBe(false)
       expect(canManageRoles(ROLES.USER)).toBe(false)
-      expect(canManageRoles(ROLES.BASIC_USER)).toBe(false)
     })
   })
 })

@@ -32,7 +32,7 @@ export default async function EditPositionPage({
   const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
   const isRecruiter = userRole === "RECRUITER"
 
-  // Basic Users can only edit their own DRAFT positions
+  // Standard Users can only edit their own DRAFT positions
   // Admins/Recruiters can edit positions generally (subject to other workflow constraints in the form/API)
   const canEdit = isAdmin || isRecruiter || (isCreator && position.status === "DRAFT")
 

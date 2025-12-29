@@ -107,7 +107,7 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit User</DialogTitle>
+          <DialogTitle>Edit user</DialogTitle>
           <DialogDescription>
             Update role and permissions for {displayName}
           </DialogDescription>
@@ -145,7 +145,6 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
               {selectedRole === "ADMIN" && "Can manage positions and candidates"}
               {selectedRole === "SUPER_ADMIN" && "Full system access"}
               {selectedRole === "USER" && "Can post positions and propose candidates"}
-              {selectedRole === "BASIC_USER" && "View-only access to positions"}
             </p>
           </div>
 

@@ -98,7 +98,7 @@ export default async function DashboardPage() {
     )
   }
 
-  // Default: Basic User dashboard (for all other roles including any former RECRUITER role)
+  // Default: Standard User dashboard (for all other roles including any former RECRUITER role)
   return (
     <UserDashboard
       userId={session.user.id}

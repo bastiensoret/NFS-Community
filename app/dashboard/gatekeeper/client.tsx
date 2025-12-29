@@ -49,22 +49,22 @@ export default function GatekeeperDashboardClient({ candidates, positions }: Gat
 
   const candidateColumns = [
     { id: "DRAFT", title: "Draft" },
-    { id: "PENDING_APPROVAL", title: "Pending Approval" },
+    { id: "PENDING_APPROVAL", title: "Pending approval" },
     { id: "ACTIVE", title: "Active" },
     { id: "INACTIVE", title: "Inactive" },
   ]
 
   const positionColumns = [
     { id: "DRAFT", title: "Draft" },
-    { id: "PENDING_APPROVAL", title: "Pending Approval" },
-    { id: "ACTIVE", title: "Campaign Sent (Active)" },
+    { id: "PENDING_APPROVAL", title: "Pending approval" },
+    { id: "ACTIVE", title: "Campaign sent (active)" },
     { id: "INACTIVE", title: "Archived" },
   ]
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-foreground">Gatekeeper Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground">Gatekeeping dashboard</h1>
       </div>
       
       <Tabs defaultValue="candidates" className="space-y-4">

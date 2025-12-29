@@ -1,5 +1,4 @@
 export const ROLES = {
-  BASIC_USER: 'BASIC_USER',
   USER: 'USER',
   ADMIN: 'ADMIN',
   SUPER_ADMIN: 'SUPER_ADMIN',
@@ -8,24 +7,12 @@ export const ROLES = {
 export type Role = typeof ROLES[keyof typeof ROLES]
 
 export const ROLE_DISPLAY_NAMES: Record<Role, string> = {
-  [ROLES.BASIC_USER]: 'Basic User',
   [ROLES.USER]: 'User',
   [ROLES.ADMIN]: 'Administrator',
   [ROLES.SUPER_ADMIN]: 'Super Administrator',
 }
 
 export const ROLE_PERMISSIONS = {
-  [ROLES.BASIC_USER]: {
-    canViewPositions: true,
-    canPostPositions: false,
-    canProposeCandidates: false,
-    canViewAllPositions: false,
-    canViewAllCandidates: false,
-    canValidatePositions: false,
-    canValidateCandidates: false,
-    canApprovePositions: false,
-    canManageUsers: false,
-  },
   [ROLES.USER]: {
     canViewPositions: true,
     canPostPositions: true,

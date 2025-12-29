@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Shield, Search, UserCog, ChevronLeft, ChevronRight } from "lucide-react"
+import { Shield, ShieldPlus, Search, UserCog, ChevronLeft, ChevronRight, User as UserIcon } from "lucide-react"
 import { getRoleDisplayName } from "@/lib/roles"
 import { EditUserDialog } from "./EditUserDialog"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
@@ -109,7 +109,13 @@ export function UserManagementList({ users, pagination }: { users: User[], pagin
                   </Badge>
                 )}
                 <Badge variant="secondary" className="flex items-center gap-1">
-                  <Shield className="h-3 w-3" />
+                  {user.role === "SUPER_ADMIN" ? (
+                    <ShieldPlus className="h-3 w-3" />
+                  ) : user.role === "ADMIN" ? (
+                    <Shield className="h-3 w-3" />
+                  ) : (
+                    <UserIcon className="h-3 w-3" />
+                  )}
                   {getRoleDisplayName(user.role)}
                 </Badge>
               </div>

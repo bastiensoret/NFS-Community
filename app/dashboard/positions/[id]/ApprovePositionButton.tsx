@@ -55,7 +55,7 @@ export function ApprovePositionButton({ positionId }: ApprovePositionButtonProps
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Approve Position?</AlertDialogTitle>
+          <AlertDialogTitle>Approve position?</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to approve this position? This will trigger the email campaign and mark the position as Campaign Sent.
           </AlertDialogDescription>

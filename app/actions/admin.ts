@@ -7,7 +7,7 @@ import { z } from "zod"
 
 const updateUserSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
-  role: z.enum(["BASIC_USER", "USER", "ADMIN", "SUPER_ADMIN"]),
+  role: z.enum(["USER", "ADMIN", "SUPER_ADMIN"]),
   isGatekeeper: z.boolean(),
 })
 

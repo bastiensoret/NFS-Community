@@ -11,7 +11,7 @@ import {
   LogOut, 
   Home, 
   Shield, 
-  User, 
+  User as UserIcon, 
   Settings,
   ChevronsUpDown, 
   SquareKanban,
@@ -106,13 +106,15 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
         <NavItem href="/dashboard/candidates" icon={Users} label="Candidates" />
         <NavItem href="/dashboard/positions" icon={Briefcase} label="Positions" />
         
-        {(user?.role === "GATEKEEPER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") && (
-          <NavItem href="/dashboard/gatekeeper" icon={SquareKanban} label="Gatekeeper Board" />
-        )}
+        <div className="pt-4 mt-4 border-t border-border/50">
+          {(user?.role === "GATEKEEPER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") && (
+            <NavItem href="/dashboard/gatekeeper" icon={SquareKanban} label="Gatekeeping" />
+          )}
 
-        {user?.role === "SUPER_ADMIN" && (
-           <NavItem href="/dashboard/admin" icon={Shield} label="Administration" />
-        )}
+          {user?.role === "SUPER_ADMIN" && (
+             <NavItem href="/dashboard/admin" icon={Shield} label="Administration" />
+          )}
+        </div>
       </nav>
 
       <div className="p-2 border-t mt-auto">
@@ -154,7 +156,7 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/dashboard/profile" className="cursor-pointer flex w-full items-center">
-                <User className="mr-2 h-4 w-4" />
+                <UserIcon className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </Link>
             </DropdownMenuItem>

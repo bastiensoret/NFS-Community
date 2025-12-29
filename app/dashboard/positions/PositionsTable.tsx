@@ -376,7 +376,7 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Position</AlertDialogTitle>
+            <AlertDialogTitle>Delete position</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this position? This action cannot be undone.
             </AlertDialogDescription>

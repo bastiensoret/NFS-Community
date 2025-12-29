@@ -23,7 +23,7 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
+        <h1 className="text-3xl font-bold text-foreground">Profile settings</h1>
         <p className="text-muted-foreground mt-2">
           Manage your account settings and preferences.
         </p>

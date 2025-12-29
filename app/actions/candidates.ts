@@ -103,7 +103,7 @@ export async function updateCandidateAction(id: string, data: Partial<CandidateI
        }
 
        if (!isGatekeeper) {
-          // Basic user (Creator)
+          // Standard user (Creator)
           if (existingCandidate.status !== "DRAFT") {
             throw new ActionError("Cannot edit candidate after submission")
           }

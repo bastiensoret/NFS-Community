@@ -161,7 +161,7 @@ nfs-community/
 
 ### User
 - Authentication and authorization
-- Roles: SUPER_ADMIN, GATEKEEPER, BASIC_USER
+- Roles: SUPER_ADMIN, ADMIN, USER
 
 ### Candidate
 - Personal information (name, email, phone)

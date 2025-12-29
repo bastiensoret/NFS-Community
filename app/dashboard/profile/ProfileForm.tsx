@@ -32,7 +32,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     <form action={action}>
       <Card>
         <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
+          <CardTitle>Profile information</CardTitle>
           <CardDescription>
             Update your personal details and profile picture.
           </CardDescription>

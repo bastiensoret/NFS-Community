@@ -23,20 +23,20 @@ Create a new job position.
   - Supports flattened fields: `remoteAllowed`, `onSiteDays`, `minSalary`, etc.
   - `languageRequirements` array maps to relation.
 - **Permissions**: 
-  - `BASIC_USER` -> forces status `DRAFT`.
-  - `ADMIN` -> can set any status.
+  - `USER` -> forces status `DRAFT`.
+  - `ADMINISTRATOR` -> can set any status.
 
 #### `PATCH /api/positions/[id]`
 Update an existing position.
 - **Body**: Partial `JobPostingInput`.
 - **Permissions**:
   - Creator can edit if `DRAFT`.
-  - Admin can edit any.
-  - Gatekeeper can approve (`PENDING_APPROVAL` -> `CAMPAIGN_SENT`).
+  - Administrator can edit any.
+  - Super Administrator can approve (`PENDING_APPROVAL` -> `CAMPAIGN_SENT`).
 
 #### `DELETE /api/positions/[id]`
 Delete a position.
-- **Permissions**: Creator or Admin.
+- **Permissions**: Creator or Administrator.
 
 ### Candidates
 
