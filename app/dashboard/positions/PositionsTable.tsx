@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { SENIORITY_LEVELS } from "@/lib/constants"
 import { deletePositionAction } from "@/app/actions/positions"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -304,7 +305,7 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
                       {position.jobTitle}
                     </TableCell>
                     <TableCell className="py-4 text-muted-foreground">
-                      {position.seniorityLevel}
+                      {SENIORITY_LEVELS.find(l => l.value === position.seniorityLevel)?.label || position.seniorityLevel}
                     </TableCell>
                     <TableCell className="py-4 text-muted-foreground">{position.companyName}</TableCell>
                     <TableCell className="py-4 text-muted-foreground">{getLocationString(position)}</TableCell>

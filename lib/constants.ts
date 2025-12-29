@@ -127,3 +127,10 @@ export const CERTIFICATION_OPTIONS = [
   "CSM (Certified ScrumMaster)",
   "CIPP/E (Certified Information Privacy Professional/Europe)"
 ]
+
+export const SENIORITY_LEVELS = [
+  { value: "Junior", label: "Junior (-2 years)" },
+  { value: "Medior", label: "Medior (2-5 years)" },
+  { value: "Senior", label: "Senior (5-8 years)" },
+  { value: "Expert", label: "Expert (+8 years)" }
+]

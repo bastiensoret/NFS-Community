@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { SENIORITY_LEVELS } from "@/lib/constants"
 import { updatePositionAction } from "@/app/actions/positions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -425,10 +426,11 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Junior">Junior (-2 years)</SelectItem>
-                        <SelectItem value="Medior">Medior (2-5 years)</SelectItem>
-                        <SelectItem value="Senior">Senior (5-8 years)</SelectItem>
-                        <SelectItem value="Expert">Expert (+8 years)</SelectItem>
+                        {SENIORITY_LEVELS.map((level) => (
+                          <SelectItem key={level.value} value={level.value}>
+                            {level.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

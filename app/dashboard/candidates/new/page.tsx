@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SENIORITY_LEVELS } from "@/lib/constants"
 import { createCandidateAction } from "@/app/actions/candidates"
 import { type CandidateInput } from "@/lib/validations"
 import { toast } from "sonner"
@@ -151,10 +152,11 @@ export default function NewCandidatePage() {
                     <SelectValue placeholder="Select level" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Junior">Junior</SelectItem>
-                    <SelectItem value="Medior">Medior</SelectItem>
-                    <SelectItem value="Senior">Senior</SelectItem>
-                    <SelectItem value="Expert">Expert</SelectItem>
+                    {SENIORITY_LEVELS.map((level) => (
+                      <SelectItem key={level.value} value={level.value}>
+                        {level.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

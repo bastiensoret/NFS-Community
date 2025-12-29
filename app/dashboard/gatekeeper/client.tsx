@@ -14,6 +14,8 @@ interface GatekeeperDashboardClientProps {
 }
 
 export default function GatekeeperDashboardClient({ candidates, positions }: GatekeeperDashboardClientProps) {
+  const [activeTab, setActiveTab] = useState<"candidates" | "positions">("candidates")
+
   async function handleCandidateStatusChange(id: string, newStatus: string) {
     try {
       const result = await updateCandidateAction(id, { status: newStatus as any })
@@ -64,29 +66,49 @@ export default function GatekeeperDashboardClient({ candidates, positions }: Gat
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-foreground">Gatekeeping dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground">Gatekeeping</h1>
       </div>
       
-      <Tabs defaultValue="candidates" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="candidates">Candidates</TabsTrigger>
-          <TabsTrigger value="positions">Positions</TabsTrigger>
-        </TabsList>
-        <TabsContent value="candidates" className="space-y-4">
-          <KanbanBoard 
-            initialItems={candidates} 
+      <div className="flex items-center gap-4 bg-muted/50 p-1 rounded-lg w-fit">
+        <button
+          onClick={() => setActiveTab("candidates")}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            activeTab === "candidates"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Candidates
+        </button>
+        <button
+          onClick={() => setActiveTab("positions")}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            activeTab === "positions"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Positions
+        </button>
+      </div>
+
+      {activeTab === "candidates" ? (
+        <div className="space-y-4">
+          <KanbanBoard
+            initialItems={candidates}
             columns={candidateColumns}
             onStatusChange={handleCandidateStatusChange}
           />
-        </TabsContent>
-        <TabsContent value="positions" className="space-y-4">
-          <KanbanBoard 
-            initialItems={positions} 
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <KanbanBoard
+            initialItems={positions}
             columns={positionColumns}
             onStatusChange={handlePositionStatusChange}
           />
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
     </div>
   )
 }
