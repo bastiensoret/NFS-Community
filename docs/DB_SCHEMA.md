@@ -3,45 +3,31 @@
 ## Models
 
 ### User
-- Identity and Auth.
-- Relations: `Company`, `JobPosting` (CreatedPositions).
-- Role: String enum (BASIC_USER, USER, ADMIN, SUPER_ADMIN).
+- Identity and Auth (NextAuth integration).
+- Relations: `Company`, `JobPosting` (CreatedPositions), `Candidate` (CreatedCandidates).
+- Role: String (`BASIC_USER`, `USER`, `ADMIN`, `SUPER_ADMIN`, `RECRUITER`).
+- Fields: `email`, `password`, `isGatekeeper`, `tenantId`, `firstName`, `lastName`, `plan`, etc.
 
 ### JobPosting
-- Core entity.
-- **Legacy Fields** (Deprecated/Optional):
-  - `workLocation` (Json) - *To be migrated*
-  - `externalReference`
-- **Current Fields** (Refactored & Flattened):
-  - `location` (String)
-  - `country` (String)
-  - `status` (Enum String)
-  - **Work Arrangement**:
-    - `remoteAllowed` (Boolean)
-    - `onSiteDays` (Int)
-  - **Salary**:
-    - `minSalary` (Float)
-    - `maxSalary` (Float)
-    - `currency` (String)
-  - **Contact**:
-    - `contactName` (String)
-    - `contactEmail` (String)
-    - `contactPhone` (String)
-  - **Arrays** (Postgres):
-    - `responsibilities` (String[])
-    - `skills` (String[])
-    - `languages` (String[]) - *Legacy simple list*
-- **Relations**:
-  - `languageRequirements` -> `JobPostingLanguage[]`
-
-### JobPostingLanguage
-- Relation for detailed language requirements.
-- Fields: `language`, `level`, `mandatory`.
+- Core recruitment entity.
+- **Core Fields**: `jobTitle`, `companyName`, `location`, `country`, `status`.
+- **Details**: `description`, `industrySector`, `seniorityLevel`, `employmentType`, `durationMonths`, `startDate`, `endDate`.
+- **Work Arrangement**: `remoteAllowed` (Boolean), `onSiteDays` (Int).
+- **Salary**: `minSalary`, `maxSalary`, `currency`.
+- **Arrays**: `responsibilities`, `skills`, `objectives`, `education`, `experience`.
+- **Relations**: `languageRequirements` (one-to-many), `creator` (belongs-to).
 
 ### Candidate
-- Potential hires.
-- `skills`: String array.
-- `profileDataJson`: Flexible JSON for extra attributes.
+- Potential hire profiles.
+- **Fields**: `firstName`, `lastName`, `email`, `phoneNumber`, `seniorityLevel`, `location`, `status`.
+- **Arrays**: `desiredRoles`, `skills`, `industries`, `certifications`, `languages`.
+- **JSON**: `profileDataJson` for extensible data storage.
+
+### Infrastructure Models
+- **Account / Session / VerificationToken**: Standard Auth.js models.
+- **Company**: Multi-tenant support fields.
+- **RateLimit**: API protection and request throttling.
+- **JobPostingLanguage**: Structured language requirements for positions.
 
 ## Design Decisions
 - **Normalization**: complex JSON fields (`workArrangement`, `salaryRange`) have been flattened into scalar columns for better SQL querying and type safety.

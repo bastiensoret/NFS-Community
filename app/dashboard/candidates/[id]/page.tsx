@@ -82,7 +82,7 @@ export default async function CandidateDetailsPage({
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-foreground">
+              <h1 className="text-3xl font-bold text-foreground">
                 {candidate.firstName} {candidate.lastName}
               </h1>
             </div>

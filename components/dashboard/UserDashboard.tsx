@@ -123,14 +123,14 @@ export function UserDashboard({
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
                             {candidate.desiredRoles.slice(0, 2).map((role, i) => (
-                              <span key={i} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
+                              <Badge key={i} variant="secondary">
                                 {role}
-                              </span>
+                              </Badge>
                             ))}
                             {candidate.desiredRoles.length > 2 && (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
+                              <Badge variant="secondary">
                                 +{candidate.desiredRoles.length - 2}
-                              </span>
+                              </Badge>
                             )}
                           </div>
                         </TableCell>

@@ -40,11 +40,22 @@ Delete a position.
 
 ### Candidates
 
-**Note**: Candidate management has been migrated to Server Actions and Server Components. Legacy API endpoints have been removed.
+Candidate management has been fully migrated to Server Actions. Legacy API endpoints have been removed.
 
 #### Actions (Internal)
-- `createCandidateAction(data: CandidateInput)`
-- `deleteCandidateAction(id: string)`
+- `createCandidateAction(data: CandidateInput)`: Create a new candidate profile.
+- `updateCandidateAction(id: string, data: CandidateInput)`: Update an existing candidate.
+- `deleteCandidateAction(id: string)`: Delete a candidate profile.
+
+### Positions
+
+Position management uses a mix of Server Actions and API routes.
+
+#### Actions (Internal)
+- `createPositionAction(data: JobPostingInput)`: Create a new job position.
+- `updatePositionAction(id: string, data: JobPostingInput)`: Update an existing position.
+- `deletePositionAction(id: string)`: Delete a position.
+- `approvePositionAction(id: string)`: Approve a pending position.
 
 ## Error Handling
 Standard HTTP codes:

@@ -72,6 +72,8 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates)
   const canManage = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
   const canCreate = true // All authenticated users can create candidates
@@ -129,14 +131,16 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
   }
 
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this candidate?")) return
+  const handleDelete = async () => {
+    if (!deleteId) return
 
+    setIsDeleting(true)
     try {
-      const result = await deleteCandidateAction(id)
+      const result = await deleteCandidateAction(deleteId)
 
       if (result.success) {
-        setCandidates(candidates.filter(c => c.id !== id))
+        setCandidates(candidates.filter(c => c.id !== deleteId))
+        setDeleteId(null)
         router.refresh()
         toast.success("Candidate deleted successfully")
       } else {
@@ -146,6 +150,8 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
     } catch (error) {
       console.error("Failed to delete candidate:", error)
       toast.error("An error occurred")
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -268,7 +274,8 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleDelete(candidate.id)}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => setDeleteId(candidate.id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -308,6 +315,29 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
           )}
         </CardContent>
       </Card>
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Candidate</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this candidate? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={(e) => {
+                e.preventDefault()
+                handleDelete()
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

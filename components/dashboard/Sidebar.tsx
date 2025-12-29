@@ -167,10 +167,10 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <form action={onSignOut} className="w-full">
-                <button type="submit" className="flex w-full items-center">
+                <Button variant="ghost" type="submit" className="w-full justify-start h-auto p-0 font-normal hover:bg-transparent">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Disconnect</span>
-                </button>
+                </Button>
               </form>
             </DropdownMenuItem>
           </DropdownMenuContent>

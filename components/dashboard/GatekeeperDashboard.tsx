@@ -2,6 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Briefcase, Clock, CheckCircle, AlertTriangle, TrendingUp, Eye, Send } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
 
 interface GatekeeperDashboardProps {
   pendingPositionsCount: number
@@ -36,9 +38,11 @@ export function GatekeeperDashboard({
             <div className="text-2xl font-bold text-orange-800 dark:text-orange-200">{pendingPositionsCount}</div>
             <p className="text-xs text-muted-foreground">Need your review</p>
             {pendingPositionsCount > 0 && (
-              <Link href="/dashboard/positions?status=PENDING_APPROVAL" className="inline-flex items-center mt-2 text-sm text-orange-600 hover:text-orange-700">
-                Review Now →
-              </Link>
+              <Button variant="link" className="p-0 h-auto text-orange-600 hover:text-orange-700 dark:text-orange-400" asChild>
+                <Link href="/dashboard/positions?status=PENDING_APPROVAL">
+                  Review Now <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
             )}
           </CardContent>
         </Card>
@@ -54,9 +58,11 @@ export function GatekeeperDashboard({
             <div className="text-2xl font-bold text-green-800 dark:text-green-200">{approvedPositionsCount}</div>
             <p className="text-xs text-muted-foreground">Approved and ready to send</p>
             {approvedPositionsCount > 0 && (
-              <Link href="/dashboard/positions?status=ACTIVE" className="inline-flex items-center mt-2 text-sm text-green-600 hover:text-green-700">
-                Launch Campaigns →
-              </Link>
+              <Button variant="link" className="p-0 h-auto text-green-600 hover:text-green-700 dark:text-green-400" asChild>
+                <Link href="/dashboard/positions?status=ACTIVE">
+                  Launch Campaigns <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
             )}
           </CardContent>
         </Card>

@@ -2,6 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Users, UserCheck, Clock, AlertTriangle, TrendingUp, Eye } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
 
 interface AdminDashboardProps {
   pendingCandidatesCount: number
@@ -40,9 +42,11 @@ export function AdminDashboard({
             <div className="text-2xl font-bold text-orange-800 dark:text-orange-200">{pendingCandidatesCount}</div>
             <p className="text-xs text-muted-foreground">Need your attention</p>
             {pendingCandidatesCount > 0 && (
-              <Link href="/dashboard/candidates?status=PENDING_APPROVAL" className="inline-flex items-center mt-2 text-sm text-orange-600 hover:text-orange-700">
-                Review Now →
-              </Link>
+              <Button variant="link" className="p-0 h-auto text-orange-600 hover:text-orange-700 dark:text-orange-400" asChild>
+                <Link href="/dashboard/candidates?status=PENDING_APPROVAL">
+                  Review Now <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
             )}
           </CardContent>
         </Card>
@@ -58,9 +62,11 @@ export function AdminDashboard({
             <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">{pendingPositionsCount}</div>
             <p className="text-xs text-muted-foreground">Awaiting approval</p>
             {pendingPositionsCount > 0 && (
-              <Link href="/dashboard/positions?status=PENDING_APPROVAL" className="inline-flex items-center mt-2 text-sm text-blue-600 hover:text-blue-700">
-                Review Now →
-              </Link>
+              <Button variant="link" className="p-0 h-auto text-blue-600 hover:text-blue-700 dark:text-blue-400" asChild>
+                <Link href="/dashboard/positions?status=PENDING_APPROVAL">
+                  Review Now <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
             )}
           </CardContent>
         </Card>

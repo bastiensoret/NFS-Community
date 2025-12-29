@@ -9,8 +9,13 @@ NFS Community is a recruitment and candidate management platform built with Next
 - **Database**: PostgreSQL (Prisma ORM)
 - **Auth**: Auth.js (NextAuth) v5
 - **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui (Radix UI)
+- **UI Components**: shadcn/ui (Radix UI) - See [UI Standards](docs/UI_STANDARDS.md) for usage guidelines.
 - **Testing**: Vitest
+
+## Documentation Policy
+Always adhere to the documentation rules:
+1. **Read documentation first** before making any changes.
+2. **Update documentation after each change** to reflect new behavior, UI standards, or API updates.
 
 ## Key Concepts
 
@@ -28,8 +33,8 @@ NFS Community is a recruitment and candidate management platform built with Next
 4. **Archived**: Closed positions.
 
 ### Data Flow
-- **Mutations**: Currently using API Routes (`app/api/`). Planned migration to Server Actions.
-- **Fetching**: Server Components (direct DB access) and Client Components (API fetch via `useSWR` or `useEffect`).
+- **Mutations**: Primary migration to Server Actions (`app/actions/`) for Candidates, Positions, and Profile management. Some legacy API routes remain for specific integrations.
+- **Fetching**: Server Components (direct DB access) for initial page loads and search results. Client Components handle local state and optimistic updates.
 
 ## Directory Structure
 - `app/`: Next.js App Router pages and API routes.

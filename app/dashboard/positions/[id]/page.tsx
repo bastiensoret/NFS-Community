@@ -130,7 +130,7 @@ export default async function PositionDetailsPage({
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-foreground">{position.jobTitle}</h1>
+              <h1 className="text-3xl font-bold text-foreground">{position.jobTitle}</h1>
               {(position.reference || position.externalReference) && (
                 <Badge variant="secondary" className="font-mono text-muted-foreground font-normal">
                   {position.reference || position.externalReference}

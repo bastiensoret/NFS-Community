@@ -8,7 +8,7 @@ A modern recruitment management platform built with Next.js, featuring candidate
 - **Role-Based Access Control**: Super Administrator, Administrator, Gatekeeper, and User roles
 - **Candidate Management**: Create, view, edit, and delete candidate profiles
 - **Job Posting Management**: Create and manage job opportunities with detailed information
-- **Modern UI**: Built with shadcn/ui and Tailwind CSS
+- **Modern UI**: Built with [shadcn/ui](docs/UI_STANDARDS.md) and Tailwind CSS
 - **Database**: PostgreSQL with Prisma ORM
 
 ## Tech Stack
@@ -132,26 +132,29 @@ npm test
 ```
 nfs-community/
 ├── app/
+│   ├── actions/               # Server Actions (Primary mutations)
+│   │   ├── admin.ts
+│   │   ├── candidates.ts
+│   │   ├── positions.ts
+│   │   └── profile.ts
 │   ├── api/                    # API routes
 │   │   ├── auth/              # NextAuth endpoints
-│   │   ├── candidates/        # Candidate CRUD
-│   │   └── job-postings/      # Job posting CRUD
-│   ├── auth/                  # Authentication pages
+│   │   └── cron/              # Scheduled tasks
+│   ├── auth/                  # Authentication pages (SignIn/SignUp)
 │   ├── dashboard/             # Main application
+│   │   ├── admin/             # User management
 │   │   ├── candidates/        # Candidate management
-│   │   └── job-postings/      # Job posting management
+│   │   ├── gatekeeper/        # Kanban board
+│   │   └── positions/         # Job posting management
 │   └── page.tsx               # Home (redirects to dashboard)
 ├── components/
+│   ├── dashboard/             # Dashboard-specific components
+│   ├── kanban/                # Kanban board components
 │   └── ui/                    # shadcn/ui components
-├── lib/
-│   ├── prisma.ts              # Prisma client
-│   └── auth.ts                # Auth configuration
-├── prisma/
-│   ├── schema.prisma          # Database schema
-│   └── seed.ts                # Database seeding
-├── types/
-│   └── next-auth.d.ts         # NextAuth type definitions
-└── auth.ts                    # NextAuth configuration
+├── docs/                      # Technical documentation
+├── lib/                       # Shared utilities and configuration
+├── prisma/                    # Database schema and migrations
+└── types/                     # TypeScript type definitions
 ```
 
 ## Database Schema
@@ -194,21 +197,19 @@ npx prisma generate        # Generate Prisma Client
 npx tsx prisma/seed.ts     # Seed database
 ```
 
-## API Endpoints
+## API & Server Actions
 
-### Candidates
-- `GET /api/candidates` - List all candidates
-- `POST /api/candidates` - Create candidate
-- `GET /api/candidates/[id]` - Get candidate
-- `PATCH /api/candidates/[id]` - Update candidate
-- `DELETE /api/candidates/[id]` - Delete candidate
+This project has migrated primary data mutations to **Server Actions** for better performance and type safety.
 
-### Job Postings
-- `GET /api/job-postings` - List all job postings
-- `POST /api/job-postings` - Create job posting
-- `GET /api/job-postings/[id]` - Get job posting
-- `PATCH /api/job-postings/[id]` - Update job posting
-- `DELETE /api/job-postings/[id]` - Delete job posting
+### Server Actions
+- **Candidates**: `createCandidateAction`, `updateCandidateAction`, `deleteCandidateAction`
+- **Positions**: `createPositionAction`, `updatePositionAction`, `deletePositionAction`, `approvePositionAction`
+- **Admin**: `updateUserAction`
+- **Profile**: `updateProfile`, `changePassword`, `deleteAccount`
+
+### API Endpoints
+- `/api/auth/*`: Authentication endpoints (NextAuth)
+- `/api/cron/*`: System maintenance tasks
 
 ## Authentication Flow
 
