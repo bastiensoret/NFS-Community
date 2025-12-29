@@ -12,6 +12,7 @@ import {
   Home, 
   Shield, 
   User, 
+  Settings,
   ChevronsUpDown, 
   SquareKanban,
   ChevronLeft,
@@ -155,6 +156,12 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
               <Link href="/dashboard/profile" className="cursor-pointer flex w-full items-center">
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/preferences" className="cursor-pointer flex w-full items-center">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Preferences</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
