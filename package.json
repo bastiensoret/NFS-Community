@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "predev": "rimraf .next",
     "check-env": "node check-env.js",
     "clean": "rimraf .next",
