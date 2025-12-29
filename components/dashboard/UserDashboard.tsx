@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Briefcase, Plus, TrendingUp, Clock, Calendar } from "lucide-react"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -84,7 +85,14 @@ export function UserDashboard({
                 You have created {candidatesCount} candidate profile{candidatesCount !== 1 ? 's' : ''}
               </CardDescription>
             </div>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard/candidates/new">
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border mt-4">
@@ -157,7 +165,14 @@ export function UserDashboard({
                 You have posted {positionsCount} position{positionsCount !== 1 ? 's' : ''}
               </CardDescription>
             </div>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard/positions/new">
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Briefcase className="h-4 w-4 text-muted-foreground" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border mt-4">
@@ -212,40 +227,6 @@ export function UserDashboard({
           </CardContent>
         </Card>
       </div>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick actions</CardTitle>
-          <CardDescription>Make our community grow.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Link href="/dashboard/candidates/new" className="block p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  <Plus className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <div className="font-medium">Add candidate</div>
-                  <div className="text-sm text-muted-foreground">Create a new candidate profile.</div>
-                </div>
-              </div>
-            </Link>
-            <Link href="/dashboard/positions/new" className="block p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  <Plus className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <div className="font-medium">Add position</div>
-                  <div className="text-sm text-muted-foreground">Create a new job opportunity.</div>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
 
     </div>
   )
