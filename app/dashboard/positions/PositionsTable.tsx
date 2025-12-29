@@ -278,8 +278,9 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="h-12">Posted Date</TableHead>
-                <TableHead className="h-12">Job Title</TableHead>
+                <TableHead className="h-12">Created date</TableHead>
+                <TableHead className="h-12">Job title</TableHead>
+                <TableHead className="h-12">Seniority level</TableHead>
                 <TableHead className="h-12">Company</TableHead>
                 <TableHead className="h-12">Location</TableHead>
                 <TableHead className="h-12">Status</TableHead>
@@ -289,7 +290,7 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
             <TableBody>
               {positions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
                     No positions found matching your criteria.
                   </TableCell>
                 </TableRow>
@@ -302,13 +303,16 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
                     <TableCell className="py-4 font-medium text-foreground">
                       {position.jobTitle}
                     </TableCell>
+                    <TableCell className="py-4 text-muted-foreground">
+                      {position.seniorityLevel}
+                    </TableCell>
                     <TableCell className="py-4 text-muted-foreground">{position.companyName}</TableCell>
                     <TableCell className="py-4 text-muted-foreground">{getLocationString(position)}</TableCell>
                     <TableCell className="py-4">
                       {getStatusBadge(position.status)}
                     </TableCell>
                     <TableCell className="text-right py-4">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex justify-end gap-2">
                         {/* View icon - always visible */}
                         <Link href={`/dashboard/positions/${position.id}`}>
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">

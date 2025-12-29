@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter } from "lucide-react"
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter, Eye } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
@@ -29,6 +29,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { useDebouncedCallback } from "use-debounce"
 
 interface Candidate {
@@ -217,13 +222,11 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Roles</TableHead>
-                    <TableHead>Location</TableHead>
+                    <TableHead>Full name</TableHead>
+                    <TableHead>Desired roles</TableHead>
+                    <TableHead>Seniority level</TableHead>
+                    <TableHead>Phone number</TableHead>
                     <TableHead>Creator</TableHead>
-                    <TableHead>Created</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -235,37 +238,56 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
 
                     return (
                     <TableRow key={candidate.id}>
-                      <TableCell>{getStatusBadge(candidate.status)}</TableCell>
                       <TableCell className="font-medium">
                         <Link href={`/dashboard/candidates/${candidate.id}`} className="hover:underline">
                           {candidate.firstName} {candidate.lastName}
                         </Link>
                       </TableCell>
-                      <TableCell>{candidate.email}</TableCell>
                       <TableCell>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex items-center gap-1">
                           {candidate.desiredRoles.slice(0, 1).map((role, idx) => (
-                            <Badge key={idx} variant="secondary" className="text-xs">
+                            <Badge key={idx} variant="secondary" className="text-xs whitespace-nowrap">
                               {role}
                             </Badge>
                           ))}
                           {candidate.desiredRoles.length > 1 && (
-                            <Badge variant="secondary" className="text-xs">
-                              +{candidate.desiredRoles.length - 1}
-                            </Badge>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Badge 
+                                  variant="secondary" 
+                                  className="text-xs cursor-pointer hover:bg-secondary/80 whitespace-nowrap"
+                                >
+                                  +{candidate.desiredRoles.length - 1}
+                                </Badge>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-60 p-2" align="start">
+                                <div className="flex flex-wrap gap-1">
+                                  {candidate.desiredRoles.map((role, idx) => (
+                                    <Badge key={idx} variant="secondary" className="text-xs">
+                                      {role}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </PopoverContent>
+                            </Popover>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>{candidate.location || "-"}</TableCell>
+                      <TableCell>{candidate.seniorityLevel || "-"}</TableCell>
+                      <TableCell>{candidate.phoneNumber || "-"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {candidate.creator?.name || candidate.creator?.email || "-"}
                       </TableCell>
-                      <TableCell>{format(new Date(candidate.createdAt), "MMM d, yyyy")}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Link href={`/dashboard/candidates/${candidate.id}`}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
                           {canEdit && (
                             <Link href={`/dashboard/candidates/${candidate.id}/edit`}>
-                              <Button variant="ghost" size="icon">
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                                 <Pencil className="h-4 w-4" />
                               </Button>
                             </Link>
@@ -274,7 +296,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                               onClick={() => setDeleteId(candidate.id)}
                             >
                               <Trash2 className="h-4 w-4" />
