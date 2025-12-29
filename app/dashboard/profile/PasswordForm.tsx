@@ -33,7 +33,7 @@ export function PasswordForm() {
             </Alert>
           )}
           {state.success && (
-            <Alert className="border-green-500 text-green-900 bg-green-50">
+            <Alert variant="success">
               <AlertDescription>Password changed successfully.</AlertDescription>
             </Alert>
           )}
@@ -47,7 +47,7 @@ export function PasswordForm() {
               required
             />
             {state.fieldErrors?.currentPassword && (
-              <p className="text-sm text-red-500 mt-1">{state.fieldErrors.currentPassword[0]}</p>
+              <p className="text-sm text-destructive mt-1">{state.fieldErrors.currentPassword[0]}</p>
             )}
           </div>
 
@@ -60,7 +60,7 @@ export function PasswordForm() {
               required
             />
             {state.fieldErrors?.newPassword && (
-              <p className="text-sm text-red-500 mt-1">{state.fieldErrors.newPassword[0]}</p>
+              <p className="text-sm text-destructive mt-1">{state.fieldErrors.newPassword[0]}</p>
             )}
           </div>
 
@@ -73,7 +73,7 @@ export function PasswordForm() {
               required
             />
             {state.fieldErrors?.confirmPassword && (
-              <p className="text-sm text-red-500 mt-1">{state.fieldErrors.confirmPassword[0]}</p>
+              <p className="text-sm text-destructive mt-1">{state.fieldErrors.confirmPassword[0]}</p>
             )}
           </div>
         </CardContent>

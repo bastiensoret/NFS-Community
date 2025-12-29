@@ -19,6 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { useDebouncedCallback } from "use-debounce"
 
 interface Candidate {
@@ -73,9 +83,9 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
   const getStatusBadge = (status?: string) => {
     switch (status) {
       case "ACTIVE":
-        return <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>
+        return <Badge variant="success">Active</Badge>
       case "PENDING_APPROVAL":
-        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>
+        return <Badge variant="warning">Pending</Badge>
       case "DRAFT":
         return <Badge variant="secondary">Draft</Badge>
       case "INACTIVE":
@@ -142,8 +152,8 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Candidates</h1>
-          <p className="text-gray-500 mt-2">Manage candidate profiles</p>
+          <h1 className="text-3xl font-bold text-foreground">Candidates</h1>
+          <p className="text-muted-foreground mt-2">Manage candidate profiles</p>
         </div>
         {canManage && (
           <Link href="/dashboard/candidates/new">
@@ -159,7 +169,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
         <div className="p-6 border-b space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search candidates..."
                 className="pl-9 h-10"
@@ -174,7 +184,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
               >
                 <SelectTrigger className="h-10">
                   <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-gray-500" />
+                    <Filter className="h-4 w-4 text-muted-foreground" />
                     <SelectValue placeholder="Filter by status" />
                   </div>
                 </SelectTrigger>
@@ -193,7 +203,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
         <CardContent className="p-6">
           {candidates.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500">No candidates found. Add your first candidate to get started.</p>
+              <p className="text-muted-foreground">No candidates found. Add your first candidate to get started.</p>
             </div>
           ) : (
             <>
@@ -240,7 +250,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                         </div>
                       </TableCell>
                       <TableCell>{candidate.location || "-"}</TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {candidate.creator?.name || candidate.creator?.email || "-"}
                       </TableCell>
                       <TableCell>{format(new Date(candidate.createdAt), "MMM d, yyyy")}</TableCell>
@@ -280,7 +290,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </Button>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-muted-foreground">
                   Page {pagination.page} of {pagination.totalPages}
                 </div>
                 <Button

@@ -38,7 +38,7 @@ export function MultiSelect({
 
   return (
     <div className={cn("space-y-3", className)}>
-      <div className="border rounded-md p-4 space-y-4 max-h-[200px] overflow-y-auto bg-white">
+      <div className="border rounded-md p-4 space-y-4 max-h-[200px] overflow-y-auto bg-background">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {options.map((item) => (
             <div key={item} className="flex items-start space-x-2">

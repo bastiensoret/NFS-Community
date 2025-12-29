@@ -46,7 +46,7 @@ export function KanbanCard({ item }: KanbanCardProps) {
       <div
         ref={setNodeRef}
         style={style}
-        className="opacity-30 bg-gray-50 border-2 border-primary h-[150px] min-h-[150px] rounded-xl cursor-grab relative"
+        className="opacity-30 bg-muted/50 border-2 border-primary h-[150px] min-h-[150px] rounded-xl cursor-grab relative"
       />
     )
   }
@@ -71,7 +71,7 @@ export function KanbanCard({ item }: KanbanCardProps) {
       </CardHeader>
       <CardContent className="p-4 pt-2 space-y-2">
          {item.content && (
-             <p className="text-xs text-gray-600 line-clamp-2">{item.content}</p>
+             <p className="text-xs text-muted-foreground line-clamp-2">{item.content}</p>
          )}
          <div className="flex flex-wrap gap-1">
             {item.tags?.map((tag) => (
@@ -80,7 +80,7 @@ export function KanbanCard({ item }: KanbanCardProps) {
                 </Badge>
             ))}
          </div>
-         <div className="flex justify-between items-center text-[10px] text-gray-400 pt-2 border-t mt-2">
+         <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-2 border-t mt-2">
              <span>{item.creator}</span>
              <span>{item.date}</span>
          </div>

@@ -80,18 +80,20 @@ export default async function PositionDetailsPage({
   // Gatekeeper: At least Administrator role AND isGatekeeper flag (or Super Admin)
   const canValidate = (isGatekeeper && session.user?.role !== "USER") || isSuperAdmin
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return "bg-green-100 text-green-800"
+        return <Badge variant="success">Active</Badge>
       case "CAMPAIGN_SENT":
-        return "bg-purple-100 text-purple-800"
+        return <Badge variant="purple">Campaign Sent</Badge>
       case "ARCHIVED":
-        return "bg-gray-100 text-gray-800"
+        return <Badge variant="secondary">Archived</Badge>
       case "PENDING_APPROVAL":
-        return "bg-yellow-100 text-yellow-800"
+        return <Badge variant="warning">Pending Approval</Badge>
+      case "DRAFT":
+        return <Badge variant="secondary">Draft</Badge>
       default:
-        return "bg-gray-100 text-gray-800"
+        return <Badge variant="outline">{status.replace('_', ' ')}</Badge>
     }
   }
 
@@ -128,25 +130,23 @@ export default async function PositionDetailsPage({
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-gray-900">{position.jobTitle}</h1>
+              <h1 className="text-2xl font-bold text-foreground">{position.jobTitle}</h1>
               {(position.reference || position.externalReference) && (
-                <span className="text-sm font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                <Badge variant="secondary" className="font-mono text-muted-foreground font-normal">
                   {position.reference || position.externalReference}
-                </span>
+                </Badge>
               )}
             </div>
-            <p className="text-gray-500">{position.companyName}</p>
+            <p className="text-muted-foreground">{position.companyName}</p>
             {canValidate && position.creator && (
-               <p className="text-sm text-gray-400 mt-1">
+               <p className="text-sm text-muted-foreground mt-1">
                  Created by: {position.creator.name || position.creator.email}
                </p>
             )}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge className={getStatusColor(position.status)}>
-            {position.status.replace('_', ' ')}
-          </Badge>
+          {getStatusBadge(position.status)}
           
           {/* Gatekeeper Approval Button */}
           {canValidate && position.status === "PENDING_APPROVAL" && (
@@ -171,14 +171,14 @@ export default async function PositionDetailsPage({
               <CardTitle>Description</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="whitespace-pre-wrap text-gray-700">
+              <div className="whitespace-pre-wrap text-foreground">
                 {position.description}
               </div>
 
               {position.responsibilities.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Key responsibilities</h3>
-                  <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <ul className="list-disc pl-5 space-y-1 text-foreground">
                     {position.responsibilities.map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
@@ -202,11 +202,11 @@ export default async function PositionDetailsPage({
                   <h3 className="font-semibold mb-2">Languages</h3>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {languages.map((lang, i) => (
-                      <div key={i} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
+                      <div key={i} className="flex justify-between items-center bg-muted/50 p-2 rounded text-sm">
                         <span className="font-medium">{lang.language}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-500">{lang.level}</span>
-                          {lang.mandatory && <Badge variant="outline" className="text-xs border-red-200 text-red-700 bg-red-50">Required</Badge>}
+                          <span className="text-muted-foreground">{lang.level}</span>
+                          {lang.mandatory && <Badge variant="outline" className="text-xs border-destructive/20 text-destructive bg-destructive/10">Required</Badge>}
                         </div>
                       </div>
                     ))}
@@ -217,7 +217,7 @@ export default async function PositionDetailsPage({
               {position.objectives.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Objectives</h3>
-                  <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <ul className="list-disc pl-5 space-y-1 text-foreground">
                     {position.objectives.map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
@@ -234,33 +234,33 @@ export default async function PositionDetailsPage({
             <CardContent className="grid sm:grid-cols-2 gap-6">
               {(position.industrySector || position.industry) && (
                 <div>
-                  <span className="text-sm text-gray-500 block mb-1">Industry</span>
+                  <span className="text-sm text-muted-foreground block mb-1">Industry</span>
                   <span className="font-medium">{position.industrySector || position.industry}</span>
                 </div>
               )}
               {position.domain && (
                 <div>
-                  <span className="text-sm text-gray-500 block mb-1">Domain</span>
+                  <span className="text-sm text-muted-foreground block mb-1">Domain</span>
                   <span className="font-medium">{position.domain}</span>
                 </div>
               )}
               {position.source && (
                 <div>
-                  <span className="text-sm text-gray-500 block mb-1">Source</span>
+                  <span className="text-sm text-muted-foreground block mb-1">Source</span>
                   <span className="font-medium">{position.source}</span>
                 </div>
               )}
               {position.sourceUrl && (
                 <div>
-                  <span className="text-sm text-gray-500 block mb-1">Source URL</span>
-                  <a href={position.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                  <span className="text-sm text-muted-foreground block mb-1">Source URL</span>
+                  <a href={position.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                     Link <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
               )}
               {position.applicationMethod && (
                 <div>
-                  <span className="text-sm text-gray-500 block mb-1">Application method</span>
+                  <span className="text-sm text-muted-foreground block mb-1">Application method</span>
                   <span className="font-medium">{position.applicationMethod}</span>
                 </div>
               )}
@@ -275,41 +275,41 @@ export default async function PositionDetailsPage({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <Briefcase className="h-5 w-5 text-gray-400 mt-0.5" />
+                <Briefcase className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <span className="text-sm text-gray-500 block">Employment type</span>
+                  <span className="text-sm text-muted-foreground block">Employment type</span>
                   <span className="font-medium capitalize">{position.employmentType.replace('_', ' ').toLowerCase()}</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <Building2 className="h-5 w-5 text-gray-400 mt-0.5" />
+                <Building2 className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <span className="text-sm text-gray-500 block">Seniority level</span>
+                  <span className="text-sm text-muted-foreground block">Seniority level</span>
                   <span className="font-medium capitalize">{position.seniorityLevel.toLowerCase()}</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <span className="text-sm text-gray-500 block">Location</span>
+                  <span className="text-sm text-muted-foreground block">Location</span>
                   <span className="font-medium">{getLocationString()}</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <Laptop className="h-5 w-5 text-gray-400 mt-0.5" />
+                <Laptop className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <span className="text-sm text-gray-500 block">Work arrangement</span>
+                  <span className="text-sm text-muted-foreground block">Work arrangement</span>
                   <span className="font-medium capitalize">{getOnSiteString()}</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
+                <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <span className="text-sm text-gray-500 block">Start date</span>
+                  <span className="text-sm text-muted-foreground block">Start date</span>
                   <span className="font-medium">
                     {position.startDate ? format(new Date(position.startDate), "MMM d, yyyy") : "ASAP"}
                   </span>
@@ -317,9 +317,9 @@ export default async function PositionDetailsPage({
               </div>
 
               <div className="flex items-start gap-3">
-                <Clock className="h-5 w-5 text-gray-400 mt-0.5" />
+                <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <span className="text-sm text-gray-500 block">Duration</span>
+                  <span className="text-sm text-muted-foreground block">Duration</span>
                   <span className="font-medium">
                     {position.durationMonths 
                       ? `${position.durationMonths} months` 
@@ -339,7 +339,7 @@ export default async function PositionDetailsPage({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <span className="text-sm text-gray-500 block mb-1">Division</span>
+                  <span className="text-sm text-muted-foreground block mb-1">Division</span>
                   <span className="font-medium">{position.companyDivision}</span>
                 </div>
               </CardContent>

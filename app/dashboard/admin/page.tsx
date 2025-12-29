@@ -62,8 +62,8 @@ export default async function AdminPage({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Administration</h1>
-        <p className="text-gray-500 mt-2">Manage users and system settings</p>
+        <h1 className="text-3xl font-bold text-foreground">Administration</h1>
+        <p className="text-muted-foreground mt-2">Manage users and system settings</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">

@@ -16,13 +16,13 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-2">Welcome back, {session?.user?.name || session?.user?.email}</p>
+        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground mt-2">Welcome back, {session?.user?.name || session?.user?.email}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
         <Link href="/dashboard/candidates" className="block transition-transform hover:scale-[1.02]">
-          <Card className="h-full cursor-pointer hover:bg-gray-50/50">
+          <Card className="h-full cursor-pointer hover:bg-muted/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Candidates</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
         </Link>
 
         <Link href="/dashboard/positions" className="block transition-transform hover:scale-[1.02]">
-          <Card className="h-full cursor-pointer hover:bg-gray-50/50">
+          <Card className="h-full cursor-pointer hover:bg-muted/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Positions</CardTitle>
               <Briefcase className="h-4 w-4 text-muted-foreground" />
@@ -66,13 +66,13 @@ export default async function DashboardPage() {
             <CardDescription>Common tasks and operations</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <a href="/dashboard/candidates/new" className="block p-3 rounded-lg border hover:bg-gray-50 transition-colors">
+            <a href="/dashboard/candidates/new" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
               <div className="font-medium">Add New Candidate</div>
-              <div className="text-sm text-gray-500">Create a new candidate profile</div>
+              <div className="text-sm text-muted-foreground">Create a new candidate profile</div>
             </a>
-            <a href="/dashboard/positions/new" className="block p-3 rounded-lg border hover:bg-gray-50 transition-colors">
+            <a href="/dashboard/positions/new" className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors">
               <div className="font-medium">Create Position</div>
-              <div className="text-sm text-gray-500">Add a new job opportunity</div>
+              <div className="text-sm text-muted-foreground">Add a new job opportunity</div>
             </a>
           </CardContent>
         </Card>

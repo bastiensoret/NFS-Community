@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { DndContext, DragOverlay, useSensor, useSensors, MouseSensor, TouchSensor, DragStartEvent, DragEndEvent, DragOverEvent } from "@dnd-kit/core"
 import { SortableContext, arrayMove } from "@dnd-kit/sortable"
 import { KanbanColumn, type ColumnType } from "./KanbanColumn"
@@ -16,6 +16,11 @@ interface KanbanBoardProps {
 export function KanbanBoard({ initialItems, columns, onStatusChange }: KanbanBoardProps) {
   const [items, setItems] = useState<KanbanItem[]>(initialItems)
   const [activeItem, setActiveItem] = useState<KanbanItem | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -133,7 +138,7 @@ export function KanbanBoard({ initialItems, columns, onStatusChange }: KanbanBoa
         ))}
       </div>
 
-      {createPortal(
+      {mounted && createPortal(
         <DragOverlay>
           {activeItem && (
             <KanbanCard item={activeItem} />

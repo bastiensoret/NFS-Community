@@ -57,18 +57,18 @@ export default async function CandidateDetailsPage({
 
   const canEdit = isAdmin || isGatekeeper || (isOwner && candidate.status === "DRAFT")
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return "bg-green-100 text-green-800"
+        return <Badge variant="success">Active</Badge>
       case "PENDING_APPROVAL":
-        return "bg-yellow-100 text-yellow-800"
+        return <Badge variant="warning">Pending Approval</Badge>
       case "DRAFT":
-        return "bg-gray-100 text-gray-800"
+        return <Badge variant="secondary">Draft</Badge>
       case "INACTIVE":
-        return "bg-red-100 text-red-800"
+        return <Badge variant="destructive">Inactive</Badge>
       default:
-        return "bg-gray-100 text-gray-800"
+        return <Badge variant="outline">{status.replace('_', ' ')}</Badge>
     }
   }
 
@@ -83,20 +83,18 @@ export default async function CandidateDetailsPage({
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-foreground">
                 {candidate.firstName} {candidate.lastName}
               </h1>
             </div>
-            <div className="flex items-center gap-2 text-gray-500 mt-1">
+            <div className="flex items-center gap-2 text-muted-foreground mt-1">
               <Mail className="h-4 w-4" />
               <span>{candidate.email}</span>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge className={getStatusColor(candidate.status)}>
-            {candidate.status.replace('_', ' ')}
-          </Badge>
+          {getStatusBadge(candidate.status)}
           
           {canEdit && (
             <Link href={`/dashboard/candidates/${candidate.id}/edit`}>
@@ -119,7 +117,7 @@ export default async function CandidateDetailsPage({
               
               {/* Desired Roles */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-2">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                   <Briefcase className="h-4 w-4" /> Desired Roles
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -128,14 +126,14 @@ export default async function CandidateDetailsPage({
                       <Badge key={i} variant="secondary">{role}</Badge>
                     ))
                   ) : (
-                    <span className="text-gray-400 italic">No roles specified</span>
+                    <span className="text-muted-foreground italic">No roles specified</span>
                   )}
                 </div>
               </div>
 
               {/* Skills */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-2">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                   <Award className="h-4 w-4" /> Skills
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -144,14 +142,14 @@ export default async function CandidateDetailsPage({
                       <Badge key={i} variant="outline">{skill}</Badge>
                     ))
                   ) : (
-                    <span className="text-gray-400 italic">No skills listed</span>
+                    <span className="text-muted-foreground italic">No skills listed</span>
                   )}
                 </div>
               </div>
 
               {/* Industries */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-2">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                   <Building2 className="h-4 w-4" /> Industries
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -160,7 +158,7 @@ export default async function CandidateDetailsPage({
                       <Badge key={i} variant="outline">{ind}</Badge>
                     ))
                   ) : (
-                    <span className="text-gray-400 italic">No industries specified</span>
+                    <span className="text-muted-foreground italic">No industries specified</span>
                   )}
                 </div>
               </div>
@@ -175,23 +173,23 @@ export default async function CandidateDetailsPage({
             <CardContent className="space-y-6">
                {/* Certifications */}
                <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-2">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                   <Award className="h-4 w-4" /> Certifications
                 </h3>
                 {candidate.certifications.length > 0 ? (
-                  <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <ul className="list-disc pl-5 space-y-1 text-foreground">
                     {candidate.certifications.map((cert, i) => (
                       <li key={i}>{cert}</li>
                     ))}
                   </ul>
                 ) : (
-                  <span className="text-gray-400 italic">No certifications listed</span>
+                  <span className="text-muted-foreground italic">No certifications listed</span>
                 )}
               </div>
 
               {/* Languages */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-2">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                   <Languages className="h-4 w-4" /> Languages
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -200,7 +198,7 @@ export default async function CandidateDetailsPage({
                       <Badge key={i} variant="secondary">{lang}</Badge>
                     ))
                   ) : (
-                    <span className="text-gray-400 italic">No languages specified</span>
+                    <span className="text-muted-foreground italic">No languages specified</span>
                   )}
                 </div>
               </div>
@@ -215,9 +213,9 @@ export default async function CandidateDetailsPage({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <User className="h-5 w-5 text-gray-400 mt-0.5" />
+                <User className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <span className="text-sm text-gray-500 block">Seniority Level</span>
+                  <span className="text-sm text-muted-foreground block">Seniority Level</span>
                   <span className="font-medium capitalize">
                     {candidate.seniorityLevel ? candidate.seniorityLevel.toLowerCase() : "Not specified"}
                   </span>
@@ -225,9 +223,9 @@ export default async function CandidateDetailsPage({
               </div>
 
               <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <span className="text-sm text-gray-500 block">Location</span>
+                  <span className="text-sm text-muted-foreground block">Location</span>
                   <span className="font-medium">
                     {candidate.location || "Not specified"}
                   </span>
@@ -236,9 +234,9 @@ export default async function CandidateDetailsPage({
 
               {candidate.phoneNumber && (
                 <div className="flex items-start gap-3">
-                  <Phone className="h-5 w-5 text-gray-400 mt-0.5" />
+                  <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <span className="text-sm text-gray-500 block">Phone</span>
+                    <span className="text-sm text-muted-foreground block">Phone</span>
                     <span className="font-medium">
                       {candidate.phoneNumber}
                     </span>
@@ -247,7 +245,7 @@ export default async function CandidateDetailsPage({
               )}
 
               <div className="pt-4 border-t mt-4">
-                <div className="text-xs text-gray-400 space-y-1">
+                <div className="text-xs text-muted-foreground space-y-1">
                   <p>Created: {format(new Date(candidate.createdAt), "PPP")}</p>
                   {candidate.creator && (
                      <p>By: {candidate.creator.name || candidate.creator.email}</p>

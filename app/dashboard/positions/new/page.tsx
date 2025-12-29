@@ -119,8 +119,8 @@ export default function NewJobPostingPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Add new position</h1>
-        <p className="text-gray-500 mt-2">Create a new job opportunity</p>
+        <h1 className="text-3xl font-bold text-foreground">Add new position</h1>
+        <p className="text-muted-foreground mt-2">Create a new job opportunity</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -128,19 +128,19 @@ export default function NewJobPostingPage() {
           <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-6 rounded-none border-b">
             <TabsTrigger 
               value="core" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
               Core info
             </TabsTrigger>
             <TabsTrigger 
               value="requirements"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
               Requirements
             </TabsTrigger>
             <TabsTrigger 
               value="details"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
               Details
             </TabsTrigger>
@@ -278,9 +278,8 @@ export default function NewJobPostingPage() {
                       id="status"
                       value="Pending Creation"
                       disabled
-                      className="bg-gray-100"
                     />
-                    <p className="text-xs text-gray-500">Status is managed automatically.</p>
+                    <p className="text-xs text-muted-foreground">Status is managed automatically.</p>
                   </div>
                 </div>
               </CardContent>
@@ -325,7 +324,7 @@ export default function NewJobPostingPage() {
 
                 <div className="space-y-2">
                   <Label>Languages</Label>
-                  <div className="flex items-end justify-between p-4 border rounded-lg bg-gray-50">
+                  <div className="flex items-end justify-between p-4 border rounded-lg bg-muted/50">
                     <div className="flex gap-4 items-end">
                       <div className="w-[200px] space-y-1">
                         <Label className="text-xs">Language</Label>
@@ -333,7 +332,7 @@ export default function NewJobPostingPage() {
                           value={newLanguage.language}
                           onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
                         >
-                          <SelectTrigger className="bg-white">
+                          <SelectTrigger className="bg-background">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -349,7 +348,7 @@ export default function NewJobPostingPage() {
                           value={newLanguage.level} 
                           onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
                         >
-                          <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             {LEVELS.map(level => (
                               <SelectItem key={level} value={level}>{level}</SelectItem>
@@ -362,7 +361,7 @@ export default function NewJobPostingPage() {
                           id="lang-mandatory"
                           checked={newLanguage.mandatory}
                           onCheckedChange={(checked) => setNewLanguage({...newLanguage, mandatory: checked as boolean})}
-                          className="bg-white"
+                          className="bg-background"
                         />
                         <Label htmlFor="lang-mandatory" className="text-xs">Mandatory</Label>
                       </div>
@@ -372,14 +371,14 @@ export default function NewJobPostingPage() {
                   
                   <div className="space-y-2 mt-2">
                     {languages.map((lang, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 bg-white border rounded text-sm shadow-sm">
+                      <div key={idx} className="flex items-center justify-between p-2 bg-card border rounded text-sm shadow-sm">
                         <div className="flex gap-4 items-center">
-                          <span className="font-semibold text-gray-900 w-24">{lang.language}</span>
-                          <span className="text-gray-600">{lang.level}</span>
-                          {lang.mandatory && <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Mandatory</span>}
+                          <span className="font-semibold text-foreground w-24">{lang.language}</span>
+                          <span className="text-muted-foreground">{lang.level}</span>
+                          {lang.mandatory && <span className="text-xs font-medium text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Mandatory</span>}
                         </div>
                         <Button type="button" variant="ghost" size="icon" onClick={() => removeLanguage(idx)}>
-                          <X className="h-4 w-4 text-gray-500 hover:text-red-600" />
+                          <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                         </Button>
                       </div>
                     ))}
@@ -400,7 +399,7 @@ export default function NewJobPostingPage() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-0.5">
                       <Label htmlFor="remote" className="text-base">Homeworking allowed</Label>
-                      <p className="text-sm text-gray-500">Is the candidate allowed to work from home?</p>
+                      <p className="text-sm text-muted-foreground">Is the candidate allowed to work from home?</p>
                     </div>
                     <Checkbox 
                       id="remote"
@@ -422,7 +421,7 @@ export default function NewJobPostingPage() {
                         value={workArrangement.on_site_days_per_week || 0}
                         onChange={(e) => setWorkArrangement({ ...workArrangement, on_site_days_per_week: parseInt(e.target.value) })}
                       />
-                      <span className="text-sm text-gray-500">days/week required in office</span>
+                      <span className="text-sm text-muted-foreground">days/week required in office</span>
                     </div>
                   </div>
                 </div>

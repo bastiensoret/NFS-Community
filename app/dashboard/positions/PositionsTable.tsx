@@ -27,6 +27,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { useDebouncedCallback } from "use-debounce"
 
 interface WorkArrangement {
@@ -177,20 +187,20 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
     }
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return "bg-green-100 text-green-800 hover:bg-green-100"
+        return <Badge variant="success" className="px-2.5 py-0.5 border-0">{status.replace('_', ' ')}</Badge>
       case "CAMPAIGN_SENT":
-        return "bg-purple-100 text-purple-800 hover:bg-purple-100"
+        return <Badge variant="purple" className="px-2.5 py-0.5 border-0">{status.replace('_', ' ')}</Badge>
       case "ARCHIVED":
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+        return <Badge variant="secondary" className="px-2.5 py-0.5 border-0">{status.replace('_', ' ')}</Badge>
       case "PENDING_APPROVAL":
-        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+        return <Badge variant="warning" className="px-2.5 py-0.5 border-0">{status.replace('_', ' ')}</Badge>
       case "DRAFT":
-        return "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50"
+        return <Badge variant="info" className="px-2.5 py-0.5">{status.replace('_', ' ')}</Badge>
       default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+        return <Badge variant="outline" className="px-2.5 py-0.5">{status.replace('_', ' ')}</Badge>
     }
   }
 
@@ -211,8 +221,8 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Positions</h1>
-          <p className="text-gray-500 mt-1">Manage and track all job positions</p>
+          <h1 className="text-3xl font-bold text-foreground">Positions</h1>
+          <p className="text-muted-foreground mt-1">Manage and track all job positions</p>
         </div>
         {canCreate && (
           <Link href="/dashboard/positions/new">
@@ -228,7 +238,7 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
         <div className="p-6 border-b space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search positions..."
                 className="pl-9 h-10"
@@ -240,7 +250,7 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
               <Select value={currentStatus} onValueChange={handleStatusChange}>
                 <SelectTrigger className="h-10">
                   <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-gray-500" />
+                    <Filter className="h-4 w-4 text-muted-foreground" />
                     <SelectValue placeholder="Filter by status" />
                   </div>
                 </SelectTrigger>
@@ -250,7 +260,7 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
                   <SelectItem value="PENDING_APPROVAL">
                     Pending Approval
                     {pendingCount > 0 && (
-                        <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-1.5 py-0.5 rounded-full">
+                        <span className="ml-2 bg-destructive/10 text-destructive text-xs font-bold px-1.5 py-0.5 rounded-full">
                             {pendingCount}
                         </span>
                     )}
@@ -278,38 +288,36 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
             <TableBody>
               {positions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-32 text-center text-gray-500">
+                  <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
                     No positions found matching your criteria.
                   </TableCell>
                 </TableRow>
               ) : (
                 positions.map((position) => (
                   <TableRow key={position.id} className="group">
-                    <TableCell className="py-4 text-gray-500">
+                    <TableCell className="py-4 text-muted-foreground">
                        {format(new Date(position.postingDate), "MMM d, yyyy")}
                     </TableCell>
-                    <TableCell className="py-4 font-medium text-gray-900">
+                    <TableCell className="py-4 font-medium text-foreground">
                       {position.jobTitle}
                     </TableCell>
-                    <TableCell className="py-4 text-gray-600">{position.companyName}</TableCell>
-                    <TableCell className="py-4 text-gray-600">{getLocationString(position)}</TableCell>
+                    <TableCell className="py-4 text-muted-foreground">{position.companyName}</TableCell>
+                    <TableCell className="py-4 text-muted-foreground">{getLocationString(position)}</TableCell>
                     <TableCell className="py-4">
-                      <Badge className={`${getStatusColor(position.status)} border-0 px-2.5 py-0.5`}>
-                        {position.status.replace('_', ' ')}
-                      </Badge>
+                      {getStatusBadge(position.status)}
                     </TableCell>
                     <TableCell className="text-right py-4">
                       {canEditPosition(position) && (
                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link href={`/dashboard/positions/${position.id}`}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-900">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                               <Pencil className="h-4 w-4" />
                             </Button>
                           </Link>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={() => setDeleteId(position.id)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -337,7 +345,7 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
               <ChevronLeft className="h-4 w-4 mr-2" />
               Previous
             </Button>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               Page {pagination.page} of {pagination.totalPages}
             </div>
             <Button

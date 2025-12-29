@@ -16,6 +16,16 @@ import { CategorizedMultiSelect } from "@/components/ui/categorized-multi-select
 import { RESPONSIBILITY_OPTIONS, SKILL_OPTIONS } from "@/lib/constants"
 import { type JobPostingInput } from "@/lib/validations"
 import { toast } from "sonner"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface LanguageRequirement {
   language: string
@@ -190,10 +200,9 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     }
   }
 
-  const handleSubmitForApproval = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (!confirm("Are you sure you want to submit this position for approval? You will not be able to edit it afterwards.")) return
-    
+  const [showSubmitAlert, setShowSubmitAlert] = useState(false)
+
+  const handleSubmitForApproval = async () => {
     setLoading(true)
 
     const payload: JobPostingInput = {
@@ -232,6 +241,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
       toast.error("Failed to submit for approval")
     } finally {
       setLoading(false)
+      setShowSubmitAlert(false)
     }
   }
 
@@ -240,9 +250,33 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      <AlertDialog open={showSubmitAlert} onOpenChange={setShowSubmitAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Submit for Approval?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to submit this position for approval? You will not be able to edit it afterwards until it is reviewed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={(e) => {
+                e.preventDefault()
+                handleSubmitForApproval()
+              }}
+              disabled={loading}
+              variant="info"
+            >
+              {loading ? "Submitting..." : "Confirm Submission"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Edit position</h1>
-        <p className="text-gray-500 mt-2">Update job opportunity details</p>
+        <h1 className="text-3xl font-bold text-foreground">Edit position</h1>
+        <p className="text-muted-foreground mt-2">Update job opportunity details</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -250,19 +284,19 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
           <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-6 rounded-none border-b">
             <TabsTrigger 
               value="core"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
               Core information
             </TabsTrigger>
             <TabsTrigger 
               value="requirements"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
               Requirements
             </TabsTrigger>
             <TabsTrigger 
               value="details"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
               Details
             </TabsTrigger>
@@ -281,7 +315,6 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                     <Input
                       disabled
                       value={position.reference || position.id}
-                      className="bg-gray-100"
                     />
                   </div>
                   <div className="space-y-2">
@@ -302,7 +335,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                         <SelectItem value="ARCHIVED">Archived</SelectItem>
                       </SelectContent>
                     </Select>
-                    {!canEditStatus && <p className="text-xs text-gray-500">Only Admins can change status.</p>}
+                    {!canEditStatus && <p className="text-xs text-muted-foreground">Only Admins can change status.</p>}
                   </div>
                 </div>
 
@@ -461,7 +494,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
 
                 <div className="space-y-2">
                   <Label>Languages</Label>
-                  <div className="flex items-end justify-between p-4 border rounded-lg bg-gray-50">
+                  <div className="flex items-end justify-between p-4 border rounded-lg bg-muted/50">
                     <div className="flex gap-4 items-end">
                       <div className="w-[200px] space-y-1">
                         <Label className="text-xs">Language</Label>
@@ -469,7 +502,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                           value={newLanguage.language}
                           onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
                         >
-                          <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             {LANGUAGES.map(lang => (
                               <SelectItem key={lang} value={lang}>{lang}</SelectItem>
@@ -483,7 +516,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                           value={newLanguage.level} 
                           onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
                         >
-                          <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             {LEVELS.map(level => (
                               <SelectItem key={level} value={level}>{level}</SelectItem>
@@ -496,7 +529,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                           id="lang-mandatory"
                           checked={newLanguage.mandatory}
                           onCheckedChange={(checked) => setNewLanguage({...newLanguage, mandatory: checked as boolean})}
-                          className="bg-white"
+                          className="bg-background"
                         />
                         <Label htmlFor="lang-mandatory" className="text-xs">Mandatory</Label>
                       </div>
@@ -506,14 +539,14 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                   
                   <div className="space-y-2 mt-2">
                     {languages.map((lang, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 bg-white border rounded text-sm shadow-sm">
+                      <div key={idx} className="flex items-center justify-between p-2 bg-card border rounded text-sm shadow-sm">
                         <div className="flex gap-4 items-center">
-                          <span className="font-semibold text-gray-900 w-24">{lang.language}</span>
-                          <span className="text-gray-600">{lang.level}</span>
-                          {lang.mandatory && <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Mandatory</span>}
+                          <span className="font-semibold text-foreground w-24">{lang.language}</span>
+                          <span className="text-muted-foreground">{lang.level}</span>
+                          {lang.mandatory && <span className="text-xs font-medium text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Mandatory</span>}
                         </div>
                         <Button type="button" variant="ghost" size="icon" onClick={() => removeLanguage(idx)}>
-                          <X className="h-4 w-4 text-gray-500 hover:text-red-600" />
+                          <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                         </Button>
                       </div>
                     ))}
@@ -534,7 +567,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-0.5">
                       <Label htmlFor="remote" className="text-base">Homeworking allowed</Label>
-                      <p className="text-sm text-gray-500">Is the candidate allowed to work from home?</p>
+                      <p className="text-sm text-muted-foreground">Is the candidate allowed to work from home?</p>
                     </div>
                     <Checkbox 
                       id="remote"
@@ -556,7 +589,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                         value={workArrangement.on_site_days_per_week || 0}
                         onChange={(e) => setWorkArrangement({ ...workArrangement, on_site_days_per_week: parseInt(e.target.value) })}
                       />
-                      <span className="text-sm text-gray-500">days/week required in office</span>
+                      <span className="text-sm text-muted-foreground">days/week required in office</span>
                     </div>
                   </div>
                 </div>
@@ -574,8 +607,8 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
             <Button 
                 type="button" 
                 disabled={loading} 
-                onClick={handleSubmitForApproval}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => setShowSubmitAlert(true)}
+                variant="info"
             >
                 Submit for Approval
             </Button>

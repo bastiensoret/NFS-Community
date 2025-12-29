@@ -20,7 +20,7 @@ const SignUpForm = dynamic(() => import("./SignUpForm"), {
 
 export default function SignUpPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
       <Suspense fallback={<div>Loading...</div>}>
         <SignUpForm />
       </Suspense>

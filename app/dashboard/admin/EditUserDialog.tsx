@@ -116,13 +116,13 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
         <div className="space-y-6 py-4">
           <div className="space-y-2">
             <div className="text-sm">
-              <span className="font-medium text-gray-700">Email:</span>{" "}
-              <span className="text-gray-600">{user.email}</span>
+              <span className="font-medium text-foreground">Email:</span>{" "}
+              <span className="text-muted-foreground">{user.email}</span>
             </div>
             {user.tenantId && (
               <div className="text-sm">
-                <span className="font-medium text-gray-700">Organization:</span>{" "}
-                <span className="text-gray-600">{user.tenantId}</span>
+                <span className="font-medium text-foreground">Organization:</span>{" "}
+                <span className="text-muted-foreground">{user.tenantId}</span>
               </div>
             )}
           </div>
@@ -141,7 +141,7 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {selectedRole === "ADMIN" && "Can manage positions and candidates"}
               {selectedRole === "SUPER_ADMIN" && "Full system access"}
               {selectedRole === "USER" && "Can post positions and propose candidates"}
@@ -162,7 +162,7 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
               Gatekeeper responsibility
             </Label>
           </div>
-          <p className="text-xs text-gray-500 -mt-2">
+          <p className="text-xs text-muted-foreground -mt-2">
             Can approve positions in addition to their role permissions
           </p>
 

@@ -6,6 +6,17 @@ import { CheckCircle2, XCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { updatePositionAction } from "@/app/actions/positions"
 import { toast } from "sonner"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface ApprovePositionButtonProps {
   positionId: string
@@ -16,8 +27,6 @@ export function ApprovePositionButton({ positionId }: ApprovePositionButtonProps
   const router = useRouter()
 
   const handleApprove = async () => {
-    if (!confirm("Are you sure you want to approve this position? This will trigger the email campaign and mark the position as Campaign Sent.")) return
-
     setLoading(true)
     try {
       const result = await updatePositionAction(positionId, { status: "CAMPAIGN_SENT" })
@@ -37,13 +46,27 @@ export function ApprovePositionButton({ positionId }: ApprovePositionButtonProps
   }
 
   return (
-    <Button 
-      onClick={handleApprove} 
-      disabled={loading}
-      className="bg-green-600 hover:bg-green-700 text-white"
-    >
-      <CheckCircle2 className="mr-2 h-4 w-4" />
-      {loading ? "Processing..." : "Approve & Launch Campaign"}
-    </Button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="success">
+          <CheckCircle2 className="mr-2 h-4 w-4" />
+          Approve & Launch Campaign
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Approve Position?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to approve this position? This will trigger the email campaign and mark the position as Campaign Sent.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleApprove} disabled={loading} variant="success">
+            {loading ? "Processing..." : "Confirm Approval"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

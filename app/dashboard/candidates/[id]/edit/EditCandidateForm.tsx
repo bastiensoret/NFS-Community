@@ -109,8 +109,8 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Edit Candidate</h1>
-        <p className="text-gray-500 mt-2">Update candidate profile</p>
+        <h1 className="text-3xl font-bold text-foreground">Edit Candidate</h1>
+        <p className="text-muted-foreground mt-2">Update candidate profile</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -118,13 +118,13 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
           <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-6 rounded-none border-b">
             <TabsTrigger 
               value="info" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
               Information
             </TabsTrigger>
             <TabsTrigger 
               value="skills" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-3 text-base"
             >
               Skills & Experience
             </TabsTrigger>

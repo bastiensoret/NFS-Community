@@ -4,6 +4,7 @@ import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { useMemo } from "react"
 import { KanbanCard, type KanbanItem } from "./KanbanCard"
+import { Badge } from "@/components/ui/badge"
 
 export type ColumnType = {
   id: string
@@ -29,11 +30,11 @@ export function KanbanColumn({ column, items }: KanbanColumnProps) {
   return (
     <div
       ref={setNodeRef}
-      className="bg-gray-100 w-[350px] min-w-[350px] max-w-[350px] rounded-lg flex flex-col max-h-full"
+      className="bg-muted/50 w-[350px] min-w-[350px] max-w-[350px] rounded-lg flex flex-col max-h-full"
     >
-      <div className="p-4 font-semibold border-b border-gray-200 flex justify-between items-center bg-white rounded-t-lg">
+      <div className="p-4 font-semibold border-b border-border flex justify-between items-center bg-card rounded-t-lg">
         {column.title}
-        <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded-full text-xs">
+        <span className="bg-muted text-muted-foreground px-2 py-1 rounded-full text-xs">
           {items.length}
         </span>
       </div>

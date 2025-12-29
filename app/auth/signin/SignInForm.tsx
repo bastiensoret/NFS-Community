@@ -66,7 +66,7 @@ export default function SignInForm() {
             type="button"
           >
             <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7v10c0 6.52 4.02 10 10 10s10-3.48 10-10V7l-10-5z" fill="#0078D4"/>
+              <path d="M12 2L2 7v10c0 6.52 4.02 10 10 10s10-3.48 10-10V7l-10-5z" fill="var(--microsoft-blue)"/>
               <path d="M12 2v25" stroke="white" strokeWidth="0.5" opacity="0.3"/>
               <path d="M2 7h20" stroke="white" strokeWidth="0.5" opacity="0.3"/>
             </svg>
@@ -78,7 +78,7 @@ export default function SignInForm() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-muted-foreground">
+              <span className="bg-card px-2 text-muted-foreground">
                 Or continue with
               </span>
             </div>

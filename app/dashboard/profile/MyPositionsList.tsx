@@ -36,18 +36,18 @@ export function MyPositionsList({ positions }: MyPositionsListProps) {
     }
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "PENDING_APPROVAL":
-        return "bg-yellow-100 text-yellow-800"
+        return <Badge variant="warning">{getStatusLabel(status)}</Badge>
       case "ACTIVE":
-        return "bg-green-100 text-green-800"
+        return <Badge variant="success">{getStatusLabel(status)}</Badge>
       case "CAMPAIGN_SENT":
-        return "bg-purple-100 text-purple-800"
+        return <Badge variant="purple">{getStatusLabel(status)}</Badge>
       case "ARCHIVED":
-        return "bg-gray-100 text-gray-800"
+        return <Badge variant="secondary">{getStatusLabel(status)}</Badge>
       default:
-        return "bg-gray-100 text-gray-800"
+        return <Badge variant="outline">{getStatusLabel(status)}</Badge>
     }
   }
 
@@ -58,31 +58,29 @@ export function MyPositionsList({ positions }: MyPositionsListProps) {
       </CardHeader>
       <CardContent>
         {positions.length === 0 ? (
-          <p className="text-gray-500 text-sm">You haven't created any positions yet.</p>
+          <p className="text-muted-foreground text-sm">You haven't created any positions yet.</p>
         ) : (
           <div className="space-y-4">
             {positions.map((position) => (
               <div
                 key={position.id}
-                className="flex items-center justify-between p-4 border rounded-lg bg-white"
+                className="flex items-center justify-between p-4 border rounded-lg bg-card"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900">{position.jobTitle}</span>
+                    <span className="font-medium text-foreground">{position.jobTitle}</span>
                     {position.reference && (
-                      <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                      <Badge variant="secondary" className="font-mono text-xs font-normal text-muted-foreground">
                         {position.reference}
-                      </span>
+                      </Badge>
                     )}
                   </div>
-                  <div className="text-sm text-gray-500">
-                    {position.companyName} • Created on {format(new Date(position.postingDate), "MMM d, yyyy")}
+                  <div className="text-sm text-muted-foreground">
+                    {position.companyName}  Created on {format(new Date(position.postingDate), "MMM d, yyyy")}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Badge className={getStatusColor(position.status)}>
-                    {getStatusLabel(position.status)}
-                  </Badge>
+                  {getStatusBadge(position.status)}
                   <Link href={`/dashboard/positions/${position.id}`}>
                     <Button variant="ghost" size="icon">
                       <Eye className="h-4 w-4" />

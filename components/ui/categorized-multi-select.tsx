@@ -57,10 +57,10 @@ export function CategorizedMultiSelect({
 
   return (
     <div className="space-y-3">
-      <div className="border rounded-md p-4 space-y-4 max-h-[400px] overflow-y-auto bg-white">
+      <div className="border rounded-md p-4 space-y-4 max-h-[400px] overflow-y-auto bg-background">
         {categories.map((category) => (
           <div key={category} className="space-y-2">
-            <h4 className="font-medium text-sm text-gray-900 sticky top-0 bg-white py-1 z-10 border-b">
+            <h4 className="font-medium text-sm text-foreground sticky top-0 bg-background py-1 z-10 border-b">
               {category}
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-2">

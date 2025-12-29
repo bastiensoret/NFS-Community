@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -37,11 +39,11 @@ export default async function DashboardLayout({
   const currentUser = user || session.user
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <div className="flex h-screen bg-muted/40">
+      <aside className="w-64 bg-background border-r flex flex-col">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900">NFS Community</h1>
-          <p className="text-sm text-gray-500 mt-1">Building our reputation</p>
+          <h1 className="text-2xl font-bold text-foreground">NFS Community</h1>
+          <p className="text-sm text-muted-foreground mt-1">Building our reputation</p>
         </div>
         
         <nav className="px-4 space-y-2 flex-1">
@@ -84,32 +86,25 @@ export default async function DashboardLayout({
           )}
         </div>
 
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex items-center gap-3 px-2 py-2 w-full hover:bg-gray-100 rounded-md cursor-pointer transition-colors outline-none">
-                <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border shrink-0">
-                  {currentUser?.image ? (
-                    <img 
-                      src={currentUser.image} 
-                      alt="Profile" 
-                      className="h-full w-full object-cover" 
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
-                      {currentUser?.name?.[0] || currentUser?.email?.[0]?.toUpperCase()}
-                    </div>
-                  )}
-                </div>
+              <div className="flex items-center gap-3 px-2 py-2 w-full hover:bg-accent rounded-md cursor-pointer transition-colors outline-none">
+                <Avatar className="h-8 w-8 border">
+                  <AvatarImage src={currentUser?.image || ""} alt={currentUser?.name || "User"} />
+                  <AvatarFallback className="bg-muted text-muted-foreground text-xs font-bold">
+                    {currentUser?.name?.[0] || currentUser?.email?.[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-medium text-foreground truncate">
                     {currentUser?.name || currentUser?.email}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="text-xs text-muted-foreground truncate">
                     {getRoleDisplayName(currentUser?.role || '')}
                   </p>
                 </div>
-                <ChevronsUpDown className="h-4 w-4 text-gray-500" />
+                <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" side="top">
@@ -126,10 +121,10 @@ export default async function DashboardLayout({
                   const { signOut } = await import("@/auth")
                   await signOut()
                 }} className="w-full">
-                  <button type="submit" className="w-full flex items-center cursor-pointer">
+                  <Button variant="ghost" type="submit" className="w-full justify-start px-2 py-1.5 h-auto font-normal text-sm cursor-pointer hover:bg-transparent">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Disconnect</span>
-                  </button>
+                  </Button>
                 </form>
               </DropdownMenuItem>
             </DropdownMenuContent>

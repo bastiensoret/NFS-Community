@@ -9,6 +9,7 @@ import { getRoleDisplayName } from "@/lib/roles"
 import { EditUserDialog } from "./EditUserDialog"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useDebouncedCallback } from "use-debounce"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 type User = {
   id: string
@@ -62,7 +63,7 @@ export function UserManagementList({ users, pagination }: { users: User[], pagin
   return (
     <div className="space-y-4">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
           placeholder="Search by name, email or role..."
@@ -73,7 +74,7 @@ export function UserManagementList({ users, pagination }: { users: User[], pagin
       </div>
 
       {users.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-muted-foreground">
           No users found matching &quot;{searchParams.get("query")}&quot;
         </div>
       ) : (
@@ -82,34 +83,27 @@ export function UserManagementList({ users, pagination }: { users: User[], pagin
             <div
               key={user.id}
               onClick={() => handleUserClick(user)}
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+              className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border">
-                  {user.image ? (
-                    <img 
-                      src={user.image} 
-                      alt="Profile" 
-                      className="h-full w-full object-cover" 
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                      {user.firstName?.[0] || user.name?.[0] || user.email[0].toUpperCase()}
-                    </div>
-                  )}
-                </div>
+                <Avatar className="h-10 w-10 border">
+                  <AvatarImage src={user.image || ""} alt={user.name || "User"} />
+                  <AvatarFallback className="bg-muted text-muted-foreground font-bold">
+                     {user.firstName?.[0] || user.name?.[0] || user.email[0].toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
                 <div>
-                  <div className="font-medium text-gray-900">
+                  <div className="font-medium text-foreground">
                     {user.firstName && user.lastName 
                       ? `${user.firstName} ${user.lastName}`
                       : user.name || "User"}
                   </div>
-                  <div className="text-sm text-gray-500">{user.email}</div>
+                  <div className="text-sm text-muted-foreground">{user.email}</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 {user.isGatekeeper && (
-                  <Badge className="flex items-center gap-1 bg-orange-500 hover:bg-orange-500 text-white border-0">
+                  <Badge variant="warning" className="flex items-center gap-1">
                     <UserCog className="h-3 w-3" />
                     Gatekeeper
                   </Badge>
@@ -135,7 +129,7 @@ export function UserManagementList({ users, pagination }: { users: User[], pagin
               <ChevronLeft className="h-4 w-4" />
               Previous
             </Button>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               Page {pagination.page} of {pagination.totalPages}
             </div>
             <Button
