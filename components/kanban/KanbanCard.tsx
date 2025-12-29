@@ -2,10 +2,13 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { formatDistanceToNow, isValid, parseISO } from "date-fns"
 import { useEffect, useState } from "react"
+import { MapPin, User, Clock, GraduationCap, Phone, ExternalLink } from "lucide-react"
+import { SENIORITY_LEVELS } from "@/lib/constants"
 
 export type KanbanItem = {
   id: string
@@ -16,13 +19,19 @@ export type KanbanItem = {
   content?: string
   creator?: string
   date?: string
+  // Additional optional fields for better display
+  seniority?: string
+  location?: string
+  phoneNumber?: string
+  type?: "candidate" | "position"
 }
 
 interface KanbanCardProps {
   item: KanbanItem
+  onViewClick?: (id: string, type?: "candidate" | "position") => void
 }
 
-export function KanbanCard({ item }: KanbanCardProps) {
+export function KanbanCard({ item, onViewClick }: KanbanCardProps) {
   const [formattedDate, setFormattedDate] = useState<string | null>(null)
 
   useEffect(() => {
@@ -76,33 +85,83 @@ export function KanbanCard({ item }: KanbanCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className="cursor-grab hover:ring-2 hover:ring-primary/20 transition-all touch-none"
+      className="cursor-grab hover:ring-2 hover:ring-primary/20 transition-all touch-none overflow-hidden group border-muted-foreground/20 bg-card py-0 gap-0"
     >
-      <CardHeader className="p-4 pb-2">
+      <CardContent className="p-4 space-y-3.5">
+        {/* Header: Title */}
         <div className="flex justify-between items-start gap-2">
-          <CardTitle className="text-sm font-medium leading-tight">
-            {item.title}
-          </CardTitle>
+          <div className="space-y-1 flex-1">
+            <h3 className="text-sm font-bold leading-snug group-hover:text-primary transition-colors">
+              {item.title}
+            </h3>
+            {item.subtitle && (
+              <p className="text-[11px] text-muted-foreground font-semibold line-clamp-1">
+                {item.subtitle}
+              </p>
+            )}
+          </div>
+          {onViewClick && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => {
+                e.stopPropagation()
+                onViewClick(item.id, item.type)
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
-        {item.subtitle && (
-           <p className="text-xs text-muted-foreground">{item.subtitle}</p>
-        )}
-      </CardHeader>
-      <CardContent className="p-4 pt-2 space-y-2">
-         {item.content && (
-             <p className="text-xs text-muted-foreground line-clamp-2">{item.content}</p>
-         )}
-         <div className="flex flex-wrap gap-1">
-            {item.tags?.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-[10px] px-1 py-0 h-5">
-                    {tag}
-                </Badge>
+
+        {/* Quick Info Grid */}
+        <div className="grid grid-cols-1 gap-2">
+          {item.seniority && (
+            <div className="flex items-center gap-2.5 text-[10px] text-muted-foreground">
+              <GraduationCap className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
+              <span className="truncate">
+                {SENIORITY_LEVELS.find(l => l.value === item.seniority)?.label || item.seniority}
+              </span>
+            </div>
+          )}
+          {item.location && (
+            <div className="flex items-center gap-2.5 text-[10px] text-muted-foreground">
+              <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
+              <span className="truncate">{item.location}</span>
+            </div>
+          )}
+          {item.phoneNumber && (
+            <div className="flex items-center gap-2.5 text-[10px] text-muted-foreground">
+              <Phone className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
+              <span className="truncate">{item.phoneNumber}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Tags/Skills */}
+        {item.tags && item.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {item.tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-[9px] px-2 py-0.5 h-5 bg-muted/60 border-none font-medium text-muted-foreground hover:bg-muted transition-colors">
+                {tag}
+              </Badge>
             ))}
-         </div>
-         <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-2 border-t mt-2">
-             <span>{item.creator}</span>
-             <span>{formattedDate || item.date}</span>
-         </div>
+          </div>
+        )}
+
+        {/* Footer: Metadata */}
+        <div className="flex justify-between items-center text-[9px] text-muted-foreground/60 pt-4 border-t border-border/50">
+          <div className="flex items-center gap-2">
+            <User className="h-3 w-3" />
+            <span className="truncate max-w-[100px]">{item.creator}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-3 w-3" />
+            <span>{formattedDate || item.date}</span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   )

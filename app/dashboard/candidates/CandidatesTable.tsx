@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter, Eye } from "lucide-react"
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
@@ -195,7 +195,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                   onValueChange={handleStatusFilter} 
                   defaultValue={searchParams.get("status") || "ALL"}
               >
-                <SelectTrigger className="h-10">
+                <SelectTrigger className="!h-10">
                   <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-muted-foreground" />
                     <SelectValue placeholder="Filter by status" />
@@ -238,7 +238,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                     const canDelete = canManage // Only admins can delete based on requirements
 
                     return (
-                    <TableRow key={candidate.id}>
+                    <TableRow key={candidate.id} className="last:border-0">
                       <TableCell className="font-medium">
                         <Link href={`/dashboard/candidates/${candidate.id}`} className="hover:underline">
                           {candidate.firstName} {candidate.lastName}
@@ -285,7 +285,7 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
                         <div className="flex justify-end gap-2">
                           <Link href={`/dashboard/candidates/${candidate.id}`}>
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                              <Eye className="h-4 w-4" />
+                              <ExternalLink className="h-4 w-4" />
                             </Button>
                           </Link>
                           {canEdit && (

@@ -11,12 +11,18 @@ interface KanbanBoardProps {
   initialItems: KanbanItem[]
   columns: ColumnType[]
   onStatusChange: (itemId: string, newStatus: string) => Promise<void>
+  onViewClick?: (id: string, type?: "candidate" | "position") => void
 }
 
-export function KanbanBoard({ initialItems, columns, onStatusChange }: KanbanBoardProps) {
+export function KanbanBoard({ initialItems, columns, onStatusChange, onViewClick }: KanbanBoardProps) {
   const [items, setItems] = useState<KanbanItem[]>(initialItems)
   const [activeItem, setActiveItem] = useState<KanbanItem | null>(null)
   const [mounted, setMounted] = useState(false)
+
+  // Sync state when initialItems changes (e.g. switching between candidates and positions)
+  useEffect(() => {
+    setItems(initialItems)
+  }, [initialItems])
 
   useEffect(() => {
     setMounted(true)
@@ -56,7 +62,7 @@ export function KanbanBoard({ initialItems, columns, onStatusChange }: KanbanBoa
               {items
                 .filter((item) => item.columnId === col.id)
                 .map((item) => (
-                  <KanbanCard key={item.id} item={item} />
+                  <KanbanCard key={item.id} item={item} onViewClick={onViewClick} />
                 ))}
             </div>
           </div>
@@ -162,6 +168,7 @@ export function KanbanBoard({ initialItems, columns, onStatusChange }: KanbanBoa
             key={col.id}
             column={col}
             items={items.filter((item) => item.columnId === col.id)}
+            onViewClick={onViewClick}
           />
         ))}
       </div>

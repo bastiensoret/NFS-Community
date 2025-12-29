@@ -38,7 +38,11 @@ export default async function GatekeeperDashboardPage() {
     tags: c.skills.slice(0, 3),
     content: c.email,
     creator: c.creator?.name || c.creator?.email || "Unknown",
-    date: c.updatedAt.toISOString()
+    date: c.updatedAt.toISOString(),
+    seniority: c.seniorityLevel || undefined,
+    location: c.location || undefined,
+    phoneNumber: c.phoneNumber || undefined,
+    type: "candidate"
   }))
 
   // Fetch Positions
@@ -67,10 +71,14 @@ export default async function GatekeeperDashboardPage() {
       columnId,
       title: p.jobTitle,
       subtitle: p.companyName,
-      tags: [p.location, p.country],
+      tags: [p.location, p.country].filter(Boolean) as string[],
       content: p.description ? p.description.substring(0, 100) + "..." : "",
       creator: p.creator?.name || p.creator?.email || "Unknown",
-      date: p.lastUpdated.toISOString()
+      date: p.lastUpdated.toISOString(),
+      seniority: p.seniorityLevel,
+      location: p.location || undefined,
+      phoneNumber: p.contactPhone || undefined,
+      type: "position"
     }
   })
 

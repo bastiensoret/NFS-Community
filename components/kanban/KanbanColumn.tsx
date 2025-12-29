@@ -14,9 +14,10 @@ export type ColumnType = {
 interface KanbanColumnProps {
   column: ColumnType
   items: KanbanItem[]
+  onViewClick?: (id: string, type?: "candidate" | "position") => void
 }
 
-export function KanbanColumn({ column, items }: KanbanColumnProps) {
+export function KanbanColumn({ column, items, onViewClick }: KanbanColumnProps) {
   const itemsIds = useMemo(() => items.map((item) => item.id), [items])
 
   const { setNodeRef } = useSortable({
@@ -41,7 +42,7 @@ export function KanbanColumn({ column, items }: KanbanColumnProps) {
       <div className="flex-1 p-2 flex flex-col gap-2 overflow-y-auto min-h-[100px]">
         <SortableContext items={itemsIds}>
           {items.map((item) => (
-            <KanbanCard key={item.id} item={item} />
+            <KanbanCard key={item.id} item={item} onViewClick={onViewClick} />
           ))}
         </SortableContext>
       </div>

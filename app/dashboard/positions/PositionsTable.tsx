@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter, Eye } from "lucide-react"
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
@@ -250,7 +250,7 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
             </div>
             <div className="w-full sm:w-[200px]">
               <Select value={currentStatus} onValueChange={handleStatusChange}>
-                <SelectTrigger className="h-10">
+                <SelectTrigger className="!h-10">
                   <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-muted-foreground" />
                     <SelectValue placeholder="Filter by status" />
@@ -297,27 +297,27 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
                 </TableRow>
               ) : (
                 positions.map((position) => (
-                  <TableRow key={position.id} className="group">
-                    <TableCell className="py-4 text-muted-foreground">
+                  <TableRow key={position.id} className="group last:border-0">
+                    <TableCell className="text-muted-foreground">
                        {format(new Date(position.postingDate), "MMM d, yyyy")}
                     </TableCell>
-                    <TableCell className="py-4 font-medium text-foreground">
+                    <TableCell className="font-medium text-foreground">
                       {position.jobTitle}
                     </TableCell>
-                    <TableCell className="py-4 text-muted-foreground">
+                    <TableCell className="text-muted-foreground">
                       {SENIORITY_LEVELS.find(l => l.value === position.seniorityLevel)?.label || position.seniorityLevel}
                     </TableCell>
-                    <TableCell className="py-4 text-muted-foreground">{position.companyName}</TableCell>
-                    <TableCell className="py-4 text-muted-foreground">{getLocationString(position)}</TableCell>
-                    <TableCell className="py-4">
+                    <TableCell className="text-muted-foreground">{position.companyName}</TableCell>
+                    <TableCell className="text-muted-foreground">{getLocationString(position)}</TableCell>
+                    <TableCell>
                       {getStatusBadge(position.status)}
                     </TableCell>
-                    <TableCell className="text-right py-4">
+                    <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         {/* View icon - always visible */}
                         <Link href={`/dashboard/positions/${position.id}`}>
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                            <Eye className="h-4 w-4" />
+                            <ExternalLink className="h-4 w-4" />
                           </Button>
                         </Link>
                         
@@ -348,35 +348,35 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
               )}
             </TableBody>
           </Table>
+
+          {/* Pagination inside the card content for consistency with CandidatesTable */}
+          {positions.length > 0 && (
+            <div className="flex items-center justify-end space-x-2 py-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page <= 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <div className="text-sm text-muted-foreground">
+                  Page {pagination.page} of {pagination.totalPages}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={pagination.page >= pagination.totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+            </div>
+          )}
         </div>
       </Card>
-
-      {/* Pagination */}
-      {positions.length > 0 && (
-        <div className="flex items-center justify-end space-x-2 py-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page <= 1}
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Previous
-            </Button>
-            <div className="text-sm text-muted-foreground">
-              Page {pagination.page} of {pagination.totalPages}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNextPage}
-              disabled={pagination.page >= pagination.totalPages}
-            >
-              Next
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
-        </div>
-      )}
 
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
