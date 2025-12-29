@@ -307,9 +307,9 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="DRAFT">Draft</SelectItem>
-                        <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
+                        <SelectItem value="PENDING_APPROVAL">Pending approval</SelectItem>
                         <SelectItem value="ACTIVE">Active</SelectItem>
-                        <SelectItem value="CAMPAIGN_SENT">Campaign Sent</SelectItem>
+                        <SelectItem value="CAMPAIGN_SENT">Campaign sent</SelectItem>
                         <SelectItem value="ARCHIVED">Archived</SelectItem>
                       </SelectContent>
                     </Select>
@@ -319,7 +319,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="jobTitle">Job Title *</Label>
+                    <Label htmlFor="jobTitle">Job title *</Label>
                     <Input
                       id="jobTitle"
                       required
@@ -328,7 +328,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="companyName">Company Name *</Label>
+                    <Label htmlFor="companyName">Company name *</Label>
                     <Input
                       id="companyName"
                       required
@@ -369,7 +369,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="startDate">Start Date *</Label>
+                    <Label htmlFor="startDate">Start date *</Label>
                     <Input
                       id="startDate"
                       type="date"
@@ -394,7 +394,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="seniorityLevel">Experience Level *</Label>
+                    <Label htmlFor="seniorityLevel">Seniority level *</Label>
                     <Select
                       value={formData.seniorityLevel}
                       onValueChange={(value) => setFormData({ ...formData, seniorityLevel: value })}

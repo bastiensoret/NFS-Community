@@ -123,7 +123,7 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
+                <Label htmlFor="firstName">First name *</Label>
                 <Input
                   id="firstName"
                   required
@@ -132,7 +132,7 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
+                <Label htmlFor="lastName">Last name *</Label>
                 <Input
                   id="lastName"
                   required
@@ -154,7 +154,7 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Label htmlFor="phoneNumber">Phone number</Label>
                 <Input
                   id="phoneNumber"
                   value={formData.phoneNumber}
@@ -203,7 +203,7 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-               <Label htmlFor="seniorityLevel">Seniority Level</Label>
+               <Label htmlFor="seniorityLevel">Seniority level</Label>
                <Select
                  value={formData.seniorityLevel}
                  onValueChange={(value) => setFormData({ ...formData, seniorityLevel: value })}
@@ -222,7 +222,7 @@ export function EditCandidateForm({ candidate, userRole }: { candidate: Candidat
              </div>
 
             <div className="space-y-2">
-              <Label>Desired Roles</Label>
+              <Label>Desired roles</Label>
               <MultiSelect
                 options={ROLE_OPTIONS}
                 selected={desiredRoles}
