@@ -28,9 +28,11 @@ export default async function DashboardPage() {
     totalPositions,
     activePositions,
     pendingPositions,
+    userCandidatesCount,
+    userPositionsCount,
+    campaignSentPositions,
     userCandidates,
-    userPositions,
-    campaignSentPositions
+    userPositions
   ] = await Promise.all([
     // Overall stats
     prisma.candidate.count(),
@@ -43,7 +45,32 @@ export default async function DashboardPage() {
     // User-specific stats
     prisma.candidate.count({ where: { creatorId: session.user.id } }),
     prisma.jobPosting.count({ where: { creatorId: session.user.id } }),
-    prisma.jobPosting.count({ where: { status: "CAMPAIGN_SENT" } })
+    prisma.jobPosting.count({ where: { status: "CAMPAIGN_SENT" } }),
+
+    // User-specific lists
+    prisma.candidate.findMany({
+      where: { creatorId: session.user.id },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        status: true,
+        desiredRoles: true,
+        createdAt: true
+      }
+    }),
+    prisma.jobPosting.findMany({
+      where: { creatorId: session.user.id },
+      orderBy: { postingDate: 'desc' },
+      select: {
+        id: true,
+        jobTitle: true,
+        status: true,
+        postingDate: true,
+        applicationDeadline: true
+      }
+    })
   ])
 
   // Render dashboard based on user role
@@ -75,9 +102,10 @@ export default async function DashboardPage() {
   return (
     <UserDashboard
       userId={session.user.id}
-      candidatesCount={userCandidates}
-      positionsCount={userPositions}
-      pendingPositionsCount={pendingPositions}
+      candidatesCount={userCandidatesCount}
+      positionsCount={userPositionsCount}
+      userCandidates={userCandidates}
+      userPositions={userPositions}
     />
   )
 }
