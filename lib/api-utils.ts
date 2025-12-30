@@ -5,13 +5,13 @@ import { Session } from "next-auth"
 import { checkRateLimit } from "@/lib/rate-limit"
 import { ZodError } from "zod"
 
-type AuthenticatedHandler<T = any> = (
+type AuthenticatedHandler<T = unknown> = (
   req: NextRequest,
   session: Session,
   context: T
 ) => Promise<NextResponse>
 
-export function withAuth<T = any>(
+export function withAuth<T = unknown>(
   handler: AuthenticatedHandler<T>,
   requiredPermission?: keyof typeof import("./roles").ROLE_PERMISSIONS['USER']
 ) {
@@ -42,19 +42,21 @@ export function withAuth<T = any>(
       }
 
       return await handler(req, session, context)
-    } catch (error: any) {
+    } catch (error) {
       console.error("API Error details:", error)
       
+      const err = error as Error & { name?: string; errors?: unknown }
+
       // Check for ZodError (instanceof or shape)
-      if (error instanceof ZodError || (error?.name === 'ZodError') || error?.errors) {
+      if (err instanceof ZodError || (err?.name === 'ZodError') || err?.errors) {
         return NextResponse.json(
-          { error: "Validation Error", details: error.errors },
+          { error: "Validation Error", details: (err as unknown as ZodError).errors },
           { status: 400 }
         )
       }
 
       return NextResponse.json(
-        { error: "Internal Server Error", message: error instanceof Error ? error.message : "Unknown error" },
+        { error: "Internal Server Error", message: err.message || "Unknown error" },
         { status: 500 }
       )
     }

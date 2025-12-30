@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Briefcase, Plus, TrendingUp, Clock, Calendar } from "lucide-react"
+import { Users, Briefcase, Plus } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -60,7 +60,6 @@ function formatStatus(status: string) {
 }
 
 export function UserDashboard({ 
-  userId, 
   candidatesCount, 
   positionsCount, 
   userCandidates, 

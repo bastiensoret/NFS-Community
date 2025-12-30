@@ -1,26 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown, X } from "lucide-react"
+import { X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/ui/command" // I need to check if command exists, it was not in the ls output.
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover" // I need to check if popover exists.
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { ScrollArea } from "@/components/ui/scroll-area" // Check if exists
 
 // Fallback if Command/Popover don't exist: Use a simple div structure with standard inputs.
 // Since I saw the file list earlier and didn't see command/popover/scroll-area, I should verify or build a simpler version.
@@ -36,9 +21,7 @@ export function CategorizedMultiSelect({
   options,
   selected,
   onChange,
-  placeholder = "Select items...",
 }: CategorizedMultiSelectProps) {
-  const [isOpen, setIsOpen] = React.useState(false)
 
   const handleSelect = (item: string) => {
     if (selected.includes(item)) {

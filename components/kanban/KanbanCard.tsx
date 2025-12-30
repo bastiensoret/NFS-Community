@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatDistanceToNow, isValid, parseISO } from "date-fns"
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
 import { MapPin, User, Clock, GraduationCap, Phone, ExternalLink } from "lucide-react"
 import { SENIORITY_LEVELS } from "@/lib/constants"
 
@@ -32,20 +32,16 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ item, onViewClick }: KanbanCardProps) {
-  const [formattedDate, setFormattedDate] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (item.date) {
-      try {
-        const date = parseISO(item.date)
-        if (isValid(date)) {
-          setFormattedDate(formatDistanceToNow(date, { addSuffix: true }))
-        } else {
-          setFormattedDate(item.date)
-        }
-      } catch (e) {
-        setFormattedDate(item.date)
+  const formattedDate = useMemo(() => {
+    if (!item.date) return null
+    try {
+      const date = parseISO(item.date)
+      if (isValid(date)) {
+        return formatDistanceToNow(date, { addSuffix: true })
       }
+      return item.date
+    } catch {
+      return item.date
     }
   }, [item.date])
 

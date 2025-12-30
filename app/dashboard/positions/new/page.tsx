@@ -74,16 +74,16 @@ export default function NewJobPostingPage() {
     // Construct payload strictly typed against schema input
     const payload: JobPostingInput = {
       ...formData,
-      status: formData.status as any,
-      country: formData.country as any, // Cast to enum type
-      seniorityLevel: formData.seniorityLevel as any, // Cast to enum type
-      industrySector: formData.industrySector as any, // Cast to enum type
+      status: formData.status as JobPostingInput['status'],
+      country: formData.country as JobPostingInput['country'], // Cast to enum type
+      seniorityLevel: formData.seniorityLevel as JobPostingInput['seniorityLevel'], // Cast to enum type
+      industrySector: formData.industrySector as JobPostingInput['industrySector'], // Cast to enum type
       // Flatten work arrangement
       remoteAllowed: workArrangement.remote_allowed,
       onSiteDays: workArrangement.on_site_days_per_week,
       responsibilities,
       skills,
-      languageRequirements: languages as any, // Zod input expects specific structure, casting to bypass strict array check for now or map it if needed
+      languageRequirements: languages as JobPostingInput['languageRequirements'],
     }
 
     // Fix languageRequirements typing if possible, or just cast as any for the action call which validates it runtime.

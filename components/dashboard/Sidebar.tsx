@@ -15,8 +15,6 @@ import {
   Settings,
   ChevronsUpDown, 
   SquareKanban,
-  ChevronLeft,
-  ChevronRight,
   PanelLeftClose,
   PanelLeftOpen
 } from "lucide-react"
@@ -41,40 +39,48 @@ interface SidebarProps {
   onSignOut: () => Promise<void>
 }
 
+interface NavItemProps {
+  href: string
+  icon: React.ElementType
+  label: string
+  isCollapsed: boolean
+  pathname: string
+}
+
+const NavItem = ({ href, icon: Icon, label, isCollapsed, pathname }: NavItemProps) => {
+  const isActive = pathname === href
+  
+  return (
+    <Tooltip delayDuration={0}>
+      <TooltipTrigger asChild>
+        <Link href={href} className="w-full">
+          <Button
+            variant={isActive ? "secondary" : "ghost"}
+            className={cn(
+              "w-full justify-start h-10 mb-1",
+              isCollapsed ? "px-2 justify-center" : "px-4"
+            )}
+          >
+            <Icon className={cn("h-4 w-4", isCollapsed ? "mr-0" : "mr-2")} />
+            {!isCollapsed && <span>{label}</span>}
+          </Button>
+        </Link>
+      </TooltipTrigger>
+      {isCollapsed && (
+        <TooltipContent side="right">
+          {label}
+        </TooltipContent>
+      )}
+    </Tooltip>
+  )
+}
+
 export function Sidebar({ user, onSignOut }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const pathname = usePathname()
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed)
-  }
-
-  const NavItem = ({ href, icon: Icon, label }: { href: string; icon: any; label: string }) => {
-    const isActive = pathname === href
-    
-    return (
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
-          <Link href={href} className="w-full">
-            <Button
-              variant={isActive ? "secondary" : "ghost"}
-              className={cn(
-                "w-full justify-start h-10 mb-1",
-                isCollapsed ? "px-2 justify-center" : "px-4"
-              )}
-            >
-              <Icon className={cn("h-4 w-4", isCollapsed ? "mr-0" : "mr-2")} />
-              {!isCollapsed && <span>{label}</span>}
-            </Button>
-          </Link>
-        </TooltipTrigger>
-        {isCollapsed && (
-          <TooltipContent side="right">
-            {label}
-          </TooltipContent>
-        )}
-      </Tooltip>
-    )
   }
 
   return (
@@ -102,17 +108,17 @@ export function Sidebar({ user, onSignOut }: SidebarProps) {
       </div>
       
       <nav className="px-2 space-y-1 flex-1 py-4">
-        <NavItem href="/dashboard" icon={Home} label="Dashboard" />
-        <NavItem href="/dashboard/candidates" icon={Users} label="Candidates" />
-        <NavItem href="/dashboard/positions" icon={Briefcase} label="Positions" />
+        <NavItem href="/dashboard" icon={Home} label="Dashboard" isCollapsed={isCollapsed} pathname={pathname} />
+        <NavItem href="/dashboard/candidates" icon={Users} label="Candidates" isCollapsed={isCollapsed} pathname={pathname} />
+        <NavItem href="/dashboard/positions" icon={Briefcase} label="Positions" isCollapsed={isCollapsed} pathname={pathname} />
         
         <div className="pt-4 mt-4 border-t border-border/50">
           {(user?.role === "GATEKEEPER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") && (
-            <NavItem href="/dashboard/gatekeeper" icon={SquareKanban} label="Gatekeeping" />
+            <NavItem href="/dashboard/gatekeeper" icon={SquareKanban} label="Gatekeeping" isCollapsed={isCollapsed} pathname={pathname} />
           )}
 
           {user?.role === "SUPER_ADMIN" && (
-             <NavItem href="/dashboard/admin" icon={Shield} label="Administration" />
+             <NavItem href="/dashboard/admin" icon={Shield} label="Administration" isCollapsed={isCollapsed} pathname={pathname} />
           )}
         </div>
       </nav>

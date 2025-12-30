@@ -1,8 +1,8 @@
 "use client"
 
-import { useMemo, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { DndContext, DragOverlay, useSensor, useSensors, MouseSensor, TouchSensor, DragStartEvent, DragEndEvent, DragOverEvent } from "@dnd-kit/core"
-import { SortableContext, arrayMove } from "@dnd-kit/sortable"
+import { arrayMove } from "@dnd-kit/sortable"
 import { KanbanColumn, type ColumnType } from "./KanbanColumn"
 import { KanbanCard, type KanbanItem } from "./KanbanCard"
 import { createPortal } from "react-dom"
@@ -41,8 +41,6 @@ export function KanbanBoard({ initialItems, columns, onStatusChange, onViewClick
       },
     })
   )
-
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns])
 
   if (!mounted) {
     return (

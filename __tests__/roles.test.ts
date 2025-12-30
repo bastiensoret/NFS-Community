@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { ROLES, hasPermission, canManageRoles, getRoleDisplayName } from '../lib/roles'
+import { ROLES, hasPermission, canManageRoles, getRoleDisplayName, type Role } from '../lib/roles'
 
 describe('Roles and Permissions', () => {
   describe('getRoleDisplayName', () => {
@@ -36,8 +36,7 @@ describe('Roles and Permissions', () => {
     })
 
     it('should return false for invalid role', () => {
-      // @ts-ignore
-      expect(hasPermission('INVALID', 'canViewPositions')).toBe(false)
+      expect(hasPermission('INVALID' as Role, 'canViewPositions')).toBe(false)
     })
   })
 

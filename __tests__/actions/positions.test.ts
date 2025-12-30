@@ -3,6 +3,7 @@ import { createPositionAction, deletePositionAction, updatePositionAction } from
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { type JobPostingInput } from '@/lib/validations'
 
 // Mock dependencies
 vi.mock('@/lib/prisma', () => ({
@@ -64,14 +65,14 @@ describe('Positions Server Actions', () => {
 
   describe('createPositionAction', () => {
     it('should create position with default DRAFT status for USER', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock user session
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma create
       prisma.jobPosting.create.mockResolvedValue({ id: 'pos-1', ...mockPosting, status: 'DRAFT', creatorId: mockUser.id })
 
-      const result = await createPositionAction(mockPosting as any)
+      const result = await createPositionAction(mockPosting as JobPostingInput)
 
       expect(result.success).toBe(true)
       expect(prisma.jobPosting.create).toHaveBeenCalledWith(expect.objectContaining({
@@ -85,14 +86,14 @@ describe('Positions Server Actions', () => {
     })
 
     it('should allow ADMIN to create ACTIVE position', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock admin session
       auth.mockResolvedValue({ user: mockAdmin })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma create
       prisma.jobPosting.create.mockResolvedValue({ id: 'pos-1', ...mockPosting, status: 'ACTIVE', creatorId: mockAdmin.id })
 
-      const result = await createPositionAction(mockPosting as any)
+      const result = await createPositionAction(mockPosting as JobPostingInput)
 
       expect(result.success).toBe(true)
       expect(prisma.jobPosting.create).toHaveBeenCalledWith(expect.objectContaining({
@@ -104,14 +105,14 @@ describe('Positions Server Actions', () => {
     })
 
     it('should handle language requirements correctly', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock admin session
       auth.mockResolvedValue({ user: mockAdmin })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma create
       prisma.jobPosting.create.mockResolvedValue({ id: 'pos-1', ...mockPosting })
       
-      await createPositionAction(mockPosting as any)
+      await createPositionAction(mockPosting as JobPostingInput)
 
       expect(prisma.jobPosting.create).toHaveBeenCalledWith(expect.objectContaining({
         data: expect.objectContaining({
@@ -125,13 +126,13 @@ describe('Positions Server Actions', () => {
     })
 
     it('should fail validation with missing fields', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock user session
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
 
       const invalidInput = { jobTitle: '' }
-      const result = await createPositionAction(invalidInput as any)
+      const result = await createPositionAction(invalidInput as JobPostingInput)
 
       expect(result.validationErrors).toBeDefined()
     })
@@ -139,15 +140,15 @@ describe('Positions Server Actions', () => {
 
   describe('updatePositionAction', () => {
     it('should allow creator to update DRAFT position', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock user session
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma findUnique
       prisma.jobPosting.findUnique.mockResolvedValue({ id: 'pos-1', creatorId: mockUser.id, status: 'DRAFT' })
-      // @ts-ignore
+      // @ts-expect-error - mock prisma user find
       prisma.user.findUnique.mockResolvedValue(mockUser)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma update
       prisma.jobPosting.update.mockResolvedValue({ id: 'pos-1', ...mockPosting, jobTitle: 'Updated Title' })
 
       const result = await updatePositionAction('pos-1', { jobTitle: 'Updated Title' })
@@ -157,13 +158,13 @@ describe('Positions Server Actions', () => {
     })
 
     it('should deny USER from updating someone else\'s position', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock other user session
       auth.mockResolvedValue({ user: { id: 'other-user', role: 'USER' } })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma findUnique
       prisma.jobPosting.findUnique.mockResolvedValue({ id: 'pos-1', creatorId: mockUser.id, status: 'DRAFT' })
-      // @ts-ignore
+      // @ts-expect-error - mock prisma user find
       prisma.user.findUnique.mockResolvedValue({ id: 'other-user', role: 'USER' })
 
       const result = await updatePositionAction('pos-1', { jobTitle: 'Hacked Title' })
@@ -172,15 +173,15 @@ describe('Positions Server Actions', () => {
     })
 
     it('should allow ADMIN to update any position', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock admin session
       auth.mockResolvedValue({ user: mockAdmin })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma findUnique
       prisma.jobPosting.findUnique.mockResolvedValue({ id: 'pos-1', creatorId: mockUser.id, status: 'ACTIVE' })
-      // @ts-ignore
+      // @ts-expect-error - mock prisma user find
       prisma.user.findUnique.mockResolvedValue(mockAdmin)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma update
       prisma.jobPosting.update.mockResolvedValue({ id: 'pos-1', ...mockPosting, jobTitle: 'Admin Edit' })
 
       const result = await updatePositionAction('pos-1', { jobTitle: 'Admin Edit' })
@@ -191,13 +192,13 @@ describe('Positions Server Actions', () => {
 
   describe('deletePositionAction', () => {
     it('should allow creator to delete', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock user session
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma findUnique
       prisma.jobPosting.findUnique.mockResolvedValue({ id: 'pos-1', creatorId: mockUser.id, status: 'DRAFT' })
-      // @ts-ignore
+      // @ts-expect-error - mock prisma delete
       prisma.jobPosting.delete.mockResolvedValue({ id: 'pos-1' })
 
       const result = await deletePositionAction('pos-1')
@@ -206,11 +207,11 @@ describe('Positions Server Actions', () => {
     })
 
     it('should deny non-creator USER', async () => {
-      // @ts-ignore
+      // @ts-expect-error - mock other user session
       auth.mockResolvedValue({ user: { id: 'other-user', role: 'USER' } })
-      // @ts-ignore
+      // @ts-expect-error - mock rate limit success
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - mock prisma findUnique
       prisma.jobPosting.findUnique.mockResolvedValue({ id: 'pos-1', creatorId: mockUser.id, status: 'DRAFT' })
 
       const result = await deletePositionAction('pos-1')

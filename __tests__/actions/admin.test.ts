@@ -31,9 +31,9 @@ describe('Admin Server Actions', () => {
 
   describe('updateUserAction', () => {
     it('should allow SUPER_ADMIN to update user role', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockSuperAdmin })
-      // @ts-ignore
+      // @ts-expect-error - Mocking prisma for testing
       prisma.user.update.mockResolvedValue({ id: 'target-1', role: 'ADMIN', isGatekeeper: true })
 
       const result = await updateUserAction({
@@ -50,7 +50,7 @@ describe('Admin Server Actions', () => {
     })
 
     it('should deny non-SUPER_ADMIN users', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockAdmin })
 
       const result = await updateUserAction({
@@ -64,12 +64,12 @@ describe('Admin Server Actions', () => {
     })
 
     it('should fail validation for invalid role', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockSuperAdmin })
 
       const result = await updateUserAction({
         userId: mockTargetUser.id,
-        // @ts-ignore
+        // @ts-expect-error - Testing invalid role input
         role: 'INVALID_ROLE',
         isGatekeeper: true
       })

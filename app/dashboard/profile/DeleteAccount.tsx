@@ -37,7 +37,7 @@ export function DeleteAccount() {
           description: result.error || "Failed to delete account. Please try again.",
         })
       }
-    } catch (error) {
+    } catch {
       toast.error("Error", {
         description: "An unexpected error occurred.",
       })

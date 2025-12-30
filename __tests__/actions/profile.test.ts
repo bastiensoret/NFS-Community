@@ -44,9 +44,9 @@ describe('Profile Server Actions', () => {
 
   describe('updateProfile', () => {
     it('should update profile with valid data', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - Mocking prisma update
       prisma.user.update.mockResolvedValue({ id: 'user-1', firstName: 'John', lastName: 'Doe' })
 
       const formData = new FormData()
@@ -63,7 +63,7 @@ describe('Profile Server Actions', () => {
     })
 
     it('should fail validation with missing name', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockUser })
 
       const formData = new FormData()
@@ -78,13 +78,13 @@ describe('Profile Server Actions', () => {
 
   describe('changePassword', () => {
     it('should change password if current password is correct', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - Mocking prisma findUnique
       prisma.user.findUnique.mockResolvedValue({ id: 'user-1', password: 'hashed-old-password' })
-      // @ts-ignore
+      // @ts-expect-error - Mocking bcrypt compare
       bcrypt.compare.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - Mocking bcrypt hash
       bcrypt.hash.mockResolvedValue('hashed-new-password')
 
       const formData = new FormData()
@@ -99,11 +99,11 @@ describe('Profile Server Actions', () => {
     })
 
     it('should fail if current password is incorrect', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - Mocking prisma findUnique
       prisma.user.findUnique.mockResolvedValue({ id: 'user-1', password: 'hashed-old-password' })
-      // @ts-ignore
+      // @ts-expect-error - Mocking bcrypt compare
       bcrypt.compare.mockResolvedValue(false)
 
       const formData = new FormData()
@@ -114,7 +114,7 @@ describe('Profile Server Actions', () => {
       const result = await changePassword({}, formData)
 
       expect(result.error).toBe('Validation failed')
-      expect(result.fieldErrors?.currentPassword).toBeDefined()
+      expect(result.validationErrors?.currentPassword).toBeDefined()
     })
   })
 })

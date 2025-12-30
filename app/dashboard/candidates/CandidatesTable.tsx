@@ -8,7 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Search, Filter, ExternalLink } from "lucide-react"
 import Link from "next/link"
-import { format } from "date-fns"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { deleteCandidateAction } from "@/app/actions/candidates"
 import { toast } from "sonner"
@@ -90,24 +89,6 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
   const canCreate = true // All authenticated users can create candidates
 
   // Sync state with props when initialCandidates changes
-  if (candidates !== initialCandidates) {
-    setCandidates(initialCandidates)
-  }
-
-  const getStatusBadge = (status?: string) => {
-    switch (status) {
-      case "ACTIVE":
-        return <Badge variant="success">Active</Badge>
-      case "PENDING_APPROVAL":
-        return <Badge variant="warning">Pending</Badge>
-      case "DRAFT":
-        return <Badge variant="secondary">Draft</Badge>
-      case "INACTIVE":
-        return <Badge variant="destructive">Inactive</Badge>
-      default:
-        return <Badge variant="outline">Unknown</Badge>
-    }
-  }
 
   const createQueryString = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -140,7 +121,6 @@ export function CandidatesTable({ initialCandidates, userRole, currentUserId, pa
   const handlePageChange = (newPage: number) => {
     router.push(pathname + "?" + createQueryString("page", String(newPage)))
   }
-
 
   const handleDelete = async () => {
     if (!deleteId) return

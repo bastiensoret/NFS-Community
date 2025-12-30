@@ -4,7 +4,6 @@ import { authenticated, handleActionError, ActionError, type ActionState } from 
 import { prisma } from "@/lib/prisma"
 import { candidateSchema, type CandidateInput } from "@/lib/validations"
 import { revalidatePath } from "next/cache"
-import { Prisma } from "@prisma/client"
 
 export { type ActionState }
 

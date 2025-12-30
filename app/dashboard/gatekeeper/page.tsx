@@ -2,7 +2,6 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import GatekeeperDashboardClient from "./client"
-import { formatDistanceToNow } from "date-fns"
 import type { KanbanItem } from "@/components/kanban/KanbanCard"
 
 export default async function GatekeeperDashboardPage() {
@@ -35,7 +34,7 @@ export default async function GatekeeperDashboardPage() {
     columnId: c.status || "DRAFT",
     title: `${c.firstName} ${c.lastName}`,
     subtitle: c.desiredRoles[0] || "No role specified",
-    tags: c.skills.slice(0, 3),
+    tags: [...c.hardSkills, ...c.softSkills].slice(0, 3),
     content: c.email,
     creator: c.creator?.name || c.creator?.email || "Unknown",
     date: c.updatedAt.toISOString(),

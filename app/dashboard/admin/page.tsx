@@ -13,7 +13,15 @@ export default async function AdminPage({
 }) {
   const session = await auth()
   
-  if (!session || session.user?.role !== "SUPER_ADMIN") {
+  // Fetch fresh user data from DB to ensure role is up to date
+  const user = session?.user?.id 
+    ? await prisma.user.findUnique({ 
+        where: { id: session.user.id },
+        select: { role: true }
+      }) 
+    : null
+
+  if (!user || user.role !== "SUPER_ADMIN") {
     redirect("/dashboard")
   }
 

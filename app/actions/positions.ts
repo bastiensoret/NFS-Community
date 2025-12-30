@@ -159,7 +159,7 @@ export async function updatePositionAction(id: string, data: Partial<JobPostingI
     }
 
     // 3. Status Transition Logic
-    let newStatus = validatedBody.status
+    const newStatus = validatedBody.status
     
     if (newStatus && newStatus !== existingPosition.status) {
       if (newStatus === "CAMPAIGN_SENT" || newStatus === "ARCHIVED") {

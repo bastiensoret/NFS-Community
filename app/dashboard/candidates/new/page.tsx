@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
 import { X, Plus } from "lucide-react"
 import { SENIORITY_LEVELS } from "@/lib/constants"
 import { createCandidateAction } from "@/app/actions/candidates"
@@ -95,7 +94,7 @@ export default function NewCandidatePage() {
     const payload: CandidateInput = {
       ...formData,
       education: educationDegrees,
-      educationLevel: primaryEducationLevel as any,
+      educationLevel: primaryEducationLevel as CandidateInput['educationLevel'],
       previousRoles,
       desiredRoles,
       softSkills,
@@ -122,7 +121,7 @@ export default function NewCandidatePage() {
             toast.error(result.error || "Failed to create candidate")
         }
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to create candidate")
     } finally {
       setLoading(false)
@@ -300,7 +299,7 @@ export default function NewCandidatePage() {
         <Card>
           <CardHeader>
             <CardTitle>Professional profile</CardTitle>
-            <CardDescription>Candidate's professional preferences and expertise</CardDescription>
+            <CardDescription>Candidate&apos;s professional preferences and expertise</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">

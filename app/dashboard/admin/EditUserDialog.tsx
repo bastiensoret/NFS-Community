@@ -65,10 +65,9 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
     setError("")
 
     try {
-      // @ts-ignore - Role string compatibility
       const result = await updateUserAction({
         userId: user.id,
-        role: selectedRole as any,
+        role: selectedRole as "USER" | "ADMIN" | "SUPER_ADMIN",
         isGatekeeper: isGatekeeper,
       })
 
@@ -134,7 +133,7 @@ export function EditUserDialog({ user, open, onOpenChange }: EditUserDialogProps
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(ROLES).map(([key, value]) => (
+                {Object.values(ROLES).map((value) => (
                   <SelectItem key={value} value={value}>
                     {ROLE_DISPLAY_NAMES[value as keyof typeof ROLE_DISPLAY_NAMES]}
                   </SelectItem>

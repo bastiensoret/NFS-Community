@@ -6,7 +6,7 @@ export type ActionState = {
   success?: boolean
   error?: string
   validationErrors?: Record<string, string[]>
-  [key: string]: any
+  [key: string]: string | boolean | string[] | Record<string, string[]> | undefined
 }
 
 export class ActionError extends Error {

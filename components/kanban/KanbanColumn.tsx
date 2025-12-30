@@ -1,10 +1,8 @@
 "use client"
 
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
 import { useMemo } from "react"
 import { KanbanCard, type KanbanItem } from "./KanbanCard"
-import { Badge } from "@/components/ui/badge"
 
 export type ColumnType = {
   id: string

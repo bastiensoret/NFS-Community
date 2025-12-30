@@ -137,17 +137,17 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     const payload: JobPostingInput = {
       ...formData,
       reference: position.reference || undefined, // Preserve original reference
-      seniorityLevel: formData.seniorityLevel as any,
-      industrySector: formData.industrySector as any,
-      status: formData.status as any,
-      country: formData.country as any,
+      seniorityLevel: formData.seniorityLevel as JobPostingInput['seniorityLevel'],
+      industrySector: formData.industrySector as JobPostingInput['industrySector'],
+      status: formData.status as JobPostingInput['status'],
+      country: formData.country as JobPostingInput['country'],
       // Flatten Work Arrangement
       remoteAllowed: workArrangement.remote_allowed,
       onSiteDays: workArrangement.on_site_days_per_week,
       
       responsibilities,
       skills,
-      languageRequirements: languages as any,
+      languageRequirements: languages as JobPostingInput['languageRequirements'],
     }
 
     try {
@@ -167,7 +167,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
             toast.error(result.error || "Failed to update position")
         }
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to update position")
     } finally {
       setLoading(false)
@@ -182,17 +182,17 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     const payload: JobPostingInput = {
       ...formData,
       reference: position.reference || undefined,
-      seniorityLevel: formData.seniorityLevel as any,
-      industrySector: formData.industrySector as any,
-      country: formData.country as any,
+      seniorityLevel: formData.seniorityLevel as JobPostingInput['seniorityLevel'],
+      industrySector: formData.industrySector as JobPostingInput['industrySector'],
+      country: formData.country as JobPostingInput['country'],
+      status: "PENDING_APPROVAL" as JobPostingInput['status'],
       // Flatten Work Arrangement
       remoteAllowed: workArrangement.remote_allowed,
       onSiteDays: workArrangement.on_site_days_per_week,
 
       responsibilities,
       skills,
-      languageRequirements: languages as any,
-      status: "PENDING_APPROVAL"
+      languageRequirements: languages as JobPostingInput['languageRequirements'],
     }
 
     try {
@@ -212,7 +212,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
             toast.error(result.error || "Failed to submit for approval")
         }
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to submit for approval")
     } finally {
       setLoading(false)
@@ -220,10 +220,10 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     }
   }
 
-  const canEditStatus = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
-  const isDraft = position.status === "DRAFT"
+    const canEditStatus = userRole === "ADMIN" || userRole === "SUPER_ADMIN"
+    const isDraft = position.status === "DRAFT"
 
-  return (
+    return (
     <div className="max-w-5xl mx-auto space-y-6">
       <AlertDialog open={showSubmitAlert} onOpenChange={setShowSubmitAlert}>
         <AlertDialogContent>

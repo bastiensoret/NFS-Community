@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Users, Briefcase, X } from "lucide-react"
-import { KanbanBoard } from "@/components/kanban/KanbanBoard"
 import { updateCandidateAction } from "@/app/actions/candidates"
 import { updatePositionAction } from "@/app/actions/positions"
+import { type CandidateInput, type JobPostingInput } from "@/lib/validations"
+import { Users, Briefcase } from "lucide-react"
+import { KanbanBoard } from "@/components/kanban/KanbanBoard"
 import { toast } from "sonner"
 import type { KanbanItem } from "@/components/kanban/KanbanCard"
 import {
@@ -28,14 +29,14 @@ export default function GatekeeperDashboardClient({ candidates, positions }: Gat
 
   async function handleCandidateStatusChange(id: string, newStatus: string) {
     try {
-      const result = await updateCandidateAction(id, { status: newStatus as any })
+      const result = await updateCandidateAction(id, { status: newStatus as CandidateInput['status'] })
       if (!result.success) {
-        toast.error("Failed to update status", { description: result.error as string })
+        toast.error("Failed to update status", { description: result.error })
         // You might want to revert the state here or force a reload
       } else {
         toast.success("Candidate status updated")
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred")
     }
   }
@@ -48,13 +49,13 @@ export default function GatekeeperDashboardClient({ candidates, positions }: Gat
       if (newStatus === "ACTIVE") apiStatus = "CAMPAIGN_SENT"
       if (newStatus === "INACTIVE") apiStatus = "ARCHIVED"
 
-      const result = await updatePositionAction(id, { status: apiStatus as any })
+      const result = await updatePositionAction(id, { status: apiStatus as JobPostingInput['status'] })
       if (!result.success) {
-         toast.error("Failed to update status", { description: result.error as string })
+         toast.error("Failed to update status", { description: result.error })
       } else {
          toast.success("Position status updated")
       }
-    } catch (error) {
+    } catch {
        toast.error("An error occurred")
     }
   }

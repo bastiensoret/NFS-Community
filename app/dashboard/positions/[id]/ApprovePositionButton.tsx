@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { updatePositionAction } from "@/app/actions/positions"
 import { toast } from "sonner"

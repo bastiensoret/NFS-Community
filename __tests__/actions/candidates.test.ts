@@ -41,8 +41,12 @@ describe('Candidate Server Actions', () => {
     firstName: 'John',
     lastName: 'Doe',
     email: 'john@example.com',
+    phoneNumber: '1234567890',
+    seniorityLevel: 'Senior',
     desiredRoles: ['Developer'],
-    skills: ['React'],
+    softSkills: ['Communication'],
+    hardSkills: ['React'],
+    languages: ['English'],
     industries: ['Tech'],
     certifications: [],
   }
@@ -53,7 +57,7 @@ describe('Candidate Server Actions', () => {
 
   describe('createCandidateAction', () => {
     it('should fail if user is not authenticated', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking unauthenticated state
       auth.mockResolvedValue(null)
       
       const result = await createCandidateAction(mockCandidateInput)
@@ -63,9 +67,9 @@ describe('Candidate Server Actions', () => {
     })
 
     it('should fail if rate limit exceeded', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - Mocking rate limit check
       checkRateLimit.mockResolvedValue(false)
 
       const result = await createCandidateAction(mockCandidateInput)
@@ -75,11 +79,11 @@ describe('Candidate Server Actions', () => {
     })
 
     it('should create candidate if authorized and valid', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - Mocking rate limit check
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - Mocking prisma create
       prisma.candidate.create.mockResolvedValue({ id: 'cand-1', ...mockCandidateInput })
 
       const result = await createCandidateAction(mockCandidateInput)
@@ -89,9 +93,9 @@ describe('Candidate Server Actions', () => {
     })
 
     it('should fail validation with invalid email', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockUser })
-      // @ts-ignore
+      // @ts-expect-error - Mocking rate limit check
       checkRateLimit.mockResolvedValue(true)
 
       const invalidInput = { ...mockCandidateInput, email: 'not-an-email' }
@@ -104,9 +108,9 @@ describe('Candidate Server Actions', () => {
 
   describe('deleteCandidateAction', () => {
     it('should fail if user is not admin/recruiter', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockUser }) // USER role cannot delete
-      // @ts-ignore
+      // @ts-expect-error - Mocking rate limit check
       checkRateLimit.mockResolvedValue(true)
 
       const result = await deleteCandidateAction('cand-1')
@@ -116,11 +120,11 @@ describe('Candidate Server Actions', () => {
     })
 
     it('should delete candidate if user is admin', async () => {
-      // @ts-ignore
+      // @ts-expect-error - Mocking auth for testing
       auth.mockResolvedValue({ user: mockAdmin })
-      // @ts-ignore
+      // @ts-expect-error - Mocking rate limit check
       checkRateLimit.mockResolvedValue(true)
-      // @ts-ignore
+      // @ts-expect-error - Mocking prisma delete
       prisma.candidate.delete.mockResolvedValue({ id: 'cand-1' })
 
       const result = await deleteCandidateAction('cand-1')

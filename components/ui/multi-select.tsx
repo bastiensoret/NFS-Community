@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, X } from "lucide-react"
+import { X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -20,7 +20,6 @@ export function MultiSelect({
   options,
   selected,
   onChange,
-  placeholder = "Select items...",
   className
 }: MultiSelectProps) {
   
