@@ -84,6 +84,7 @@ model Candidate {
   email          String   @unique
   phoneNumber    String
   seniorityLevel String
+  birthDate      DateTime?
   location       String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

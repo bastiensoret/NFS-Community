@@ -54,6 +54,7 @@ export const candidateSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().min(1, "Phone number is required"),
+  birthDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
   location: z.string().optional(),
   
   // Experience

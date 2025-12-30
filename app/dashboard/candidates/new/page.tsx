@@ -12,6 +12,7 @@ import { SENIORITY_LEVELS } from "@/lib/constants"
 import { createCandidateAction } from "@/app/actions/candidates"
 import { type CandidateInput } from "@/lib/validations"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 import { DropdownMultiSelect } from "@/components/ui/dropdown-multi-select"
 import { CategorizedDropdownMultiSelect } from "@/components/ui/categorized-dropdown-multi-select"
 import { 
@@ -46,6 +47,7 @@ export default function NewCandidatePage() {
     phoneNumber: "",
     seniorityLevel: "",
     location: "",
+    birthDate: "",
   })
   
   const [educationEntries, setEducationEntries] = useState<EducationEntry[]>([])
@@ -57,13 +59,13 @@ export default function NewCandidatePage() {
   const [certifications, setCertifications] = useState<string[]>([])
   const [languages, setLanguages] = useState<LanguageRequirement[]>([])
   
-  const [newLanguage, setNewLanguage] = useState<LanguageRequirement>({ language: "English", level: "Intermediate" })
-  const [newEducation, setNewEducation] = useState<EducationEntry>({ level: "Bachelor", degreeName: "" })
+  const [newLanguage, setNewLanguage] = useState<LanguageRequirement>({ language: "", level: "" })
+  const [newEducation, setNewEducation] = useState<EducationEntry>({ level: "", degreeName: "" })
 
   const addLanguage = () => {
-    if (newLanguage.language) {
+    if (newLanguage.language && newLanguage.level) {
       setLanguages([...languages, { ...newLanguage }])
-      setNewLanguage({ language: "English", level: "Intermediate" })
+      setNewLanguage({ language: "", level: "" })
     }
   }
 
@@ -72,9 +74,9 @@ export default function NewCandidatePage() {
   }
 
   const addEducation = () => {
-    if (newEducation.degreeName.trim()) {
+    if (newEducation.degreeName.trim() && newEducation.level) {
       setEducationEntries([...educationEntries, { ...newEducation }])
-      setNewEducation({ level: "Bachelor", degreeName: "" })
+      setNewEducation({ level: "", degreeName: "" })
     }
   }
 
@@ -149,6 +151,8 @@ export default function NewCandidatePage() {
                 <Input
                   id="firstName"
                   required
+                  placeholder="e.g., John"
+                  className="placeholder:text-muted-foreground"
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 />
@@ -158,6 +162,8 @@ export default function NewCandidatePage() {
                 <Input
                   id="lastName"
                   required
+                  placeholder="e.g., Doe"
+                  className="placeholder:text-muted-foreground"
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 />
@@ -171,6 +177,8 @@ export default function NewCandidatePage() {
                   id="email"
                   type="email"
                   required
+                  placeholder="e.g., john.doe@example.com"
+                  className="placeholder:text-muted-foreground"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -180,19 +188,35 @@ export default function NewCandidatePage() {
                 <Input
                   id="phoneNumber"
                   required
+                  placeholder="e.g., +32 123 45 67 89"
+                  className="placeholder:text-muted-foreground"
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  placeholder="e.g., Brussels, Belgium"
+                  className="placeholder:text-muted-foreground"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="birthDate">Birth Date</Label>
+                <Input
+                  id="birthDate"
+                  type="date"
+                  className="placeholder:text-muted-foreground"
+                  value={formData.birthDate}
+                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -206,13 +230,27 @@ export default function NewCandidatePage() {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
+                <Label>Previous Roles</Label>
+                <DropdownMultiSelect
+                  options={[]}
+                  selected={previousRoles}
+                  onChange={setPreviousRoles}
+                  placeholder="Select previous roles"
+                  className="placeholder:text-muted-foreground"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="seniorityLevel">Seniority Level *</Label>
                 <Select
                   required
-                  value={formData.seniorityLevel}
+                  value={formData.seniorityLevel || undefined}
                   onValueChange={(value) => setFormData({ ...formData, seniorityLevel: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={cn(
+                    "text-muted-foreground",
+                    formData.seniorityLevel && "text-foreground"
+                  )}>
                     <SelectValue placeholder="Select level" />
                   </SelectTrigger>
                   <SelectContent>
@@ -224,30 +262,23 @@ export default function NewCandidatePage() {
                   </SelectContent>
                 </Select>
               </div>
-
-              <div className="space-y-2">
-                <Label>Previous Roles</Label>
-                <DropdownMultiSelect
-                  options={[]}
-                  selected={previousRoles}
-                  onChange={setPreviousRoles}
-                  placeholder="Add previous roles (values coming later)..."
-                />
-              </div>
             </div>
 
             <div className="space-y-2">
               <Label>Education</Label>
               <div className="p-4 border rounded-lg bg-muted/30">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
+                <div className="flex flex-col md:flex-row gap-4 items-end">
+                  <div className="space-y-2 w-full md:w-[200px]">
                     <Label className="text-sm font-medium">Level</Label>
                     <Select 
-                      value={newEducation.level}
+                      value={newEducation.level || undefined}
                       onValueChange={(val) => setNewEducation({...newEducation, level: val})}
                     >
-                      <SelectTrigger className="bg-background">
-                        <SelectValue />
+                      <SelectTrigger className={cn(
+                        "bg-background text-muted-foreground",
+                        newEducation.level && "text-foreground"
+                      )}>
+                        <SelectValue placeholder="Select level" />
                       </SelectTrigger>
                       <SelectContent>
                         {EDUCATION_LEVELS.map(level => (
@@ -256,18 +287,17 @@ export default function NewCandidatePage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 flex-1">
                     <Label className="text-sm font-medium">Degree name</Label>
                     <Input
-                      className="bg-background"
+                      className="bg-background placeholder:text-muted-foreground"
                       placeholder="e.g., Computer Science"
                       value={newEducation.degreeName}
                       onChange={(e) => setNewEducation({...newEducation, degreeName: e.target.value})}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium opacity-0">Action</Label>
-                    <Button type="button" onClick={addEducation} className="w-full">
+                  <div className="flex-none ml-auto">
+                    <Button type="button" onClick={addEducation}>
                       <Plus className="mr-2 h-4 w-4" />
                       Add Education
                     </Button>
@@ -278,8 +308,8 @@ export default function NewCandidatePage() {
               <div className="space-y-3">
                 {educationEntries.map((edu, idx) => (
                   <div key={idx} className="flex items-center justify-between p-3 bg-card border rounded-lg">
-                    <div className="flex gap-4 items-center">
-                      <span className="font-semibold text-foreground min-w-20">{edu.level}</span>
+                    <div className="flex gap-4 items-center flex-1">
+                      <span className="font-semibold text-foreground min-w-[120px]">{edu.level}</span>
                       <span className="text-muted-foreground">{edu.degreeName}</span>
                     </div>
                     <Button type="button" variant="ghost" size="sm" onClick={() => removeEducation(idx)}>
@@ -359,15 +389,18 @@ export default function NewCandidatePage() {
             <div className="space-y-2">
               <Label>Languages *</Label>
               <div className="p-4 border rounded-lg bg-muted/30">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
+                <div className="flex flex-col md:flex-row gap-4 items-end">
+                  <div className="space-y-2 w-full md:w-[200px]">
                     <Label className="text-sm font-medium">Language</Label>
                     <Select 
-                      value={newLanguage.language}
+                      value={newLanguage.language || undefined}
                       onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
                     >
-                      <SelectTrigger className="bg-background">
-                        <SelectValue />
+                      <SelectTrigger className={cn(
+                        "bg-background text-muted-foreground",
+                        newLanguage.language && "text-foreground"
+                      )}>
+                        <SelectValue placeholder="Select language" />
                       </SelectTrigger>
                       <SelectContent>
                         {LANGUAGES.map(lang => (
@@ -376,14 +409,17 @@ export default function NewCandidatePage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 w-full md:w-[200px]">
                     <Label className="text-sm font-medium">Level</Label>
                     <Select 
-                      value={newLanguage.level} 
+                      value={newLanguage.level || undefined} 
                       onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
                     >
-                      <SelectTrigger className="bg-background">
-                        <SelectValue />
+                      <SelectTrigger className={cn(
+                        "bg-background text-muted-foreground",
+                        newLanguage.level && "text-foreground"
+                      )}>
+                        <SelectValue placeholder="Select level" />
                       </SelectTrigger>
                       <SelectContent>
                         {LANGUAGE_LEVELS.map(level => (
@@ -392,9 +428,8 @@ export default function NewCandidatePage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium opacity-0">Action</Label>
-                    <Button type="button" onClick={addLanguage} className="w-full">
+                  <div className="flex-none ml-auto">
+                    <Button type="button" onClick={addLanguage}>
                       <Plus className="mr-2 h-4 w-4" />
                       Add Language
                     </Button>
@@ -405,8 +440,8 @@ export default function NewCandidatePage() {
               <div className="space-y-3">
                 {languages.map((lang, idx) => (
                   <div key={idx} className="flex items-center justify-between p-3 bg-card border rounded-lg">
-                    <div className="flex gap-4 items-center">
-                      <span className="font-semibold text-foreground min-w-24">{lang.language}</span>
+                    <div className="flex gap-4 items-center flex-1">
+                      <span className="font-semibold text-foreground min-w-[120px]">{lang.language}</span>
                       <span className="text-muted-foreground">{lang.level}</span>
                     </div>
                     <Button type="button" variant="ghost" size="sm" onClick={() => removeLanguage(idx)}>
