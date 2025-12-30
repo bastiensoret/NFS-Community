@@ -18,9 +18,6 @@ export type JobPostingDTO = {
   remoteAllowed: boolean
   onSiteDays: number | null
 
-  // Legacy Fields (kept for display compatibility)
-  workLocation: any // JSON
-  workArrangement: any // JSON
   startDate: string | null // Serialized date
   lastUpdated: string // Serialized date
   createdAt: string // Serialized date
