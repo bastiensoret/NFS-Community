@@ -67,8 +67,7 @@ export default async function DashboardPage() {
         id: true,
         jobTitle: true,
         status: true,
-        postingDate: true,
-        applicationDeadline: true
+        postingDate: true
       }
     })
   ])

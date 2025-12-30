@@ -119,11 +119,7 @@ export default async function PositionsPage({
     ...pos,
     postingDate: pos.postingDate.toISOString(),
     startDate: pos.startDate?.toISOString() ?? null,
-    endDate: pos.endDate?.toISOString() ?? null,
-    applicationDeadline: pos.applicationDeadline?.toISOString() ?? null,
     lastUpdated: pos.lastUpdated.toISOString(),
-    // Ensure JSON fields are handled or typed as needed, strictly they are strictly typed in Prisma Client but might need loose handling for legacy
-    workLocation: pos.workLocation as any, 
   }))
 
   return (

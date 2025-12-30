@@ -32,18 +32,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useDebouncedCallback } from "use-debounce"
 
-interface WorkArrangement {
-  remote_allowed?: boolean
-  on_site_days_per_week?: number
-}
-
-interface LegacyWorkLocation {
-  city?: string
-  country?: string
-  workArrangement?: string
-  officeDaysRequired?: number
-}
-
 interface Position {
   id: string
   creatorId?: string | null
@@ -54,7 +42,6 @@ interface Position {
   status: string
   postingDate: string // Serialized
   reference?: string | null
-  externalReference?: string | null
   location?: string | null
   country?: string | null
   durationMonths?: number | null
@@ -62,12 +49,11 @@ interface Position {
   // New Flattened Fields
   remoteAllowed?: boolean
   onSiteDays?: number | null
+  minSalary?: number | null
+  maxSalary?: number | null
+  currency?: string | null
 
-  // Legacy Fields (kept for display compatibility)
-  workLocation: LegacyWorkLocation | null
-  workArrangement?: WorkArrangement | null
   startDate?: string | null // Serialized
-  contractDuration?: string | null
 }
 
 interface PaginationProps {
@@ -211,10 +197,8 @@ export function PositionsTable({ initialPositions, userRole, currentUserId, pagi
     
     // Prioritize new flattened fields
     if (position.location) parts.push(position.location)
-    else if (position.workLocation?.city) parts.push(position.workLocation.city)
     
     if (position.country) parts.push(position.country)
-    else if (position.workLocation?.country) parts.push(position.workLocation.country)
     
     return parts.join(", ") || "Not specified"
   }

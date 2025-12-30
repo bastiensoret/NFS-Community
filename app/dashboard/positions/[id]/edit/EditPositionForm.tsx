@@ -37,16 +37,9 @@ interface LanguageRequirement {
 const LANGUAGES = ["French", "Dutch", "English", "German", "Italian", "Spanish"]
 const LEVELS = ["Basic", "Intermediate", "Advanced", "Native"]
 
-interface WorkArrangement {
-  remote_allowed?: boolean
-  on_site_days_per_week?: number
-}
-
-interface LegacyWorkLocation {
-  city?: string
-  country?: string
-  workArrangement?: string
-  officeDaysRequired?: number
+interface WorkArrangementState {
+  remote_allowed: boolean
+  on_site_days_per_week: number
 }
 
 interface Position {
@@ -78,41 +71,20 @@ interface Position {
   skills: string[]
   languageRequirements?: LanguageRequirement[]
   
-  // Legacy/Other (kept for compatibility)
-  workArrangement?: WorkArrangement | unknown // Json
   industrySector?: string | null
   status: string
   employmentType: string
-  workLocation?: LegacyWorkLocation | unknown // Json
-  contractDuration?: string | null
 }
 
 export function EditPositionForm({ position, userRole }: { position: Position, userRole: string }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   
-  // Determine initial Work Arrangement from new fields or legacy JSON
-  const getInitialWorkArrangement = () => {
-    if (position.remoteAllowed !== undefined) {
-      return {
-        remote_allowed: position.remoteAllowed,
-        on_site_days_per_week: position.onSiteDays ?? 2
-      }
-    }
-    // Fallback to legacy
-    if (position.workArrangement) {
-        return position.workArrangement as WorkArrangement
-    }
-    if ((position.workLocation as any)?.workArrangement) {
-      const loc = position.workLocation as any
-      return {
-        remote_allowed: loc.workArrangement !== 'ON_SITE',
-        on_site_days_per_week: loc.officeDaysRequired
-      }
-    }
+  // Determine initial Work Arrangement from new fields
+  const getInitialWorkArrangement = (): WorkArrangementState => {
     return {
-      remote_allowed: true,
-      on_site_days_per_week: 2
+      remote_allowed: position.remoteAllowed ?? true,
+      on_site_days_per_week: position.onSiteDays ?? 2
     }
   }
 
@@ -126,10 +98,10 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     // Core
     jobTitle: position.jobTitle,
     companyName: position.companyName,
-    location: position.location || (position.workLocation as any)?.city || "",
-    country: position.country || (position.workLocation as any)?.country || "Belgium",
+    location: position.location || "",
+    country: position.country || "Belgium",
     startDate: position.startDate ? new Date(position.startDate).toISOString().split('T')[0] : "",
-    durationMonths: position.durationMonths || (position.contractDuration ? parseFloat(position.contractDuration) : 0),
+    durationMonths: position.durationMonths || 0,
     seniorityLevel: position.seniorityLevel,
     industrySector: position.industrySector || "Banking",
 
@@ -138,7 +110,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
     status: position.status,
   })
 
-  const [workArrangement, setWorkArrangement] = useState<WorkArrangement>(initialWorkArrangement as WorkArrangement)
+  const [workArrangement, setWorkArrangement] = useState<WorkArrangementState>(initialWorkArrangement)
   
   const [responsibilities, setResponsibilities] = useState<string[]>(position.responsibilities || [])
   const [skills, setSkills] = useState<string[]>(position.skills || [])
@@ -168,6 +140,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
       seniorityLevel: formData.seniorityLevel as any,
       industrySector: formData.industrySector as any,
       status: formData.status as any,
+      country: formData.country as any,
       // Flatten Work Arrangement
       remoteAllowed: workArrangement.remote_allowed,
       onSiteDays: workArrangement.on_site_days_per_week,
@@ -211,6 +184,7 @@ export function EditPositionForm({ position, userRole }: { position: Position, u
       reference: position.reference || undefined,
       seniorityLevel: formData.seniorityLevel as any,
       industrySector: formData.industrySector as any,
+      country: formData.country as any,
       // Flatten Work Arrangement
       remoteAllowed: workArrangement.remote_allowed,
       onSiteDays: workArrangement.on_site_days_per_week,

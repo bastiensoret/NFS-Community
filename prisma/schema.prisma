@@ -127,7 +127,6 @@ model JobPosting {
   durationMonths        Float?
   startDate             DateTime?
   endDate               DateTime?
-  contractDuration      String?   // Legacy, prefer durationMonths/dates
   extensionPossible     Boolean   @default(false)
   
   // Work Arrangement (Flattened)
@@ -150,35 +149,12 @@ model JobPosting {
   objectives            String[]
   education             String[]
   experience            String[]
-  languages             String[]  // Simple list (Legacy compat)
 
   // Relations
   languageRequirements  JobPostingLanguage[]
   
-  // Metadata
-  postingDate           DateTime  @default(now())
-  lastUpdated           DateTime  @updatedAt
-  viewCount             Int       @default(0)
-  applicationCount      Int       @default(0)
-  
   creatorId             String?
   creator               User?     @relation("CreatedPositions", fields: [creatorId], references: [id])
-
-  // Legacy / Unused (To be removed)
-  externalReference     String?
-  source                String?
-  sourceUrl             String?
-  companyDivision       String?
-  organizationalUnit    String?
-  roleCategory          String?
-  roleProfile           String?
-  workLocation          Json?     // Deprecated
-  missionContext        String?
-  industry              String?
-  domain                String?
-  travelRequired        String?
-  applicationMethod     String?
-  applicationDeadline   DateTime?
 }
 
 model JobPostingLanguage {

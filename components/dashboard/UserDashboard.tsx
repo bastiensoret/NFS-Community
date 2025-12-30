@@ -26,7 +26,6 @@ interface Position {
   jobTitle: string
   status: string
   postingDate: Date
-  applicationDeadline: Date | null
 }
 
 interface UserDashboardProps {
@@ -181,14 +180,13 @@ export function UserDashboard({
                   <TableRow>
                     <TableHead>Title</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Deadline</TableHead>
                     <TableHead className="text-right">Created</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {userPositions.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
                         No positions found
                       </TableCell>
                     </TableRow>
@@ -204,11 +202,6 @@ export function UserDashboard({
                           <Badge variant={getStatusVariant(position.status)}>
                             {formatStatus(position.status)}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {position.applicationDeadline 
-                            ? new Date(position.applicationDeadline).toLocaleDateString() 
-                            : '-'}
                         </TableCell>
                         <TableCell className="text-right text-muted-foreground text-sm">
                           {new Date(position.postingDate).toLocaleDateString()}

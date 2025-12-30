@@ -39,7 +39,6 @@ export const jobPostingSchema = z.object({
   objectives: z.array(z.string()).optional(),
   education: z.array(z.string()).optional(),
   experience: z.array(z.string()).optional(),
-  languages: z.array(z.string()).optional(), // Legacy simple list
 
   // Relations (Input for JobPostingLanguage)
   languageRequirements: z.array(z.object({
@@ -47,23 +46,6 @@ export const jobPostingSchema = z.object({
     level: z.enum(["Basic", "Intermediate", "Advanced", "Native"]),
     mandatory: z.boolean()
   })).optional(),
-
-  // Legacy fields (kept for compatibility but deprecated)
-  externalReference: z.string().optional(),
-  source: z.string().optional(),
-  sourceUrl: z.string().optional().or(z.literal("")),
-  companyDivision: z.string().optional(),
-  organizationalUnit: z.string().optional(),
-  roleCategory: z.string().optional(),
-  roleProfile: z.string().optional(),
-  workLocation: z.any().optional(),
-  contractDuration: z.string().optional(),
-  missionContext: z.string().optional(),
-  industry: z.string().optional(),
-  domain: z.string().optional(),
-  travelRequired: z.string().optional(),
-  applicationMethod: z.string().optional(),
-  applicationDeadline: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
 })
 
 export const candidateSchema = z.object({

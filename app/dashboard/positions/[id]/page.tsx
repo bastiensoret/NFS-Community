@@ -9,15 +9,6 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { ApprovePositionButton } from "./ApprovePositionButton"
 
-interface WorkLocation {
-  address?: string
-  city?: string
-  postalCode?: string
-  country?: string
-  workArrangement?: string
-  officeDaysRequired?: number
-}
-
 export default async function PositionDetailsPage({
   params,
 }: {
@@ -52,9 +43,6 @@ export default async function PositionDetailsPage({
     }
   }
 
-  // Cast legacy workLocation if needed (it is Json? in schema)
-  const location = position.workLocation as unknown as WorkLocation
-  
   // Use relation for languages
   const languages = position.languageRequirements
 
@@ -100,10 +88,7 @@ export default async function PositionDetailsPage({
   const getLocationString = () => {
     const parts = []
     if (position.location) parts.push(position.location)
-    else if (location?.city) parts.push(location.city)
-    
     if (position.country) parts.push(position.country)
-    else if (location?.country) parts.push(location.country)
     
     return parts.join(", ") || "Not specified"
   }
@@ -114,8 +99,6 @@ export default async function PositionDetailsPage({
             ? `${position.onSiteDays} days/week on-site (Remote Allowed)`
             : "Remote Allowed"
     }
-    // Fallback to legacy
-    if (location?.workArrangement) return location.workArrangement.replace('_', ' ').toLowerCase()
     return "On-site"
   }
 
@@ -131,9 +114,9 @@ export default async function PositionDetailsPage({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-3xl font-bold text-foreground">{position.jobTitle}</h1>
-              {(position.reference || position.externalReference) && (
+              {position.reference && (
                 <Badge variant="secondary" className="font-mono text-muted-foreground font-normal">
-                  {position.reference || position.externalReference}
+                  {position.reference}
                 </Badge>
               )}
             </div>
@@ -226,46 +209,6 @@ export default async function PositionDetailsPage({
               )}
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Additional information</CardTitle>
-            </CardHeader>
-            <CardContent className="grid sm:grid-cols-2 gap-6">
-              {(position.industrySector || position.industry) && (
-                <div>
-                  <span className="text-sm text-muted-foreground block mb-1">Industry</span>
-                  <span className="font-medium">{position.industrySector || position.industry}</span>
-                </div>
-              )}
-              {position.domain && (
-                <div>
-                  <span className="text-sm text-muted-foreground block mb-1">Domain</span>
-                  <span className="font-medium">{position.domain}</span>
-                </div>
-              )}
-              {position.source && (
-                <div>
-                  <span className="text-sm text-muted-foreground block mb-1">Source</span>
-                  <span className="font-medium">{position.source}</span>
-                </div>
-              )}
-              {position.sourceUrl && (
-                <div>
-                  <span className="text-sm text-muted-foreground block mb-1">Source URL</span>
-                  <a href={position.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                    Link <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              )}
-              {position.applicationMethod && (
-                <div>
-                  <span className="text-sm text-muted-foreground block mb-1">Application method</span>
-                  <span className="font-medium">{position.applicationMethod}</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
 
         <div className="space-y-6">
@@ -323,27 +266,22 @@ export default async function PositionDetailsPage({
                   <span className="font-medium">
                     {position.durationMonths 
                       ? `${position.durationMonths} months` 
-                      : position.contractDuration 
-                        ? `${position.contractDuration} months` 
-                        : "Not specified"}
+                      : "Not specified"}
                   </span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {position.companyDivision && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Company info</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <span className="text-sm text-muted-foreground block mb-1">Division</span>
-                  <span className="font-medium">{position.companyDivision}</span>
-                </div>
-              </CardContent>
-            </Card>
+          {position.industrySector && (
+             <Card>
+               <CardHeader>
+                 <CardTitle>Industry</CardTitle>
+               </CardHeader>
+               <CardContent>
+                 <span className="font-medium">{position.industrySector}</span>
+               </CardContent>
+             </Card>
           )}
         </div>
       </div>
