@@ -186,7 +186,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
+                <Label htmlFor="firstName">First name *</Label>
                 <Input
                   id="firstName"
                   required
@@ -197,7 +197,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
+                <Label htmlFor="lastName">Last name *</Label>
                 <Input
                   id="lastName"
                   required
@@ -223,7 +223,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number *</Label>
+                <Label htmlFor="phoneNumber">Phone number *</Label>
                 <Input
                   id="phoneNumber"
                   required
@@ -247,11 +247,14 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="birthDate">Birth Date</Label>
+                <Label htmlFor="birthDate">Birth date</Label>
                 <Input
                   id="birthDate"
                   type="date"
-                  className="placeholder:text-muted-foreground"
+                  className={cn(
+                    "placeholder:text-muted-foreground",
+                    !formData.birthDate && "text-muted-foreground"
+                  )}
                   value={formData.birthDate}
                   onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
                 />
@@ -268,7 +271,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Previous Roles</Label>
+                <Label className="font-normal">Previous roles</Label>
                 <DropdownMultiSelect
                   options={ROLE_OPTIONS}
                   selected={previousRoles}
@@ -279,7 +282,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="seniorityLevel">Seniority Level *</Label>
+                <Label htmlFor="seniorityLevel">Seniority level *</Label>
                 <Select
                   required
                   value={formData.seniorityLevel || undefined}
@@ -339,7 +342,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                   <div className="flex-none ml-auto">
                     <Button type="button" onClick={addEducation}>
                       <Plus className="mr-2 h-4 w-4" />
-                      Add Education
+                      Add education
                     </Button>
                   </div>
                 </div>
@@ -372,7 +375,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label>Desired Roles *</Label>
+              <Label className="font-normal">Desired roles *</Label>
               <DropdownMultiSelect
                 options={ROLE_OPTIONS}
                 selected={desiredRoles}
@@ -383,7 +386,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Soft Skills *</Label>
+                <Label className="font-normal">Soft skills *</Label>
                 <DropdownMultiSelect
                   options={SOFT_SKILL_OPTIONS}
                   selected={softSkills}
@@ -393,7 +396,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               </div>
 
               <div className="space-y-2">
-                <Label>Hard Skills *</Label>
+                <Label className="font-normal">Hard skills *</Label>
                 <CategorizedDropdownMultiSelect
                   options={HARD_SKILL_OPTIONS}
                   selected={hardSkills}
@@ -405,7 +408,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Industries</Label>
+                <Label className="font-normal">Industries</Label>
                 <DropdownMultiSelect
                   options={INDUSTRY_OPTIONS}
                   selected={industries}
@@ -415,7 +418,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               </div>
 
               <div className="space-y-2">
-                <Label>Certifications</Label>
+                <Label className="font-normal">Certifications</Label>
                 <DropdownMultiSelect
                   options={CERTIFICATION_OPTIONS}
                   selected={certifications}
@@ -472,7 +475,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                   <div className="flex-none ml-auto">
                     <Button type="button" onClick={addLanguage}>
                       <Plus className="mr-2 h-4 w-4" />
-                      Add Language
+                      Add language
                     </Button>
                   </div>
                 </div>
@@ -539,7 +542,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="createdAt">Created At</Label>
+                <Label htmlFor="createdAt">Created at</Label>
                 <Input
                   id="createdAt"
                   value={new Date(candidate.createdAt).toLocaleString()}
@@ -548,7 +551,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="updatedAt">Updated At</Label>
+                <Label htmlFor="updatedAt">Updated at</Label>
                 <Input
                   id="updatedAt"
                   value={new Date(candidate.updatedAt).toLocaleString()}
@@ -562,7 +565,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
 
         <div className="flex gap-4 pt-4">
           <Button type="submit" disabled={loading} className="min-w-32">
-            {loading ? "Saving..." : "Save Changes"}
+            {loading ? "Saving..." : "Save changes"}
           </Button>
           <Button
             type="button"

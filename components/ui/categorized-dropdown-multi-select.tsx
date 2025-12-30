@@ -80,7 +80,7 @@ export function CategorizedDropdownMultiSelect({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between h-auto min-h-[42px] py-2"
+            className="w-full justify-between h-auto min-h-[42px] py-2 font-normal"
           >
             <div className="flex flex-wrap gap-1">
               {selected.length === 0 ? (
