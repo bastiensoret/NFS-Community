@@ -90,7 +90,7 @@ export default async function PositionsPage({
   const queryOptions: Prisma.JobPostingFindManyArgs = {
     where,
     orderBy: [
-      { postingDate: "desc" },
+      { createdAt: "desc" },
       { id: "desc" }
     ],
     take: limit,
@@ -117,9 +117,9 @@ export default async function PositionsPage({
   // Transform to DTO (Serialize Dates)
   const serializedPositions = positions.map(pos => ({
     ...pos,
-    postingDate: pos.postingDate.toISOString(),
+    postingDate: pos.createdAt.toISOString(),
     startDate: pos.startDate?.toISOString() ?? null,
-    lastUpdated: pos.lastUpdated.toISOString(),
+    lastUpdated: pos.updatedAt.toISOString(),
   }))
 
   return (

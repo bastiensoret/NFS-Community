@@ -25,7 +25,7 @@ interface Position {
   id: string
   jobTitle: string
   status: string
-  postingDate: Date
+  createdAt: Date
 }
 
 interface UserDashboardProps {
@@ -204,7 +204,7 @@ export function UserDashboard({
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right text-muted-foreground text-sm">
-                          {new Date(position.postingDate).toLocaleDateString()}
+                          {new Date(position.createdAt).toLocaleDateString()}
                         </TableCell>
                       </TableRow>
                     ))

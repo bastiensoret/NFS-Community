@@ -62,12 +62,13 @@ export default async function DashboardPage() {
     }),
     prisma.jobPosting.findMany({
       where: { creatorId: session.user.id },
-      orderBy: { postingDate: 'desc' },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         jobTitle: true,
         status: true,
-        postingDate: true
+        createdAt: true,
+        reference: true
       }
     })
   ])

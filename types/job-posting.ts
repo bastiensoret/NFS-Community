@@ -22,5 +22,7 @@ export type JobPostingDTO = {
   workLocation: any // JSON
   workArrangement: any // JSON
   startDate: string | null // Serialized date
-  contractDuration: string | null
+  lastUpdated: string // Serialized date
+  createdAt: string // Serialized date
+  updatedAt: string // Serialized date
 }

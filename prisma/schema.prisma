@@ -7,26 +7,26 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          String    @default("USER")
-  isGatekeeper  Boolean   @default(false)
-  companyId     String?
-  tenantId      String?
-  firstName     String?
-  lastName      String?
-  plan          String    @default("FREE")
-  accounts      Account[]
-  sessions      Session[]
-  company       Company?  @relation(fields: [companyId], references: [id])
-  createdPositions JobPosting[] @relation("CreatedPositions")
-  createdCandidates Candidate[] @relation("CreatedCandidates")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                String       @id @default(cuid())
+  name              String?
+  email             String       @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  role              String       @default("USER")
+  isGatekeeper      Boolean      @default(false)
+  companyId         String?
+  tenantId          String?
+  firstName         String?
+  lastName          String?
+  plan              String       @default("FREE")
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  accounts          Account[]
+  createdCandidates Candidate[]  @relation("CreatedCandidates")
+  createdPositions  JobPosting[] @relation("CreatedPositions")
+  sessions          Session[]
+  company           Company?     @relation(fields: [companyId], references: [id])
 
   @@index([email])
   @@index([role])
@@ -72,98 +72,86 @@ model Company {
   tenantId  String?  @unique
   domain    String?  @unique
   plan      String   @default("FREE")
-  users     User[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  users     User[]
 }
 
 model Candidate {
-  id                String   @id @default(cuid())
-  
-  // Contact Information
-  firstName         String
-  lastName          String
-  email             String   @unique
-  phoneNumber       String
-  location          String?
-  
-  // Experience
-  education         String[]
-  educationLevel    String?  // Bachelor, Master, PhD
-  previousRoles     String[]
-  seniorityLevel    String
-  desiredRoles      String[]
-  softSkills        String[]
-  hardSkills        String[]
-  certifications    String[]
-  industries        String[]
-  languages         String[]
-  
-  // Miscellaneous
-  status            String   @default("DRAFT")
-  creatorId         String?
-  creator           User?    @relation("CreatedCandidates", fields: [creatorId], references: [id])
-
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id             String   @id @default(cuid())
+  firstName      String
+  lastName       String
+  email          String   @unique
+  phoneNumber    String
+  seniorityLevel String
+  location       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  desiredRoles   String[]
+  industries     String[]
+  certifications String[]
+  creatorId      String?
+  education      String[]
+  educationLevel String?
+  hardSkills     String[]
+  languages      String[]
+  previousRoles  String[]
+  softSkills     String[]
+  status         String   @default("DRAFT")
+  creator        User?    @relation("CreatedCandidates", fields: [creatorId], references: [id])
 }
 
 model JobPosting {
-  id                    String    @id @default(cuid())
-  reference             String?   @unique // Auto-generated reference
-  
-  // Core Fields
-  jobTitle              String
-  companyName           String
-  location              String
-  country               String
-  status                String    @default("ACTIVE")
-  
-  // Details
-  description           String
-  industrySector        String?
-  seniorityLevel        String
-  employmentType        String    @default("CONTRACT")
-  durationMonths        Float?
-  startDate             DateTime?
-  endDate               DateTime?
-  extensionPossible     Boolean   @default(false)
-  
-  // Work Arrangement (Flattened)
-  remoteAllowed         Boolean   @default(false)
-  onSiteDays            Int?
-
-  // Salary (Flattened)
-  minSalary             Float?
-  maxSalary             Float?
-  currency              String?   @default("EUR")
-
-  // Contact (Flattened)
-  contactName           String?
-  contactEmail          String?
-  contactPhone          String?
-
-  // Arrays (Postgres specific)
-  responsibilities      String[]
-  skills                String[]
-  objectives            String[]
-  education             String[]
-  experience            String[]
-
-  // Relations
-  languageRequirements  JobPostingLanguage[]
-  
-  creatorId             String?
-  creator               User?     @relation("CreatedPositions", fields: [creatorId], references: [id])
+  id                   String               @id @default(cuid())
+  jobTitle             String
+  companyName          String
+  seniorityLevel       String
+  employmentType       String               @default("CONTRACT")
+  startDate            DateTime?
+  endDate              DateTime?
+  extensionPossible    Boolean              @default(false)
+  description          String
+  status               String               @default("ACTIVE")
+  responsibilities     String[]
+  objectives           String[]
+  education            String[]
+  experience           String[]
+  skills               String[]
+  country              String
+  durationMonths       Float?
+  industrySector       String?
+  location             String
+  reference            String?              @unique
+  creatorId            String?
+  contactEmail         String?
+  contactName          String?
+  contactPhone         String?
+  currency             String?              @default("EUR")
+  maxSalary            Float?
+  minSalary            Float?
+  onSiteDays           Int?
+  remoteAllowed        Boolean              @default(false)
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  creator              User?                @relation("CreatedPositions", fields: [creatorId], references: [id])
+  languageRequirements JobPostingLanguage[]
 }
 
 model JobPostingLanguage {
   id           String     @id @default(cuid())
   jobPostingId String
-  jobPosting   JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
   language     String
   level        String
   mandatory    Boolean    @default(false)
+  jobPosting   JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+}
+
+model RateLimit {
+  identifier String   @id
+  count      Int      @default(0)
+  resetAt    DateTime
+
+  @@index([resetAt])
 }
 
 enum IndustrySector {
@@ -174,12 +162,4 @@ enum IndustrySector {
   Healthcare
   Consulting
   Other
-}
-
-model RateLimit {
-  identifier String   @id
-  count      Int      @default(0)
-  resetAt    DateTime
-
-  @@index([resetAt])
 }
