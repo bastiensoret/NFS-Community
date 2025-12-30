@@ -42,15 +42,20 @@ interface Candidate {
   firstName: string
   lastName: string
   email: string
-  phoneNumber: string | null
-  desiredRoles: string[]
-  skills: string[]
-  industries: string[]
-  certifications: string[]
-  languages: string[]
-  seniorityLevel: string | null
+  phoneNumber: string
   location: string | null
+  education: string[]
+  educationLevel: string | null
+  previousRoles: string[]
+  seniorityLevel: string
+  desiredRoles: string[]
+  softSkills: string[]
+  hardSkills: string[]
+  certifications: string[]
+  industries: string[]
+  languages: string[]
   createdAt: string | Date
+  updatedAt: string | Date
   status?: string
   creator?: {
     name: string | null

@@ -79,19 +79,27 @@ model Company {
 
 model Candidate {
   id                String   @id @default(cuid())
+  
+  // Contact Information
   firstName         String
   lastName          String
   email             String   @unique
-  phoneNumber       String?
-  desiredRoles      String[]
-  skills            String[]
-  industries        String[]
-  seniorityLevel    String?
-  certifications    String[]
-  languages         String[]
+  phoneNumber       String
   location          String?
-  profileDataJson   Json?
   
+  // Experience
+  education         String[]
+  educationLevel    String?  // Bachelor, Master, PhD
+  previousRoles     String[]
+  seniorityLevel    String
+  desiredRoles      String[]
+  softSkills        String[]
+  hardSkills        String[]
+  certifications    String[]
+  industries        String[]
+  languages         String[]
+  
+  // Miscellaneous
   status            String   @default("DRAFT")
   creatorId         String?
   creator           User?    @relation("CreatedCandidates", fields: [creatorId], references: [id])

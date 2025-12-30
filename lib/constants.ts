@@ -38,7 +38,22 @@ export const RESPONSIBILITY_OPTIONS = {
   ]
 }
 
-export const SKILL_OPTIONS = {
+export const SOFT_SKILL_OPTIONS = [
+  "Analytical thinking and problem-solving",
+  "Attention to detail and accuracy",
+  "Client communication and presentation",
+  "Report writing and documentation",
+  "Project management",
+  "Team collaboration",
+  "Stakeholder management",
+  "Adaptability to regulatory changes",
+  "Leadership",
+  "Time management",
+  "Critical thinking",
+  "Negotiation"
+]
+
+export const HARD_SKILL_OPTIONS = {
   "Compliance & Regulatory": [
     "AML/CFT regulations (AMLD, BSA, Patriot Act)",
     "KYC/CDD procedures",
@@ -71,18 +86,11 @@ export const SKILL_OPTIONS = {
     "Security controls and testing",
     "Incident response",
     "Vulnerability management"
-  ],
-  "Soft Skills": [
-    "Analytical thinking and problem-solving",
-    "Attention to detail and accuracy",
-    "Client communication and presentation",
-    "Report writing and documentation",
-    "Project management",
-    "Team collaboration",
-    "Stakeholder management",
-    "Adaptability to regulatory changes"
   ]
 }
+
+// Legacy export for backward compatibility
+export const SKILL_OPTIONS = HARD_SKILL_OPTIONS
 
 export const INDUSTRY_OPTIONS = [
   "Banking",

@@ -67,18 +67,26 @@ export const jobPostingSchema = z.object({
 })
 
 export const candidateSchema = z.object({
+  // Contact Information
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().optional(),
-  desiredRoles: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
-  skills: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
-  industries: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
-  seniorityLevel: z.string().optional(),
-  certifications: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
-  languages: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]).optional(),
+  phoneNumber: z.string().min(1, "Phone number is required"),
   location: z.string().optional(),
-  profileDataJson: z.record(z.string(), z.any()).optional(),
+  
+  // Experience
+  education: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]).optional(),
+  educationLevel: z.enum(["Bachelor", "Master", "PhD"]).optional(),
+  previousRoles: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]).optional(),
+  seniorityLevel: z.string().min(1, "Seniority level is required"),
+  desiredRoles: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
+  softSkills: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
+  hardSkills: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
+  certifications: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]).optional(),
+  industries: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]).optional(),
+  languages: z.union([z.string(), z.array(z.string())]).transform(val => Array.isArray(val) ? val : [val]),
+  
+  // Miscellaneous
   status: z.enum(["DRAFT", "PENDING_APPROVAL", "ACTIVE", "INACTIVE"]).optional(),
 })
 

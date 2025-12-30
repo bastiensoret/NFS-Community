@@ -143,15 +143,15 @@ export default async function CandidateDetailsPage({
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Roles</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Education</p>
                   <p className="text-sm font-semibold">
-                    {candidate.desiredRoles.length > 0 ? `${candidate.desiredRoles.length} role${candidate.desiredRoles.length > 1 ? 's' : ''}` : "None"}
+                    {candidate.educationLevel || "Not specified"}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground uppercase tracking-wide">Skills</p>
                   <p className="text-sm font-semibold">
-                    {candidate.skills.length > 0 ? `${candidate.skills.length} skill${candidate.skills.length > 1 ? 's' : ''}` : "None"}
+                    {(candidate.softSkills.length + candidate.hardSkills.length) > 0 ? `${candidate.softSkills.length + candidate.hardSkills.length} skill${(candidate.softSkills.length + candidate.hardSkills.length) > 1 ? 's' : ''}` : "None"}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -165,6 +165,81 @@ export default async function CandidateDetailsPage({
           </div>
         </CardContent>
       </Card>
+
+      {/* Experience & Education */}
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-semibold mb-2">Experience & education</h2>
+          <p className="text-muted-foreground text-sm">Educational background and work history</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Education */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Award className="h-5 w-5 text-primary" />
+                Education
+              </CardTitle>
+              <CardDescription>
+                Educational qualifications
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {candidate.educationLevel && (
+                <div className="mb-3">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Level</p>
+                  <Badge variant="secondary" className="text-sm py-1 px-3">
+                    {candidate.educationLevel}
+                  </Badge>
+                </div>
+              )}
+              {candidate.education.length > 0 ? (
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Institutions/Degrees</p>
+                  <div className="flex flex-wrap gap-2">
+                    {candidate.education.map((edu, i) => (
+                      <Badge key={i} variant="outline" className="text-sm py-1 px-3">
+                        {edu}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No education details specified</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Previous Roles */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Briefcase className="h-5 w-5 text-primary" />
+                Previous roles
+              </CardTitle>
+              <CardDescription>
+                Work experience and past positions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {candidate.previousRoles.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {candidate.previousRoles.map((role, i) => (
+                    <Badge key={i} variant="outline" className="text-sm py-1 px-3">
+                      {role}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No previous roles specified</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <Separator />
 
       {/* Professional Overview */}
       <div className="space-y-6">
@@ -260,34 +335,62 @@ export default async function CandidateDetailsPage({
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-semibold mb-2">Skills & expertise</h2>
-          <p className="text-muted-foreground text-sm">Technical skills and certifications</p>
+          <p className="text-muted-foreground text-sm">Soft skills, hard skills, and certifications</p>
         </div>
 
-        {/* Skills */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Award className="h-5 w-5 text-primary" />
-              Technical & professional skills
-            </CardTitle>
-            <CardDescription>
-              Core competencies and technical abilities
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {candidate.skills.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {candidate.skills.map((skill, i) => (
-                  <Badge key={i} variant="outline" className="text-sm py-1 px-3">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No skills listed</p>
-            )}
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Soft Skills */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <User className="h-5 w-5 text-primary" />
+                Soft skills
+              </CardTitle>
+              <CardDescription>
+                Interpersonal and communication abilities
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {candidate.softSkills.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {candidate.softSkills.map((skill, i) => (
+                    <Badge key={i} variant="secondary" className="text-sm py-1 px-3">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No soft skills listed</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Hard Skills */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Award className="h-5 w-5 text-primary" />
+                Hard skills
+              </CardTitle>
+              <CardDescription>
+                Technical and professional competencies
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {candidate.hardSkills.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {candidate.hardSkills.map((skill, i) => (
+                    <Badge key={i} variant="outline" className="text-sm py-1 px-3">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No hard skills listed</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Certifications */}
         <Card>
