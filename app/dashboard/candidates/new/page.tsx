@@ -232,7 +232,7 @@ export default function NewCandidatePage() {
               <div className="space-y-2">
                 <Label>Previous Roles</Label>
                 <DropdownMultiSelect
-                  options={[]}
+                  options={ROLE_OPTIONS}
                   selected={previousRoles}
                   onChange={setPreviousRoles}
                   placeholder="Select previous roles"
@@ -268,33 +268,35 @@ export default function NewCandidatePage() {
               <Label>Education</Label>
               <div className="p-4 border rounded-lg bg-muted/30">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
-                  <div className="space-y-2 w-full md:w-[200px]">
-                    <Label className="text-sm font-medium">Level</Label>
-                    <Select 
-                      value={newEducation.level || undefined}
-                      onValueChange={(val) => setNewEducation({...newEducation, level: val})}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background text-muted-foreground",
-                        newEducation.level && "text-foreground"
-                      )}>
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {EDUCATION_LEVELS.map(level => (
-                          <SelectItem key={level} value={level}>{level}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 flex-1">
-                    <Label className="text-sm font-medium">Degree name</Label>
-                    <Input
-                      className="bg-background placeholder:text-muted-foreground"
-                      placeholder="e.g., Computer Science"
-                      value={newEducation.degreeName}
-                      onChange={(e) => setNewEducation({...newEducation, degreeName: e.target.value})}
-                    />
+                  <div className="flex flex-col md:flex-row gap-4 flex-1">
+                    <div className="space-y-2 w-full md:w-[200px]">
+                      <Label className="text-sm font-medium">Level</Label>
+                      <Select 
+                        value={newEducation.level || undefined}
+                        onValueChange={(val) => setNewEducation({...newEducation, level: val})}
+                      >
+                        <SelectTrigger className={cn(
+                          "bg-background text-muted-foreground",
+                          newEducation.level && "text-foreground"
+                        )}>
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {EDUCATION_LEVELS.map(level => (
+                            <SelectItem key={level} value={level}>{level}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      <Label className="text-sm font-medium">Degree name</Label>
+                      <Input
+                        className="bg-background placeholder:text-muted-foreground"
+                        placeholder="e.g., Computer Science"
+                        value={newEducation.degreeName}
+                        onChange={(e) => setNewEducation({...newEducation, degreeName: e.target.value})}
+                      />
+                    </div>
                   </div>
                   <div className="flex-none ml-auto">
                     <Button type="button" onClick={addEducation}>
@@ -390,43 +392,45 @@ export default function NewCandidatePage() {
               <Label>Languages *</Label>
               <div className="p-4 border rounded-lg bg-muted/30">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
-                  <div className="space-y-2 w-full md:w-[200px]">
-                    <Label className="text-sm font-medium">Language</Label>
-                    <Select 
-                      value={newLanguage.language || undefined}
-                      onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background text-muted-foreground",
-                        newLanguage.language && "text-foreground"
-                      )}>
-                        <SelectValue placeholder="Select language" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LANGUAGES.map(lang => (
-                          <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 w-full md:w-[200px]">
-                    <Label className="text-sm font-medium">Level</Label>
-                    <Select 
-                      value={newLanguage.level || undefined} 
-                      onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background text-muted-foreground",
-                        newLanguage.level && "text-foreground"
-                      )}>
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LANGUAGE_LEVELS.map(level => (
-                          <SelectItem key={level} value={level}>{level}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="flex flex-col md:flex-row gap-4 flex-1">
+                    <div className="space-y-2 w-full md:w-[200px]">
+                      <Label className="text-sm font-medium">Language</Label>
+                      <Select 
+                        value={newLanguage.language || undefined}
+                        onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
+                      >
+                        <SelectTrigger className={cn(
+                          "bg-background text-muted-foreground",
+                          newLanguage.language && "text-foreground"
+                        )}>
+                          <SelectValue placeholder="Select language" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LANGUAGES.map(lang => (
+                            <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2 w-full md:w-[200px]">
+                      <Label className="text-sm font-medium">Level</Label>
+                      <Select 
+                        value={newLanguage.level || undefined} 
+                        onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
+                      >
+                        <SelectTrigger className={cn(
+                          "bg-background text-muted-foreground",
+                          newLanguage.level && "text-foreground"
+                        )}>
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LANGUAGE_LEVELS.map(level => (
+                            <SelectItem key={level} value={level}>{level}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <div className="flex-none ml-auto">
                     <Button type="button" onClick={addLanguage}>

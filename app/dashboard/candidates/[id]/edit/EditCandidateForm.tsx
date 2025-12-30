@@ -67,7 +67,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
   // Initialize education entries from candidate data
   const initEducationEntries = (): EducationEntry[] => {
     if (candidate.education.length === 0) return []
-    const level = candidate.educationLevel || "Bachelor"
+    const level = candidate.educationLevel || ""
     return candidate.education.map(degree => ({ level, degreeName: degree }))
   }
 
@@ -75,7 +75,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
   const initLanguageRequirements = (): LanguageRequirement[] => {
     return candidate.languages.map(lang => ({ 
       language: lang, 
-      level: "Intermediate"
+      level: ""
     }))
   }
 
@@ -103,7 +103,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
   const [newEducation, setNewEducation] = useState<EducationEntry>({ level: "", degreeName: "" })
 
   const addLanguage = () => {
-    if (newLanguage.language) {
+    if (newLanguage.language && newLanguage.level) {
       setLanguages([...languages, { ...newLanguage }])
       setNewLanguage({ language: "", level: "" })
     }
@@ -114,7 +114,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
   }
 
   const addEducation = () => {
-    if (newEducation.degreeName.trim()) {
+    if (newEducation.degreeName.trim() && newEducation.level) {
       setEducationEntries([...educationEntries, { ...newEducation }])
       setNewEducation({ level: "", degreeName: "" })
     }
@@ -270,7 +270,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               <div className="space-y-2">
                 <Label>Previous Roles</Label>
                 <DropdownMultiSelect
-                  options={[]}
+                  options={ROLE_OPTIONS}
                   selected={previousRoles}
                   onChange={setPreviousRoles}
                   placeholder="Select previous roles"
@@ -282,7 +282,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 <Label htmlFor="seniorityLevel">Seniority Level *</Label>
                 <Select
                   required
-                  value={formData.seniorityLevel}
+                  value={formData.seniorityLevel || undefined}
                   onValueChange={(value) => setFormData({ ...formData, seniorityLevel: value })}
                 >
                   <SelectTrigger className={cn(
@@ -306,33 +306,35 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               <Label>Education</Label>
               <div className="p-4 border rounded-lg bg-muted/30">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
-                  <div className="space-y-2 w-full md:w-[200px]">
-                    <Label className="text-sm font-medium">Level</Label>
-                    <Select 
-                      value={newEducation.level}
-                      onValueChange={(val) => setNewEducation({...newEducation, level: val})}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background text-muted-foreground",
-                        newEducation.level && "text-foreground"
-                      )}>
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {EDUCATION_LEVELS.map(level => (
-                          <SelectItem key={level} value={level}>{level}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 flex-1 w-full">
-                    <Label className="text-sm font-medium">Degree name</Label>
-                    <Input
-                      className="bg-background placeholder:text-muted-foreground"
-                      placeholder="e.g., Computer Science"
-                      value={newEducation.degreeName}
-                      onChange={(e) => setNewEducation({...newEducation, degreeName: e.target.value})}
-                    />
+                  <div className="flex flex-col md:flex-row gap-4 flex-1">
+                    <div className="space-y-2 w-full md:w-[200px]">
+                      <Label className="text-sm font-medium">Level</Label>
+                      <Select 
+                        value={newEducation.level || undefined}
+                        onValueChange={(val) => setNewEducation({...newEducation, level: val})}
+                      >
+                        <SelectTrigger className={cn(
+                          "bg-background text-muted-foreground",
+                          newEducation.level && "text-foreground"
+                        )}>
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {EDUCATION_LEVELS.map(level => (
+                            <SelectItem key={level} value={level}>{level}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2 flex-1 w-full">
+                      <Label className="text-sm font-medium">Degree name</Label>
+                      <Input
+                        className="bg-background placeholder:text-muted-foreground"
+                        placeholder="e.g., Computer Science"
+                        value={newEducation.degreeName}
+                        onChange={(e) => setNewEducation({...newEducation, degreeName: e.target.value})}
+                      />
+                    </div>
                   </div>
                   <div className="flex-none ml-auto">
                     <Button type="button" onClick={addEducation}>
@@ -360,8 +362,6 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 )}
               </div>
             </div>
-          </CardContent>
-        </Card>
 
         <Card>
           <CardHeader>
@@ -427,43 +427,45 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               <Label>Languages *</Label>
               <div className="p-4 border rounded-lg bg-muted/30">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
-                  <div className="space-y-2 w-full md:w-[200px]">
-                    <Label className="text-sm font-medium">Language</Label>
-                    <Select 
-                      value={newLanguage.language}
-                      onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background text-muted-foreground",
-                        newLanguage.language && "text-foreground"
-                      )}>
-                        <SelectValue placeholder="Select language" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LANGUAGES.map(lang => (
-                          <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 w-full md:w-[200px]">
-                    <Label className="text-sm font-medium">Level</Label>
-                    <Select 
-                      value={newLanguage.level} 
-                      onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background text-muted-foreground",
-                        newLanguage.level && "text-foreground"
-                      )}>
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LANGUAGE_LEVELS.map(level => (
-                          <SelectItem key={level} value={level}>{level}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="flex flex-col md:flex-row gap-4 flex-1">
+                    <div className="space-y-2 w-full md:w-[200px]">
+                      <Label className="text-sm font-medium">Language</Label>
+                      <Select 
+                        value={newLanguage.language || undefined}
+                        onValueChange={(val) => setNewLanguage({...newLanguage, language: val})}
+                      >
+                        <SelectTrigger className={cn(
+                          "bg-background text-muted-foreground",
+                          newLanguage.language && "text-foreground"
+                        )}>
+                          <SelectValue placeholder="Select language" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LANGUAGES.map(lang => (
+                            <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2 w-full md:w-[200px]">
+                      <Label className="text-sm font-medium">Level</Label>
+                      <Select 
+                        value={newLanguage.level || undefined} 
+                        onValueChange={(val) => setNewLanguage({...newLanguage, level: val})}
+                      >
+                        <SelectTrigger className={cn(
+                          "bg-background text-muted-foreground",
+                          newLanguage.level && "text-foreground"
+                        )}>
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LANGUAGE_LEVELS.map(level => (
+                            <SelectItem key={level} value={level}>{level}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <div className="flex-none ml-auto">
                     <Button type="button" onClick={addLanguage}>
@@ -487,7 +489,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                   </div>
                 ))}
                 {languages.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4">No languages defined yet.</p>
+                  <p className="text-sm text-muted-foreground text-center py-4">No language requirements added yet</p>
                 )}
               </div>
             </div>
@@ -504,11 +506,14 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select
-                  value={formData.status}
+                  value={formData.status || undefined}
                   onValueChange={(value) => setFormData({ ...formData, status: value })}
                   disabled
                 >
-                  <SelectTrigger className="bg-muted">
+                  <SelectTrigger className={cn(
+                    "bg-muted text-muted-foreground",
+                    formData.status && "text-foreground"
+                  )}>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
