@@ -171,7 +171,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Edit candidate</h1>
         <p className="text-muted-foreground mt-2">Update candidate profile</p>
@@ -181,12 +181,12 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
         <Card>
           <CardHeader>
             <CardTitle>Personal information</CardTitle>
-            <CardDescription>Basic details of the candidate</CardDescription>
+            <CardDescription>Basic contact details of the candidate</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First name *</Label>
+                <Label htmlFor="firstName">First Name *</Label>
                 <Input
                   id="firstName"
                   required
@@ -197,7 +197,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last name *</Label>
+                <Label htmlFor="lastName">Last Name *</Label>
                 <Input
                   id="lastName"
                   required
@@ -209,7 +209,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email *</Label>
                 <Input
@@ -223,7 +223,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone number *</Label>
+                <Label htmlFor="phoneNumber">Phone Number *</Label>
                 <Input
                   id="phoneNumber"
                   required
@@ -235,7 +235,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
                 <Input
@@ -307,7 +307,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               <div className="p-4 border rounded-lg bg-muted/30">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
                   <div className="flex flex-col md:flex-row gap-4 flex-1">
-                    <div className="space-y-2 w-full md:w-[200px]">
+                    <div className="space-y-2 w-full md:w-[200px] flex-none">
                       <Label className="text-sm font-medium">Level</Label>
                       <Select 
                         value={newEducation.level || undefined}
@@ -326,7 +326,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2 flex-1 w-full">
+                    <div className="space-y-2 flex-1">
                       <Label className="text-sm font-medium">Degree name</Label>
                       <Input
                         className="bg-background placeholder:text-muted-foreground"
@@ -362,11 +362,13 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                 )}
               </div>
             </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
             <CardTitle>Professional profile</CardTitle>
-            <CardDescription>Professional qualifications and skills</CardDescription>
+            <CardDescription>Candidate&apos;s professional preferences and expertise</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
@@ -379,7 +381,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Soft Skills *</Label>
                 <DropdownMultiSelect
@@ -401,7 +403,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Industries</Label>
                 <DropdownMultiSelect
@@ -428,7 +430,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               <div className="p-4 border rounded-lg bg-muted/30">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
                   <div className="flex flex-col md:flex-row gap-4 flex-1">
-                    <div className="space-y-2 w-full md:w-[200px]">
+                    <div className="space-y-2 w-full md:w-[200px] flex-none">
                       <Label className="text-sm font-medium">Language</Label>
                       <Select 
                         value={newLanguage.language || undefined}
@@ -447,7 +449,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2 w-full md:w-[200px]">
+                    <div className="space-y-2 w-full md:w-[200px] flex-none">
                       <Label className="text-sm font-medium">Level</Label>
                       <Select 
                         value={newLanguage.level || undefined} 
@@ -502,7 +504,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
             <CardDescription>System information (read-only)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select
@@ -535,7 +537,7 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="createdAt">Created At</Label>
                 <Input
@@ -558,14 +560,15 @@ export function EditCandidateForm({ candidate }: { candidate: Candidate }) {
           </CardContent>
         </Card>
 
-        <div className="flex gap-4">
-          <Button type="submit" disabled={loading}>
+        <div className="flex gap-4 pt-4">
+          <Button type="submit" disabled={loading} className="min-w-32">
             {loading ? "Saving..." : "Save Changes"}
           </Button>
           <Button
             type="button"
             variant="outline"
             onClick={() => router.back()}
+            className="min-w-24"
           >
             Cancel
           </Button>

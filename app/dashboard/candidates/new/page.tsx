@@ -269,7 +269,7 @@ export default function NewCandidatePage() {
               <div className="p-4 border rounded-lg bg-muted/30">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
                   <div className="flex flex-col md:flex-row gap-4 flex-1">
-                    <div className="space-y-2 w-full md:w-[200px]">
+                    <div className="space-y-2 w-full md:w-[200px] flex-none">
                       <Label className="text-sm font-medium">Level</Label>
                       <Select 
                         value={newEducation.level || undefined}
@@ -393,7 +393,7 @@ export default function NewCandidatePage() {
               <div className="p-4 border rounded-lg bg-muted/30">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
                   <div className="flex flex-col md:flex-row gap-4 flex-1">
-                    <div className="space-y-2 w-full md:w-[200px]">
+                    <div className="space-y-2 w-full md:w-[200px] flex-none">
                       <Label className="text-sm font-medium">Language</Label>
                       <Select 
                         value={newLanguage.language || undefined}
@@ -412,7 +412,7 @@ export default function NewCandidatePage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2 w-full md:w-[200px]">
+                    <div className="space-y-2 w-full md:w-[200px] flex-none">
                       <Label className="text-sm font-medium">Level</Label>
                       <Select 
                         value={newLanguage.level || undefined} 
